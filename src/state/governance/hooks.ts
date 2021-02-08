@@ -1,4 +1,4 @@
-import { UNI, PRELOADED_PROPOSALS } from './../../constants/index'
+import { VAI, PRELOADED_PROPOSALS } from './../../constants/index'
 import { TokenAmount } from '@uniswap/sdk'
 import { isAddress } from 'ethers/lib/utils'
 import { useGovernanceContract, useUniContract } from '../../hooks/useContract'
@@ -160,9 +160,9 @@ export function useUserVotes(): TokenAmount | undefined {
   const uniContract = useUniContract()
 
   // check for available votes
-  const uni = chainId ? UNI[chainId] : undefined
+  const vai = chainId ? VAI[chainId] : undefined
   const votes = useSingleCallResult(uniContract, 'getCurrentVotes', [account ?? undefined])?.result?.[0]
-  return votes && uni ? new TokenAmount(uni, votes) : undefined
+  return votes && vai ? new TokenAmount(vai, votes) : undefined
 }
 
 // fetch available votes as of block (usually proposal start block)
@@ -171,10 +171,10 @@ export function useUserVotesAsOfBlock(block: number | undefined): TokenAmount | 
   const uniContract = useUniContract()
 
   // check for available votes
-  const uni = chainId ? UNI[chainId] : undefined
+  const vai = chainId ? VAI[chainId] : undefined
   const votes = useSingleCallResult(uniContract, 'getPriorVotes', [account ?? undefined, block ?? undefined])
     ?.result?.[0]
-  return votes && uni ? new TokenAmount(uni, votes) : undefined
+  return votes && vai ? new TokenAmount(vai, votes) : undefined
 }
 
 export function useDelegateCallback(): (delegatee: string | undefined) => undefined | Promise<string> {
@@ -187,7 +187,7 @@ export function useDelegateCallback(): (delegatee: string | undefined) => undefi
     (delegatee: string | undefined) => {
       if (!library || !chainId || !account || !isAddress(delegatee ?? '')) return undefined
       const args = [delegatee]
-      if (!uniContract) throw new Error('No UNI Contract!')
+      if (!uniContract) throw new Error('No VAI Contract!')
       return uniContract.estimateGas.delegate(...args, {}).then(estimatedGasLimit => {
         return uniContract
           .delegate(...args, { value: null, gasLimit: calculateGasMargin(estimatedGasLimit) })

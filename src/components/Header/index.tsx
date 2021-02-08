@@ -129,7 +129,7 @@ const AccountElement = styled.div<{ active: boolean }>`
   }
 `
 
-const UNIAmount = styled(AccountElement)`
+const VAIAmount = styled(AccountElement)`
   color: white;
   padding: 4px 8px;
   height: 36px;
@@ -138,7 +138,7 @@ const UNIAmount = styled(AccountElement)`
   background: radial-gradient(174.47% 188.91% at 1.84% 0%, #ff007a 0%, #2172e5 100%), #edeef2;
 `
 
-const UNIWrapper = styled.span`
+const VAIWrapper = styled.span`
   width: fit-content;
   position: relative;
   cursor: pointer;
@@ -345,8 +345,8 @@ export default function Header() {
           >
             {t('pool')}
           </StyledNavLink>
-          <StyledNavLink id={`stake-nav-link`} to={'/uni'}>
-            UNI
+          <StyledNavLink id={`stake-nav-link`} to={'/vai'}>
+            VAI
           </StyledNavLink>
           <StyledNavLink id={`stake-nav-link`} to={'/vote'}>
             Vote
@@ -364,18 +364,18 @@ export default function Header() {
             )}
           </HideSmall>
           {availableClaim && !showClaimPopup && (
-            <UNIWrapper onClick={toggleClaimModal}>
-              <UNIAmount active={!!account && !availableClaim} style={{ pointerEvents: 'auto' }}>
+            <VAIWrapper onClick={toggleClaimModal}>
+              <VAIAmount active={!!account && !availableClaim} style={{ pointerEvents: 'auto' }}>
                 <TYPE.white padding="0 2px">
-                  {claimTxn && !claimTxn?.receipt ? <Dots>Claiming UNI</Dots> : 'Claim UNI'}
+                  {claimTxn && !claimTxn?.receipt ? <Dots>Claiming VAI</Dots> : 'Claim VAI'}
                 </TYPE.white>
-              </UNIAmount>
+              </VAIAmount>
               <CardNoise />
-            </UNIWrapper>
+            </VAIWrapper>
           )}
           {!availableClaim && aggregateBalance && (
-            <UNIWrapper onClick={() => setShowUniBalanceModal(true)}>
-              <UNIAmount active={!!account && !availableClaim} style={{ pointerEvents: 'auto' }}>
+            <VAIWrapper onClick={() => setShowUniBalanceModal(true)}>
+              <VAIAmount active={!!account && !availableClaim} style={{ pointerEvents: 'auto' }}>
                 {account && (
                   <HideSmall>
                     <TYPE.white
@@ -394,10 +394,10 @@ export default function Header() {
                     </TYPE.white>
                   </HideSmall>
                 )}
-                UNI
-              </UNIAmount>
+                VAI
+              </VAIAmount>
               <CardNoise />
-            </UNIWrapper>
+            </VAIWrapper>
           )}
           <AccountElement active={!!account} style={{ pointerEvents: 'auto' }}>
             {account && userEthBalance ? (
