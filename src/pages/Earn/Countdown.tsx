@@ -7,12 +7,12 @@ const HOUR = MINUTE * 60
 const DAY = HOUR * 24
 const REWARDS_DURATION = DAY * REWARDS_DURATION_DAYS
 
-export function Countdown({ exactEnd }: { exactEnd?: Date }) {
+export function Countdown({ exactEnd, withdraw }: { exactEnd?: Date; withdraw?: boolean }) {
   // get end/beginning times
   const end = useMemo(() => (exactEnd ? Math.floor(exactEnd.getTime() / 1000) : STAKING_GENESIS + REWARDS_DURATION), [
     exactEnd
   ])
-  const begin = useMemo(() => end - REWARDS_DURATION, [end])
+  const begin = useMemo(() => 1613563200, [])
 
   // get current time
   const [time, setTime] = useState(() => Math.floor(Date.now() / 1000))
@@ -31,7 +31,16 @@ export function Countdown({ exactEnd }: { exactEnd?: Date }) {
 
   let timeRemaining: number
   let message: string
-  if (timeUntilGenesis >= 0) {
+  if (withdraw) {
+    const ongoing = timeUntilEnd >= 0
+    if (ongoing) {
+      message = 'Withdrawal will be available in'
+      timeRemaining = timeUntilEnd
+    } else {
+      message = 'Withdrawal is now accessible'
+      timeRemaining = Infinity
+    }
+  } else if (timeUntilGenesis >= 0) {
     message = 'Rewards begin in'
     timeRemaining = timeUntilGenesis
   } else {

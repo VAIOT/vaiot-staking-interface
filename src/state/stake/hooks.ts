@@ -7,9 +7,13 @@ import { NEVER_RELOAD, useMultipleContractSingleData } from '../multicall/hooks'
 import { tryParseAmount } from '../swap/hooks'
 import useCurrentBlockTimestamp from 'hooks/useCurrentBlockTimestamp'
 
-export const STAKING_GENESIS = 1612812322
+export const STAKING_GENESIS = 1612812322 //08.02.21
 
 export const REWARDS_DURATION_DAYS = 60
+
+export const WITHDRAWAL_GENESIS = 1614254400
+
+export const PRE_STAKING_WITHDRAWAL_GENESIS = 1614197698
 
 // TODO add staking rewards addresses here
 export const STAKING_REWARDS_INFO: {
@@ -21,13 +25,13 @@ export const STAKING_REWARDS_INFO: {
   [ChainId.MAINNET]: [
     {
       tokens: [WETH[ChainId.MAINNET], VAI[ChainId.MAINNET]],
-      stakingRewardAddress: '0xa1484C3aa22a66C62b77E0AE78E15258bd0cB711'
+      stakingRewardAddress: '0x284e2704ea0205d63658d490d5a560523ae7c4aa'
     }
   ],
   [ChainId.ROPSTEN]: [
     {
       tokens: [WETH[ChainId.ROPSTEN], VAI[ChainId.ROPSTEN]],
-      stakingRewardAddress: '0x480e0E2FF278Dd17f7f851Fa3fc4a6F87775157E'
+      stakingRewardAddress: '0x372573a14858A5A414ACe60D079E5B270b362B5e'
     }
   ]
 }
@@ -176,7 +180,6 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
         // compare period end timestamp vs current block timestamp (in seconds)
         const active =
           periodFinishSeconds && currentBlockTimestamp ? periodFinishSeconds > currentBlockTimestamp.toNumber() : true
-
         memo.push({
           stakingRewardAddress: rewardsAddress,
           tokens: info[index].tokens,

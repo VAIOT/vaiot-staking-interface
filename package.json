@@ -1,9 +1,10 @@
 {
   "name": "@uniswap/interface",
-  "description": "Uniswap Interface",
+  "description": "VAIOT Staking",
   "homepage": ".",
   "private": true,
   "devDependencies": {
+    "@cloudflare/wrangler": "^1.13.0",
     "@ethersproject/experimental": "^5.0.1",
     "@popperjs/core": "^2.4.4",
     "@reach/dialog": "^0.10.3",
