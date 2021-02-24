@@ -40,3 +40,4 @@ wrangler.toml
 .env
 
 .env.production
+/dist
