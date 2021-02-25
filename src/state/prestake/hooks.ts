@@ -14,7 +14,7 @@ export const PRE_STAKING_REWARDS_INFO: {
   [ChainId.MAINNET]: [
     {
       token: VAI[ChainId.MAINNET],
-      stakingRewardAddress: '0x590d4780eD198e17F1592F17Bb214322da7694aE'
+      stakingRewardAddress: '0xafea6ab8ab06bf803026cc2099bff4f20e977ded'
     }
   ],
   [ChainId.ROPSTEN]: [
@@ -145,21 +145,21 @@ export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[
           return memo
         }
         const token = info[index].token
-        const totalStakedAmount = new TokenAmount(token, totalSupplyState.result?.[0])
-        const totalRewardRate = JSBI.BigInt(rewardRateState.result?.[0])
-        const stakingLimit = new TokenAmount(token, JSBI.BigInt(stakingLimitState.result?.[0]))
-        const earned = new TokenAmount(token, JSBI.BigInt(earnedAmountState?.result?.[0]))
+        const totalStakedAmount = new TokenAmount(token, totalSupplyState.result?.[0] ?? 0)
+        const totalRewardRate = JSBI.BigInt(rewardRateState.result?.[0] ?? 0)
+        const stakingLimit = new TokenAmount(token, JSBI.BigInt(stakingLimitState.result?.[0] ?? 0))
+        const earned = new TokenAmount(token, JSBI.BigInt(earnedAmountState?.result?.[0] ?? 0))
 
-        const withdrawalTimeSeconds = withdrawalTimeState.result?.[0]?.toNumber()
+        const withdrawalTimeSeconds = withdrawalTimeState?.result?.[0]?.toNumber() ?? 0
         const withdrawalTimeMS = withdrawalTimeSeconds * 1000
         memo.push({
           stakingRewardAddress: rewardsAddress,
           token: info[index].token,
           earnedAmount: earned,
           totalRewardRate: totalRewardRate,
-          stakedAmount: new TokenAmount(vai, JSBI.BigInt(balanceState?.result?.[0])),
+          stakedAmount: new TokenAmount(vai, JSBI.BigInt(balanceState?.result?.[0] ?? 0)),
           totalStakedAmount: totalStakedAmount,
-          status: statusState?.result?.[0],
+          status: statusState?.result?.[0] ?? 0,
           withdrawalTime: withdrawalTimeMS > 0 ? new Date(withdrawalTimeMS) : undefined,
           currentStakingLimit: stakingLimit
         })

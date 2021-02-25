@@ -13,7 +13,7 @@ export const REWARDS_DURATION_DAYS = 60
 
 export const WITHDRAWAL_GENESIS = 1614254400
 
-export const PRE_STAKING_WITHDRAWAL_GENESIS = 1614197698
+export const PRE_STAKING_WITHDRAWAL_GENESIS = 1619698100
 
 // TODO add staking rewards addresses here
 export const STAKING_REWARDS_INFO: {

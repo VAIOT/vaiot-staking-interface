@@ -238,7 +238,7 @@ export default function PreStake() {
         )}
 
         <TYPE.white>
-          Detailed Pre-Staking rules available <a href={'https://vaiot.ai'}>here</a>
+          Detailed Pre-Staking rules available <a href={'https://vaiotltd.medium.com/vai-token-pre-staking-launch-c193825ab32e'}>here</a>
         </TYPE.white>
       </PositionInfo>
     </PageWrapper>
