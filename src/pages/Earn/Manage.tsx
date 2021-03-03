@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { AutoColumn } from '../../components/Column'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
@@ -14,7 +14,7 @@ import { RowBetween } from '../../components/Row'
 import { CardSection, DataCard, CardNoise, CardBGImage } from '../../components/earn/styled'
 import { ButtonPrimary, ButtonEmpty } from '../../components/Button'
 import StakingModal from '../../components/earn/StakingModal'
-import { useStakingInfo } from '../../state/stake/hooks'
+import { useStakingInfo, WITHDRAWAL_GENESIS } from '../../state/stake/hooks'
 import UnstakingModal from '../../components/earn/UnstakingModal'
 import ClaimRewardModal from '../../components/earn/ClaimRewardModal'
 import { useTokenBalance } from '../../state/wallet/hooks'
@@ -29,34 +29,33 @@ import { usePair } from '../../data/Reserves'
 import usePrevious from '../../hooks/usePrevious'
 import useUSDCPrice from '../../utils/useUSDCPrice'
 import { BIG_INT_ZERO, BIG_INT_SECONDS_IN_WEEK } from '../../constants'
+import { Countdown } from './Countdown'
 
-const PageWrapper = styled(AutoColumn)`
+export const PageWrapper = styled(AutoColumn)`
   max-width: 640px;
   width: 100%;
 `
 
-const PositionInfo = styled(AutoColumn)<{ dim: any }>`
+export const PositionInfo = styled(AutoColumn)<{ dim: any }>`
   position: relative;
   max-width: 640px;
   width: 100%;
   opacity: ${({ dim }) => (dim ? 0.6 : 1)};
 `
 
-const BottomSection = styled(AutoColumn)`
+export const BottomSection = styled(AutoColumn)`
   border-radius: 12px;
   width: 100%;
   position: relative;
 `
 
-const StyledDataCard = styled(DataCard)<{ bgColor?: any; showBackground?: any }>`
-  background: radial-gradient(76.02% 75.41% at 1.84% 0%, #1e1a31 0%, #3d51a5 100%);
+export const StyledDataCard = styled(DataCard)<{ bgColor?: any; showBackground?: any }>`
   z-index: 2;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  background: ${({ theme, bgColor, showBackground }) =>
-    `radial-gradient(91.85% 100% at 1.84% 0%, ${bgColor} 0%,  ${showBackground ? theme.black : theme.bg5} 100%) `};
+  background: linear-gradient(160deg, #000, #6360b5);
 `
 
-const StyledBottomCard = styled(DataCard)<{ dim: any }>`
+export const StyledBottomCard = styled(DataCard)<{ dim: any }>`
   background: ${({ theme }) => theme.bg3};
   opacity: ${({ dim }) => (dim ? 0.4 : 1)};
   margin-top: -40px;
@@ -65,19 +64,19 @@ const StyledBottomCard = styled(DataCard)<{ dim: any }>`
   z-index: 1;
 `
 
-const PoolData = styled(DataCard)`
+export const PoolData = styled(DataCard)`
   background: none;
   border: 1px solid ${({ theme }) => theme.bg4};
   padding: 1rem;
   z-index: 1;
 `
 
-const VoteCard = styled(DataCard)`
-  background: radial-gradient(76.02% 75.41% at 1.84% 0%, #27ae60 0%, #000000 100%);
+export const VoteCard = styled(DataCard)`
+  background: linear-gradient(160deg, #000, #6360b5);
   overflow: hidden;
 `
 
-const DataRow = styled(RowBetween)`
+export const DataRow = styled(RowBetween)`
   justify-content: center;
   gap: 12px;
 
@@ -86,6 +85,23 @@ const DataRow = styled(RowBetween)`
     gap: 12px;
   `};
 `
+
+export function IsWithdrawalAccessible(end: number) {
+  const [time, setTime] = useState(() => Math.floor(Date.now() / 1000))
+  const [isWithdrawalAccessible, setIsWithdrawalAccessible] = useState(() => false)
+  useEffect((): (() => void) | void => {
+    // we only need to tick if withdrawal is currently inaccessible
+    if (time <= end) {
+      const timeout = setTimeout(() => setTime(Math.floor(Date.now() / 1000)), 1000)
+      return () => {
+        clearTimeout(timeout)
+      }
+    } else {
+      setIsWithdrawalAccessible(true)
+    }
+  }, [time, end, isWithdrawalAccessible])
+  return isWithdrawalAccessible
+}
 
 export default function Manage({
   match: {
@@ -153,11 +169,16 @@ export default function Manage({
     }
   }, [account, toggleWalletModal])
 
+  const end = WITHDRAWAL_GENESIS
+
+  const endDate = new Date(WITHDRAWAL_GENESIS * 1000)
+  const isWithdrawalAccessible = IsWithdrawalAccessible(end)
+
   return (
     <PageWrapper gap="lg" justify="center">
       <RowBetween style={{ gap: '24px' }}>
         <TYPE.mediumHeader style={{ margin: 0 }}>
-          {currencyA?.symbol}-{currencyB?.symbol} Liquidity Mining
+          {currencyA?.symbol}-{currencyB?.symbol} Liquidity Staking
         </TYPE.mediumHeader>
         <DoubleCurrencyLogo currency0={currencyA ?? undefined} currency1={currencyB ?? undefined} size={24} />
       </RowBetween>
@@ -182,7 +203,7 @@ export default function Manage({
                     ?.multiply(BIG_INT_SECONDS_IN_WEEK)
                     ?.toFixed(0, { groupSeparator: ',' }) ?? '-'
                 : '0'}
-              {' UNI / week'}
+              {' VAI / week'}
             </TYPE.body>
           </AutoColumn>
         </PoolData>
@@ -266,7 +287,7 @@ export default function Manage({
             <AutoColumn gap="sm">
               <RowBetween>
                 <div>
-                  <TYPE.black>Your unclaimed UNI</TYPE.black>
+                  <TYPE.black>Your unclaimed VAI</TYPE.black>
                 </div>
                 {stakingInfo?.earnedAmount && JSBI.notEqual(BIG_INT_ZERO, stakingInfo?.earnedAmount?.raw) && (
                   <ButtonEmpty
@@ -274,6 +295,7 @@ export default function Manage({
                     borderRadius="8px"
                     width="fit-content"
                     onClick={() => setShowClaimRewardModal(true)}
+                    disabled={!isWithdrawalAccessible}
                   >
                     Claim
                   </ButtonEmpty>
@@ -300,7 +322,7 @@ export default function Manage({
                         ?.multiply(BIG_INT_SECONDS_IN_WEEK)
                         ?.toSignificant(4, { groupSeparator: ',' }) ?? '-'
                     : '0'}
-                  {' UNI / week'}
+                  {' VAI / week'}
                 </TYPE.black>
               </RowBetween>
             </AutoColumn>
@@ -310,7 +332,7 @@ export default function Manage({
           <span role="img" aria-label="wizard-icon" style={{ marginRight: '8px' }}>
             ⭐️
           </span>
-          When you withdraw, the contract will automagically claim UNI on your behalf!
+          When you withdraw, the contract will automagically claim VAI on your behalf!
         </TYPE.main>
 
         {!showAddLiquidityButton && (
@@ -328,6 +350,7 @@ export default function Manage({
                   borderRadius="8px"
                   width="160px"
                   onClick={() => setShowUnstakingModal(true)}
+                  disabled={!isWithdrawalAccessible}
                 >
                   Withdraw
                 </ButtonPrimary>
@@ -335,6 +358,7 @@ export default function Manage({
             )}
           </DataRow>
         )}
+        {!showAddLiquidityButton && <Countdown exactEnd={endDate} withdraw={true} />}
         {!userLiquidityUnstaked ? null : userLiquidityUnstaked.equalTo('0') ? null : !stakingInfo?.active ? null : (
           <TYPE.main>{userLiquidityUnstaked.toSignificant(6)} UNI-V2 LP tokens available</TYPE.main>
         )}

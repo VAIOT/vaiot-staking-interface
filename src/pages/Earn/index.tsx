@@ -2,15 +2,13 @@ import React from 'react'
 import { AutoColumn } from '../../components/Column'
 import styled from 'styled-components'
 import { STAKING_REWARDS_INFO, useStakingInfo } from '../../state/stake/hooks'
-import { TYPE, ExternalLink } from '../../theme'
+import { ExternalLink, TYPE } from '../../theme'
 import PoolCard from '../../components/earn/PoolCard'
 import { RowBetween } from '../../components/Row'
-import { CardSection, DataCard, CardNoise, CardBGImage } from '../../components/earn/styled'
+import { CardBGImage, CardNoise, CardSection, DataCard } from '../../components/earn/styled'
 import { Countdown } from './Countdown'
 import Loader from '../../components/Loader'
 import { useActiveWeb3React } from '../../hooks'
-import { JSBI } from '@uniswap/sdk'
-import { BIG_INT_ZERO } from '../../constants'
 import { OutlineCard } from '../../components/Card'
 
 const PageWrapper = styled(AutoColumn)`
@@ -44,12 +42,6 @@ export default function Earn() {
   // staking info for connected account
   const stakingInfos = useStakingInfo()
 
-  /**
-   * only show staking cards with balance
-   * @todo only account for this if rewards are inactive
-   */
-  const stakingInfosWithBalance = stakingInfos?.filter(s => JSBI.greaterThan(s.stakedAmount.raw, BIG_INT_ZERO))
-
   // toggle copy if rewards are inactive
   const stakingRewardsExist = Boolean(typeof chainId === 'number' && (STAKING_REWARDS_INFO[chainId]?.length ?? 0) > 0)
 
@@ -62,19 +54,19 @@ export default function Earn() {
           <CardSection>
             <AutoColumn gap="md">
               <RowBetween>
-                <TYPE.white fontWeight={600}>Uniswap liquidity mining</TYPE.white>
+                <TYPE.white fontWeight={600}>Uniswap liquidity staking</TYPE.white>
               </RowBetween>
               <RowBetween>
                 <TYPE.white fontSize={14}>
-                  Deposit your Liquidity Provider tokens to receive UNI, the Uniswap protocol governance token.
+                  Deposit your Liquidity Provider tokens to receive VAI, the first VFAA-regulated token.
                 </TYPE.white>
               </RowBetween>{' '}
               <ExternalLink
                 style={{ color: 'white', textDecoration: 'underline' }}
-                href="https://uniswap.org/blog/uni/"
+                href="https://vaiot.ai"
                 target="_blank"
               >
-                <TYPE.white fontSize={14}>Read more about UNI</TYPE.white>
+                <TYPE.white fontSize={14}>Read more about VAIOT</TYPE.white>
               </ExternalLink>
             </AutoColumn>
           </CardSection>
@@ -94,10 +86,8 @@ export default function Earn() {
             <Loader style={{ margin: 'auto' }} />
           ) : !stakingRewardsExist ? (
             <OutlineCard>No active pools</OutlineCard>
-          ) : stakingInfos?.length !== 0 && stakingInfosWithBalance.length === 0 ? (
-            <OutlineCard>No active pools</OutlineCard>
           ) : (
-            stakingInfosWithBalance?.map(stakingInfo => {
+            stakingInfos?.map(stakingInfo => {
               // need to sort by added liquidity here
               return <PoolCard key={stakingInfo.stakingRewardAddress} stakingInfo={stakingInfo} />
             })

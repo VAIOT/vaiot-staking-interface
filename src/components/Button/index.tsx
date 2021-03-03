@@ -111,7 +111,7 @@ export const ButtonGray = styled(Base)`
 
 export const ButtonSecondary = styled(Base)`
   border: 1px solid ${({ theme }) => theme.primary4};
-  color: ${({ theme }) => theme.primary1};
+  color: ${({ theme }) => theme.text1};
   background-color: transparent;
   font-size: 16px;
   border-radius: 12px;
@@ -159,7 +159,7 @@ export const ButtonPink = styled(Base)`
   }
 `
 
-export const ButtonUNIGradient = styled(ButtonPrimary)`
+export const ButtonVAIGradient = styled(ButtonPrimary)`
   color: white;
   padding: 4px 8px;
   height: 36px;
@@ -201,7 +201,7 @@ export const ButtonOutlined = styled(Base)`
 
 export const ButtonEmpty = styled(Base)`
   background-color: transparent;
-  color: ${({ theme }) => theme.primary1};
+  color: ${({ theme }) => theme.text1};
   display: flex;
   justify-content: center;
   align-items: center;

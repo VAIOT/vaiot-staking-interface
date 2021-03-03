@@ -1,4 +1,4 @@
-import { UNI } from './../../constants/index'
+import { VAI } from './../../constants/index'
 import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount } from '@uniswap/sdk'
 import { useMemo } from 'react'
 import ERC20_INTERFACE from '../../constants/abis/erc20'
@@ -134,20 +134,20 @@ export function useAllTokenBalances(): { [tokenAddress: string]: TokenAmount | u
   return balances ?? {}
 }
 
-// get the total owned, unclaimed, and unharvested UNI for account
+// get the total owned, unclaimed, and unharvested VAI for account
 export function useAggregateUniBalance(): TokenAmount | undefined {
   const { account, chainId } = useActiveWeb3React()
 
-  const uni = chainId ? UNI[chainId] : undefined
+  const vai = chainId ? VAI[chainId] : undefined
 
-  const uniBalance: TokenAmount | undefined = useTokenBalance(account ?? undefined, uni)
+  const uniBalance: TokenAmount | undefined = useTokenBalance(account ?? undefined, vai)
   const uniUnclaimed: TokenAmount | undefined = useUserUnclaimedAmount(account)
   const uniUnHarvested: TokenAmount | undefined = useTotalUniEarned()
 
-  if (!uni) return undefined
+  if (!vai) return undefined
 
   return new TokenAmount(
-    uni,
+    vai,
     JSBI.add(
       JSBI.add(uniBalance?.raw ?? JSBI.BigInt(0), uniUnclaimed?.raw ?? JSBI.BigInt(0)),
       uniUnHarvested?.raw ?? JSBI.BigInt(0)
