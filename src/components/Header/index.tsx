@@ -26,6 +26,7 @@ import { Dots } from '../swap/styleds'
 import Modal from '../Modal'
 import UniBalanceContent from './UniBalanceContent'
 import usePrevious from '../../hooks/usePrevious'
+import { useLockupInfo } from '../../state/lockup/hooks'
 
 const HeaderFrame = styled.div`
   display: grid;
@@ -315,6 +316,7 @@ export default function Header() {
 
   const countUpValue = aggregateBalance?.toFixed(0) ?? '0'
   const countUpValuePrevious = usePrevious(countUpValue) ?? '0'
+  const lockupInfo = useLockupInfo()[0]
 
   return (
     <HeaderFrame>
@@ -340,6 +342,13 @@ export default function Header() {
           {/*          <TmpNavLink id={`pre-stake-nav-link`}>Pre-Staking</TmpNavLink>
           <ComingSoon>Coming soon!</ComingSoon>*/}
         </HeaderLinks>
+        {lockupInfo?.currentAmount?.greaterThan(BigInt(0)) && (
+          <HeaderLinks>
+            <StyledNavLink id={`pre-stake-nav-link`} to={'/prestake-lockup'}>
+              Pre-Staking Private Sale
+            </StyledNavLink>
+          </HeaderLinks>
+        )}
       </HeaderRow>
       <HeaderControls>
         <HeaderElement>

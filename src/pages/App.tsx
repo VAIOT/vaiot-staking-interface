@@ -83,6 +83,7 @@ export default function App() {
             <Switch>
               <Route exact strict path="/stake" component={Earn} />
               <Route exact strict path="/prestake" component={PreStake} />
+              <Route exact strict path="/prestake-lockup" component={PreStake} />
               <Route exact strict path="/create" component={RedirectToAddLiquidity} />
               <Route exact path="/add" component={AddLiquidity} />
               <Route exact path="/add/:currencyIdA" component={RedirectOldAddLiquidityPathStructure} />

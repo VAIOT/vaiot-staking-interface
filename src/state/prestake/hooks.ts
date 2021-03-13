@@ -14,13 +14,13 @@ export const PRE_STAKING_REWARDS_INFO: {
   [ChainId.MAINNET]: [
     {
       token: VAI[ChainId.MAINNET],
-      stakingRewardAddress: '0xafea6ab8ab06bf803026cc2099bff4f20e977ded'
+      stakingRewardAddress: '0xa635D5b9e72169d8164b837Eb864bb74365A9B8D'
     }
   ],
   [ChainId.ROPSTEN]: [
     {
       token: VAI[ChainId.ROPSTEN],
-      stakingRewardAddress: '0x590d4780eD198e17F1592F17Bb214322da7694aE'
+      stakingRewardAddress: '0x2353C75160F6dA5d006398bee01074986C03D16d'
     }
   ]
 }
@@ -39,10 +39,6 @@ export interface PreStakingInfo {
   currentStakingLimit: TokenAmount
   // the percentage of token
   totalRewardRate: JSBI
-
-  withdrawalTime: Date | undefined
-
-  status: any
 }
 
 export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[] {
@@ -82,8 +78,6 @@ export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[
     'currentStakingLimit'
   )
 
-  const status = useMultipleContractSingleData(rewardsAddresses, PRE_STAKING_REWARDS_INTERFACE, 'status', accountArg)
-
   const rewardRates = useMultipleContractSingleData(
     rewardsAddresses,
     PRE_STAKING_REWARDS_INTERFACE,
@@ -99,21 +93,12 @@ export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[
     accountArg
   )
 
-  const withdrawalTime = useMultipleContractSingleData(
-    rewardsAddresses,
-    PRE_STAKING_REWARDS_INTERFACE,
-    'withdrawalTime',
-    accountArg
-  )
-
   return useMemo(() => {
     if (!chainId || !vai) return []
 
     return rewardsAddresses.reduce<PreStakingInfo[]>((memo, rewardsAddress, index) => {
       const balanceState = balances[index]
-      const statusState = status[index]
       const earnedAmountState = earnedAmounts[index]
-      const withdrawalTimeState = withdrawalTime[index]
 
       // these get fetched regardless of account
       const totalSupplyState = totalSupplies[index]
@@ -123,7 +108,6 @@ export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[
       if (
         // these may be undefined if not logged in
         !balanceState?.loading &&
-        !statusState?.loading &&
         // always need these
         totalSupplyState &&
         !totalSupplyState.loading &&
@@ -137,8 +121,7 @@ export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[
           // earnedAmountState?.error ||
           totalSupplyState.error ||
           rewardRateState.error ||
-          stakingLimitState.error ||
-          statusState?.error
+          stakingLimitState.error
           // timeUntilWithdrawalState.error
         ) {
           console.error('Failed to load staking rewards info')
@@ -150,8 +133,6 @@ export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[
         const stakingLimit = new TokenAmount(token, JSBI.BigInt(stakingLimitState.result?.[0] ?? 0))
         const earned = new TokenAmount(token, JSBI.BigInt(earnedAmountState?.result?.[0] ?? 0))
 
-        const withdrawalTimeSeconds = withdrawalTimeState?.result?.[0]?.toNumber() ?? 0
-        const withdrawalTimeMS = withdrawalTimeSeconds * 1000
         memo.push({
           stakingRewardAddress: rewardsAddress,
           token: info[index].token,
@@ -159,24 +140,10 @@ export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[
           totalRewardRate: totalRewardRate,
           stakedAmount: new TokenAmount(vai, JSBI.BigInt(balanceState?.result?.[0] ?? 0)),
           totalStakedAmount: totalStakedAmount,
-          status: statusState?.result?.[0] ?? 0,
-          withdrawalTime: withdrawalTimeMS > 0 ? new Date(withdrawalTimeMS) : undefined,
           currentStakingLimit: stakingLimit
         })
       }
       return memo
     }, [])
-  }, [
-    balances,
-    chainId,
-    earnedAmounts,
-    info,
-    rewardsAddresses,
-    totalSupplies,
-    vai,
-    stakingLimit,
-    rewardRates,
-    withdrawalTime,
-    status
-  ])
+  }, [balances, chainId, earnedAmounts, info, rewardsAddresses, totalSupplies, vai, stakingLimit, rewardRates])
 }

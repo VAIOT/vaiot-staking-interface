@@ -1,8 +1,7 @@
-import { Currency, Pair } from '@uniswap/sdk'
+import { Currency, CurrencyAmount, Pair } from '@uniswap/sdk'
 import React, { useState, useCallback } from 'react'
 import styled from 'styled-components'
 import { darken } from 'polished'
-import { useCurrencyBalance } from '../../state/wallet/hooks'
 import CurrencySearchModal from '../SearchModal/CurrencySearchModal'
 import CurrencyLogo from '../CurrencyLogo'
 import DoubleCurrencyLogo from '../DoubleLogo'
@@ -14,6 +13,7 @@ import { ReactComponent as DropDown } from '../../assets/images/dropdown.svg'
 import { useActiveWeb3React } from '../../hooks'
 import { useTranslation } from 'react-i18next'
 import useTheme from '../../hooks/useTheme'
+import {useCurrencyBalance} from '../../state/wallet/hooks';
 
 const InputRow = styled.div<{ selected: boolean }>`
   ${({ theme }) => theme.flexRowNoWrap}
@@ -129,6 +129,7 @@ interface CurrencyInputPanelProps {
   hideInput?: boolean
   otherCurrency?: Currency | null
   id: string
+  selectedCurrencyBalance?: CurrencyAmount | undefined
   showCommonBases?: boolean
   customBalanceText?: string
 }
@@ -147,6 +148,7 @@ export default function CurrencyInputPanel({
   hideInput = false,
   otherCurrency,
   id,
+  selectedCurrencyBalance,
   showCommonBases,
   customBalanceText
 }: CurrencyInputPanelProps) {
@@ -154,8 +156,8 @@ export default function CurrencyInputPanel({
 
   const [modalOpen, setModalOpen] = useState(false)
   const { account } = useActiveWeb3React()
-  const selectedCurrencyBalance = useCurrencyBalance(account ?? undefined, currency ?? undefined)
   const theme = useTheme()
+  selectedCurrencyBalance = selectedCurrencyBalance ?? useCurrencyBalance(account ?? undefined, currency ?? undefined)
 
   const handleDismissSearch = useCallback(() => {
     setModalOpen(false)

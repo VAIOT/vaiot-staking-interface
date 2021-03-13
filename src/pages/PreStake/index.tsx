@@ -1,7 +1,7 @@
 import { unwrappedToken } from '../../utils/wrappedCurrency'
 import { useCurrency } from '../../hooks/Tokens'
 import { currencyId } from '../../utils/currencyId'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { RowBetween } from '../../components/Row'
 import { TYPE } from '../../theme'
 import { AutoColumn } from '../../components/Column'
@@ -28,8 +28,9 @@ import { CardBGImage, CardNoise, CardSection } from 'components/earn/styled'
 import { ButtonPrimary } from '../../components/Button'
 import { CountUp } from 'use-count-up'
 import { VAI } from '../../constants'
-import { PRE_STAKING_WITHDRAWAL_GENESIS } from '../../state/stake/hooks'
-import { Countdown } from '../Earn/Countdown'
+import { matchPath } from 'react-router'
+import { useLocation } from 'react-router-dom'
+import { useLockupInfo } from '../../state/lockup/hooks'
 
 export function parseBigNumber(value: TokenAmount): string {
   return value.greaterThan(BigInt(100000))
@@ -37,38 +38,12 @@ export function parseBigNumber(value: TokenAmount): string {
     : value.toSignificant(2, { groupSeparator: ',' })
 }
 
-export function IsWithdrawalAccessible(init: number, finalize: number | undefined) {
-  const [time, setTime] = useState(() => Math.floor(Date.now() / 1000))
-  const [isInitiateWithdrawalAccessible, setInitiateWithdrawalAccessible] = useState(() => false)
-  const [isFinalizeWithdrawalAccessible, setFinalizeWithdrawalAccessible] = useState(() => false)
-  useEffect((): (() => void) | void => {
-    // we only need to tick if withdrawal is currently inaccessible
-    if (time <= init) {
-      const timeout = setTimeout(() => setTime(Math.floor(Date.now() / 1000)), 1000)
-      return () => {
-        clearTimeout(timeout)
-      }
-    } else {
-      setInitiateWithdrawalAccessible(true)
-    }
-    if (finalize) {
-      if (time <= finalize) {
-        const timeout = setTimeout(() => setTime(Math.floor(Date.now() / 1000)), 1000)
-        return () => {
-          clearTimeout(timeout)
-        }
-      } else {
-        setFinalizeWithdrawalAccessible(true)
-      }
-    } else {
-      setFinalizeWithdrawalAccessible(false)
-    }
-  }, [time, finalize, isInitiateWithdrawalAccessible, isFinalizeWithdrawalAccessible, init])
-  return { isInitiateWithdrawalAccessible, isFinalizeWithdrawalAccessible }
-}
-
 export default function PreStake() {
   const { chainId, account } = useActiveWeb3React()
+
+  const location = useLocation()
+
+  const privateSale = matchPath(location.pathname, '/prestake-lockup')?.isExact ?? undefined
 
   const token = chainId ? VAI[chainId] : undefined
 
@@ -78,7 +53,11 @@ export default function PreStake() {
 
   const stakingInfo = usePreStakingInfo()?.[0]
 
-  const userVaiUnstaked = useTokenBalance(account ?? undefined, stakingInfo?.stakedAmount?.token)
+  const lockupInfo = useLockupInfo()?.[0]
+
+  const tokenBalance = useTokenBalance(account ?? undefined, stakingInfo?.stakedAmount?.token)
+
+  const userVaiUnstaked = !privateSale ? tokenBalance : lockupInfo?.currentAmount
 
   const [showStakingModal, setShowStakingModal] = useState(false)
   const [showUnstakingModal, setShowUnstakingModal] = useState(false)
@@ -87,11 +66,6 @@ export default function PreStake() {
 
   const backgroundColor = useColor(token)
 
-  const endDate = new Date(PRE_STAKING_WITHDRAWAL_GENESIS * 1000)
-  const { isInitiateWithdrawalAccessible, isFinalizeWithdrawalAccessible } = IsWithdrawalAccessible(
-    PRE_STAKING_WITHDRAWAL_GENESIS,
-    stakingInfo && stakingInfo?.withdrawalTime?.getTime() ? stakingInfo?.withdrawalTime?.getTime() / 1000 : undefined
-  )
   const countUpAmount = stakingInfo?.earnedAmount?.toFixed(6) ?? '0'
   const countUpAmountPrevious = usePrevious(countUpAmount) ?? '0'
 
@@ -129,7 +103,7 @@ export default function PreStake() {
             <TYPE.body style={{ margin: 0 }}>Pool Rate</TYPE.body>
             <TYPE.body fontSize={24} fontWeight={500}>
               {stakingInfo ? stakingInfo?.totalRewardRate.toString() : '0'}
-              {'% ARR'}
+              {'% ARR + 0.2% daily'}
             </TYPE.body>
           </AutoColumn>
         </PoolData>
@@ -142,11 +116,13 @@ export default function PreStake() {
             onDismiss={() => setShowStakingModal(false)}
             preStakingInfo={stakingInfo}
             userVaiUnstaked={userVaiUnstaked}
+            privateSale={privateSale}
           />
           <UnstakingModal
             isOpen={showUnstakingModal}
             onDismiss={() => setShowUnstakingModal(false)}
             preStakingInfo={stakingInfo}
+            privateSale={privateSale}
           />
         </>
       )}
@@ -197,48 +173,30 @@ export default function PreStake() {
         </BottomSection>
 
         <DataRow style={{ marginBottom: '1rem' }}>
-          {stakingInfo && stakingInfo.status === 0 && (
-            <ButtonPrimary padding="8px" borderRadius="8px" width="160px" onClick={handleDepositClick}>
-              {'Deposit'}
+          {stakingInfo && (
+            <ButtonPrimary
+              padding="8px"
+              borderRadius="8px"
+              width="160px"
+              onClick={handleDepositClick}
+              disabled={stakingInfo?.stakedAmount?.greaterThan(JSBI.BigInt(0))}
+            >
+              Deposit
             </ButtonPrimary>
           )}
 
-          {stakingInfo?.status === 1 && (
+          {stakingInfo?.stakedAmount?.greaterThan(JSBI.BigInt(0)) && (
             <>
-              <ButtonPrimary
-                padding="8px"
-                borderRadius="8px"
-                width="160px"
-                onClick={() => setShowUnstakingModal(true)}
-                disabled={!isInitiateWithdrawalAccessible}
-              >
-                Initiate Withdrawal
-              </ButtonPrimary>
-            </>
-          )}
-          {stakingInfo?.status === 2 && (
-            <>
-              <ButtonPrimary
-                padding="8px"
-                borderRadius="8px"
-                width="160px"
-                onClick={() => setShowUnstakingModal(true)}
-                disabled={!isFinalizeWithdrawalAccessible}
-              >
-                Finalize Withdrawal
+              <ButtonPrimary padding="8px" borderRadius="8px" width="160px" onClick={() => setShowUnstakingModal(true)}>
+                Withdraw
               </ButtonPrimary>
             </>
           )}
         </DataRow>
-        {stakingInfo?.status === 1 && !isInitiateWithdrawalAccessible && (
-          <Countdown exactEnd={endDate} withdraw={true} />
-        )}
-        {stakingInfo?.status === 2 && !isFinalizeWithdrawalAccessible && (
-          <Countdown exactEnd={stakingInfo.withdrawalTime} withdraw={true} />
-        )}
 
         <TYPE.white>
-          Detailed Pre-Staking rules available <a href={'https://vaiotltd.medium.com/vai-token-pre-staking-launch-c193825ab32e'}>here</a>
+          Detailed Pre-Staking rules available{' '}
+          <a href={'https://vaiotltd.medium.com/vai-token-pre-staking-re-launch-fea723e178a9'}>here</a>
         </TYPE.white>
       </PositionInfo>
     </PageWrapper>
