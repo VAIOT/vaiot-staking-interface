@@ -41,8 +41,8 @@ export default function UniBalanceContent({ setShowUniBalanceModal }: { setShowU
   const { account, chainId } = useActiveWeb3React()
   const vai = chainId ? VAI[chainId] : undefined
 
-  const total = useAggregateUniBalance()
-  const uniBalance: TokenAmount | undefined = useTokenBalance(account ?? undefined, vai)
+  const total = useAggregateUniBalance(true)
+  const uniBalance: TokenAmount | undefined = useTokenBalance(account ?? undefined, vai, true)
   const uniToClaim: TokenAmount | undefined = useTotalUniEarned()
 
   const totalSupply: TokenAmount | undefined = useTotalSupply(vai)

@@ -14,7 +14,7 @@ export const LOCKUP_INFO: {
   [ChainId.MAINNET]: [
     {
       token: VAI[ChainId.MAINNET],
-      lockupAddress: '0xCc8cB12A87506c767dFe4d3Df37FE43Bcb711cEa'
+      lockupAddress: '0x7a36bFFf1C28D0dBed43F11866E0a34f60FeC0f0'
     }
   ],
   [ChainId.ROPSTEN]: [

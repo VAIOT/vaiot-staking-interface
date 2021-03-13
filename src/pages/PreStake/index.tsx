@@ -1,7 +1,7 @@
 import { unwrappedToken } from '../../utils/wrappedCurrency'
 import { useCurrency } from '../../hooks/Tokens'
 import { currencyId } from '../../utils/currencyId'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { RowBetween } from '../../components/Row'
 import { TYPE } from '../../theme'
 import { AutoColumn } from '../../components/Column'
@@ -31,6 +31,9 @@ import { VAI } from '../../constants'
 import { matchPath } from 'react-router'
 import { useLocation } from 'react-router-dom'
 import { useLockupInfo } from '../../state/lockup/hooks'
+import { useTransactionAdder } from '../../state/transactions/hooks'
+import { useLockup } from '../../hooks/useContract'
+import { TransactionResponse } from '@ethersproject/providers'
 
 export function parseBigNumber(value: TokenAmount): string {
   return value.greaterThan(BigInt(100000))
@@ -43,7 +46,7 @@ export default function PreStake() {
 
   const location = useLocation()
 
-  const privateSale = matchPath(location.pathname, '/prestake-lockup')?.isExact ?? undefined
+  const privateSale = matchPath(location.pathname, '/prestake-lockup')?.isExact ?? true
 
   const token = chainId ? VAI[chainId] : undefined
 
@@ -78,6 +81,25 @@ export default function PreStake() {
       toggleWalletModal()
     }
   }, [account, toggleWalletModal])
+  const addTransaction = useTransactionAdder()
+  const lockupContract = useLockup(lockupInfo?.lockupAddress)
+  const beneficiary = useMemo(() => [account ?? undefined], [account])
+  async function unlock() {
+    console.log(beneficiary)
+    if (lockupContract) {
+      await lockupContract
+        .unlock(beneficiary[0], { gasLimit: 300000 })
+        .then((response: TransactionResponse) => {
+          addTransaction(response, {
+            summary: `Unlock lockup`
+          })
+        })
+        .catch((error: any) => {
+          console.log(error)
+        })
+    }
+  }
+
   return (
     <PageWrapper gap="lg" justify="center">
       <RowBetween style={{ gap: '24px' }}>
@@ -193,6 +215,31 @@ export default function PreStake() {
             </>
           )}
         </DataRow>
+        <ButtonPrimary
+          padding="8px"
+          borderRadius="8px"
+          width="160px"
+          onClick={() => unlock()}
+          disabled={stakingInfo?.stakedAmount?.greaterThan(JSBI.BigInt(0))}
+        >
+          Unlock
+        </ButtonPrimary>
+
+        <TYPE.white style={{justifyContent: 'center', textAlign: 'center'}}>
+          Attention! You can unlock your VAI <b><u>only once</u></b> every lockup period (30 days). If you try to unlock eariler, you
+          won't get your VAI, but you will <b><u>still pay transaction fee!</u></b>
+          <br />
+          <br />
+          Below are unlock times:
+          <br />
+          15 Apr 2021
+          <br />
+          15 May 2021
+          <br />
+          15 Jun 2021
+          <br />
+          15 Jul 2021
+        </TYPE.white>
 
         <TYPE.white>
           Detailed Pre-Staking rules available{' '}

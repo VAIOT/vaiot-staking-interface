@@ -9,6 +9,7 @@ import { isAddress } from '../../utils'
 import { useSingleContractMultipleData, useMultipleContractSingleData } from '../multicall/hooks'
 import { useUserUnclaimedAmount } from '../claim/hooks'
 import { useTotalUniEarned } from '../stake/hooks'
+import { useLockupInfo } from '../lockup/hooks'
 
 /**
  * Returns a map of the given addresses to their eventually consistent ETH balances.
@@ -91,10 +92,12 @@ export function useTokenBalances(
 }
 
 // get the balance for a single token/account combo
-export function useTokenBalance(account?: string, token?: Token): TokenAmount | undefined {
+export function useTokenBalance(account?: string, token?: Token, privateSale?: boolean): TokenAmount | undefined {
+  const lockupInfo = useLockupInfo()?.[0]
+
   const tokenBalances = useTokenBalances(account, [token])
   if (!token) return undefined
-  return tokenBalances[token.address]
+  return !privateSale ? tokenBalances[token.address] : lockupInfo?.currentAmount
 }
 
 export function useCurrencyBalances(
@@ -135,12 +138,14 @@ export function useAllTokenBalances(): { [tokenAddress: string]: TokenAmount | u
 }
 
 // get the total owned, unclaimed, and unharvested VAI for account
-export function useAggregateUniBalance(): TokenAmount | undefined {
+export function useAggregateUniBalance(privateSale?: boolean): TokenAmount | undefined {
   const { account, chainId } = useActiveWeb3React()
 
   const vai = chainId ? VAI[chainId] : undefined
-
-  const uniBalance: TokenAmount | undefined = useTokenBalance(account ?? undefined, vai)
+  const accountBalance = useTokenBalance(account ?? undefined, vai)
+  const lockupInfo = useLockupInfo()[0]
+  const lockupBalance = lockupInfo?.currentAmount
+  const uniBalance: TokenAmount | undefined = privateSale ? lockupBalance : accountBalance
   const uniUnclaimed: TokenAmount | undefined = useUserUnclaimedAmount(account)
   const uniUnHarvested: TokenAmount | undefined = useTotalUniEarned()
 

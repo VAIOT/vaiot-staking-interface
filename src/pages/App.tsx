@@ -16,7 +16,6 @@ import {
   RedirectOldAddLiquidityPathStructure,
   RedirectToAddLiquidity
 } from './AddLiquidity/redirects'
-import Earn from './Earn'
 import Manage from './Earn/Manage'
 import RemoveLiquidity from './RemoveLiquidity'
 import { RedirectOldRemoveLiquidityPathStructure } from './RemoveLiquidity/redirects'
@@ -81,8 +80,8 @@ export default function App() {
           <TopLevelModals />
           <Web3ReactManager>
             <Switch>
-              <Route exact strict path="/stake" component={Earn} />
-              <Route exact strict path="/prestake" component={PreStake} />
+              {/*<Route exact strict path="/stake" component={Earn} />*/}
+              {/*<Route exact strict path="/prestake" component={PreStake} />*/}
               <Route exact strict path="/prestake-lockup" component={PreStake} />
               <Route exact strict path="/create" component={RedirectToAddLiquidity} />
               <Route exact path="/add" component={AddLiquidity} />
@@ -94,7 +93,7 @@ export default function App() {
               <Route exact strict path="/remove/:tokens" component={RedirectOldRemoveLiquidityPathStructure} />
               <Route exact strict path="/remove/:currencyIdA/:currencyIdB" component={RemoveLiquidity} />
               <Route exact strict path="/stake/:currencyIdA/:currencyIdB" component={Manage} />
-              <Route component={Earn} />
+              <Route component={PreStake} />
             </Switch>
           </Web3ReactManager>
           <Marginer />
