@@ -1,7 +1,7 @@
 import { unwrappedToken } from '../../utils/wrappedCurrency'
 import { useCurrency } from '../../hooks/Tokens'
 import { currencyId } from '../../utils/currencyId'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import { RowBetween } from '../../components/Row'
 import { TYPE } from '../../theme'
 import { AutoColumn } from '../../components/Column'
@@ -22,7 +22,7 @@ import { useColor } from '../../hooks/useColor'
 import { JSBI, TokenAmount } from '@uniswap/sdk'
 import usePrevious from '../../hooks/usePrevious'
 import PreStakingModal from '../../components/PreStake/PreStakingModal'
-import { useWalletModalToggle } from '../../state/application/hooks'
+// import { useWalletModalToggle } from '../../state/application/hooks'
 import UnstakingModal from '../../components/PreStake/UnstakingModal'
 import { CardBGImage, CardNoise, CardSection } from 'components/earn/styled'
 import { ButtonPrimary } from '../../components/Button'
@@ -31,9 +31,6 @@ import { VAI } from '../../constants'
 import { matchPath } from 'react-router'
 import { useLocation } from 'react-router-dom'
 import { useLockupInfo } from '../../state/lockup/hooks'
-import { useTransactionAdder } from '../../state/transactions/hooks'
-import { useLockup } from '../../hooks/useContract'
-import { TransactionResponse } from '@ethersproject/providers'
 
 export function parseBigNumber(value: TokenAmount): string {
   return value.greaterThan(BigInt(100000))
@@ -71,41 +68,32 @@ export default function PreStake() {
 
   const countUpAmount = stakingInfo?.earnedAmount?.toFixed(6) ?? '0'
   const countUpAmountPrevious = usePrevious(countUpAmount) ?? '0'
-
-  const toggleWalletModal = useWalletModalToggle()
-
-  const handleDepositClick = useCallback(() => {
-    if (account) {
-      setShowStakingModal(true)
-    } else {
-      toggleWalletModal()
-    }
-  }, [account, toggleWalletModal])
-  const addTransaction = useTransactionAdder()
-  const lockupContract = useLockup(lockupInfo?.lockupAddress)
-  const beneficiary = useMemo(() => [account ?? undefined], [account])
-  async function unlock() {
-    console.log(beneficiary)
-    if (lockupContract) {
-      await lockupContract
-        .unlock(beneficiary[0], { gasLimit: 300000 })
-        .then((response: TransactionResponse) => {
-          addTransaction(response, {
-            summary: `Unlock lockup`
-          })
-        })
-        .catch((error: any) => {
-          console.log(error)
-        })
-    }
-  }
-
   return (
     <PageWrapper gap="lg" justify="center">
       <RowBetween style={{ gap: '24px' }}>
-        <TYPE.mediumHeader style={{ margin: 0 }}>{currencyA?.symbol} Pre-Staking</TYPE.mediumHeader>
+        <TYPE.mediumHeader style={{ margin: 0 }}>
+          {currencyA?.symbol} Pre-Staking - Pre-Sale Investors
+        </TYPE.mediumHeader>
         <CurrencyLogo currency={currency0} size={'24'} />
       </RowBetween>
+      <TYPE.white style={{ justifyContent: 'center', textAlign: 'justify' }}>
+        You can already stake all your purchased VAI Tokens. In addition to the pre-staking, you can also use this site
+        to unlock your VAI Tokens purchased in the Private Sale according to the unlock schedule presented below. To do
+        that, please tap on Unlock button. <br />
+        <br />
+        <TYPE.white style={{ justifyContent: 'center', textAlign: 'center', display: 'block' }}>
+          <b>
+            <u>Token unlock schedule</u>
+          </b>
+          <br />
+          <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
+            <div style={{ marginBottom: '10px', marginTop: '10px' }}> 15th April</div>
+            <div style={{ marginBottom: '10px' }}>15th May</div>
+            <div style={{ marginBottom: '10px' }}>15th June</div>
+            <div>15th July</div>
+          </div>
+        </TYPE.white>
+      </TYPE.white>
 
       <DataRow style={{ gap: '24px' }}>
         <PoolData>
@@ -195,18 +183,6 @@ export default function PreStake() {
         </BottomSection>
 
         <DataRow style={{ marginBottom: '1rem' }}>
-          {stakingInfo && (
-            <ButtonPrimary
-              padding="8px"
-              borderRadius="8px"
-              width="160px"
-              onClick={handleDepositClick}
-              disabled={stakingInfo?.stakedAmount?.greaterThan(JSBI.BigInt(0))}
-            >
-              Deposit
-            </ButtonPrimary>
-          )}
-
           {stakingInfo?.stakedAmount?.greaterThan(JSBI.BigInt(0)) && (
             <>
               <ButtonPrimary padding="8px" borderRadius="8px" width="160px" onClick={() => setShowUnstakingModal(true)}>
@@ -215,30 +191,11 @@ export default function PreStake() {
             </>
           )}
         </DataRow>
-        <ButtonPrimary
-          padding="8px"
-          borderRadius="8px"
-          width="160px"
-          onClick={() => unlock()}
-          disabled={stakingInfo?.stakedAmount?.greaterThan(JSBI.BigInt(0))}
-        >
-          Unlock
-        </ButtonPrimary>
 
-        <TYPE.white style={{justifyContent: 'center', textAlign: 'center'}}>
-          Attention! You can unlock your VAI <b><u>only once</u></b> every lockup period (30 days). If you try to unlock eariler, you
-          won't get your VAI, but you will <b><u>still pay transaction fee!</u></b>
-          <br />
-          <br />
-          Below are unlock times:
-          <br />
-          15 Apr 2021
-          <br />
-          15 May 2021
-          <br />
-          15 Jun 2021
-          <br />
-          15 Jul 2021
+        <TYPE.white style={{ justifyContent: 'center', textAlign: 'justify' }}>
+          <b>Important!</b> You can unlock your VAI only once every lockup period (30 days) on the days specified in the
+          token unlock schedule. If you try to tap on Unlock button earlier before the actual unlock dates, you won't
+          get your VAI, but you will still pay the transaction fee!
         </TYPE.white>
 
         <TYPE.white>
