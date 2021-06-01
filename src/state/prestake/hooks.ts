@@ -48,12 +48,12 @@ export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[
     () =>
       chainId
         ? PRE_STAKING_REWARDS_INFO[chainId]?.filter(stakingRewardInfo =>
-          pairToFilterBy === undefined
-            ? true
-            : pairToFilterBy === null
+            pairToFilterBy === undefined
+              ? true
+              : pairToFilterBy === null
               ? false
               : pairToFilterBy.involvesToken(stakingRewardInfo.token)
-        ) ?? []
+          ) ?? []
         : [],
     [chainId, pairToFilterBy]
   )
@@ -95,7 +95,7 @@ export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[
   )
 
   const isLockups = useMultipleContractSingleData(
-    isLockups,
+    rewardsAddresses,
     PRE_STAKING_REWARDS_INTERFACE,
     'isLockup',
     accountArg
@@ -125,7 +125,6 @@ export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[
         stakingLimitState &&
         !stakingLimitState.loading &&
         !isLockupState?.loading
-
       ) {
         if (
           balanceState?.error ||
@@ -134,7 +133,7 @@ export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[
           rewardRateState.error ||
           stakingLimitState.error ||
           // timeUntilWithdrawalState.error
-          isLockupState?.error ||
+          isLockupState?.error
         ) {
           console.error('Failed to load staking rewards info')
           return memo
@@ -144,7 +143,7 @@ export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[
         const totalRewardRate = JSBI.BigInt(rewardRateState.result?.[0] ?? 0)
         const stakingLimit = new TokenAmount(token, JSBI.BigInt(stakingLimitState.result?.[0] ?? 0))
         const earned = new TokenAmount(token, JSBI.BigInt(earnedAmountState?.result?.[0] ?? 0))
-        const isLockup = (isLockupState?.result?.[0] ? isLockupState?.result?.[0] : false)
+        const isLockup = isLockupState?.result?.[0] ? isLockupState?.result?.[0] : false
 
         memo.push({
           stakingRewardAddress: rewardsAddress,
@@ -159,5 +158,16 @@ export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[
       }
       return memo
     }, [])
-  }, [balances, chainId, earnedAmounts, info, rewardsAddresses, totalSupplies, vai, stakingLimit, rewardRates, isLockups])
+  }, [
+    balances,
+    chainId,
+    earnedAmounts,
+    info,
+    rewardsAddresses,
+    totalSupplies,
+    vai,
+    stakingLimit,
+    rewardRates,
+    isLockups
+  ])
 }
