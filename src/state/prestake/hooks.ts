@@ -39,6 +39,7 @@ export interface PreStakingInfo {
   currentStakingLimit: TokenAmount
   // the percentage of token
   totalRewardRate: JSBI
+  isLockup: boolean
 }
 
 export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[] {
@@ -47,12 +48,12 @@ export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[
     () =>
       chainId
         ? PRE_STAKING_REWARDS_INFO[chainId]?.filter(stakingRewardInfo =>
-            pairToFilterBy === undefined
-              ? true
-              : pairToFilterBy === null
+          pairToFilterBy === undefined
+            ? true
+            : pairToFilterBy === null
               ? false
               : pairToFilterBy.involvesToken(stakingRewardInfo.token)
-          ) ?? []
+        ) ?? []
         : [],
     [chainId, pairToFilterBy]
   )
@@ -93,6 +94,13 @@ export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[
     accountArg
   )
 
+  const isLockups = useMultipleContractSingleData(
+    isLockups,
+    PRE_STAKING_REWARDS_INTERFACE,
+    'isLockup',
+    accountArg
+  )
+
   return useMemo(() => {
     if (!chainId || !vai) return []
 
@@ -104,6 +112,7 @@ export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[
       const totalSupplyState = totalSupplies[index]
       const rewardRateState = rewardRates[index]
       const stakingLimitState = stakingLimit[index]
+      const isLockupState = isLockups[index]
 
       if (
         // these may be undefined if not logged in
@@ -114,15 +123,18 @@ export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[
         rewardRateState &&
         !rewardRateState.loading &&
         stakingLimitState &&
-        !stakingLimitState.loading
+        !stakingLimitState.loading &&
+        !isLockupState?.loading
+
       ) {
         if (
           balanceState?.error ||
           // earnedAmountState?.error ||
           totalSupplyState.error ||
           rewardRateState.error ||
-          stakingLimitState.error
+          stakingLimitState.error ||
           // timeUntilWithdrawalState.error
+          isLockupState?.error ||
         ) {
           console.error('Failed to load staking rewards info')
           return memo
@@ -132,6 +144,7 @@ export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[
         const totalRewardRate = JSBI.BigInt(rewardRateState.result?.[0] ?? 0)
         const stakingLimit = new TokenAmount(token, JSBI.BigInt(stakingLimitState.result?.[0] ?? 0))
         const earned = new TokenAmount(token, JSBI.BigInt(earnedAmountState?.result?.[0] ?? 0))
+        const isLockup = (isLockupState?.result?.[0] ? isLockupState?.result?.[0] : false)
 
         memo.push({
           stakingRewardAddress: rewardsAddress,
@@ -140,10 +153,11 @@ export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[
           totalRewardRate: totalRewardRate,
           stakedAmount: new TokenAmount(vai, JSBI.BigInt(balanceState?.result?.[0] ?? 0)),
           totalStakedAmount: totalStakedAmount,
-          currentStakingLimit: stakingLimit
+          currentStakingLimit: stakingLimit,
+          isLockup: isLockup
         })
       }
       return memo
     }, [])
-  }, [balances, chainId, earnedAmounts, info, rewardsAddresses, totalSupplies, vai, stakingLimit, rewardRates])
+  }, [balances, chainId, earnedAmounts, info, rewardsAddresses, totalSupplies, vai, stakingLimit, rewardRates, isLockups])
 }

@@ -183,7 +183,7 @@ export default function PreStake() {
         </BottomSection>
 
         <DataRow style={{ marginBottom: '1rem' }}>
-          {stakingInfo?.stakedAmount?.greaterThan(JSBI.BigInt(0)) && (
+          {(stakingInfo?.stakedAmount?.greaterThan(JSBI.BigInt(0))) && stakingInfo?.isLockup && (
             <>
               <ButtonPrimary padding="8px" borderRadius="8px" width="160px" onClick={() => setShowUnstakingModal(true)}>
                 Withdraw
