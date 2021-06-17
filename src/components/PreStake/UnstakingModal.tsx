@@ -9,7 +9,6 @@ import { usePreStakingContract } from '../../hooks/useContract'
 import { LoadingView, SubmittedView } from '../ModalViews'
 import { TransactionResponse } from '@ethersproject/providers'
 import { useTransactionAdder } from '../../state/transactions/hooks'
-import FormattedCurrencyAmount from '../FormattedCurrencyAmount'
 import { useActiveWeb3React } from '../../hooks'
 import { PreStakingInfo } from '../../state/prestake/hooks'
 
@@ -87,31 +86,14 @@ export default function UnstakingModal({ isOpen, onDismiss, preStakingInfo, priv
       {!attempting && !hash && (
         <ContentWrapper gap="lg">
           <RowBetween>
-            <TYPE.mediumHeader>Withdraw</TYPE.mediumHeader>
             <CloseIcon onClick={wrappedOndismiss} />
           </RowBetween>
-          {preStakingInfo?.stakedAmount && (
-            <AutoColumn justify="center" gap="md">
-              <TYPE.body fontWeight={600} fontSize={36}>
-                {<FormattedCurrencyAmount currencyAmount={preStakingInfo.stakedAmount} />}
-              </TYPE.body>
-              <TYPE.body>Deposited VAI:</TYPE.body>
-            </AutoColumn>
-          )}
-          {preStakingInfo?.earnedAmount && (
-            <AutoColumn justify="center" gap="md">
-              <TYPE.body fontWeight={600} fontSize={36}>
-                {<FormattedCurrencyAmount currencyAmount={preStakingInfo?.earnedAmount} />}
-              </TYPE.body>
-              <TYPE.body>Earned VAI</TYPE.body>
-            </AutoColumn>
-          )}
           <TYPE.subHeader style={{ textAlign: 'center' }}>
-            You can withdraw and claim both your stake deposit and earned reward.
+            Click the button below to upgrade your lockup to auto staking
           </TYPE.subHeader>
           {preStakingInfo && (
             <ButtonError disabled={!!error} error={!!error && !!preStakingInfo?.stakedAmount} onClick={onWithdraw}>
-              {error ?? 'Withdraw'}
+              {error ?? 'Upgrade to auto-staking'}
             </ButtonError>
           )}
         </ContentWrapper>
