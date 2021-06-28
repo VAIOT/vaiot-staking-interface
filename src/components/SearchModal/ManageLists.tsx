@@ -4,7 +4,6 @@ import ReactGA from 'react-ga'
 import { usePopper } from 'react-popper'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
-import { useFetchListCallback } from '../../hooks/useFetchListCallback'
 import { useOnClickOutside } from '../../hooks/useOnClickOutside'
 import { TokenList } from '@uniswap/token-lists'
 
@@ -14,8 +13,6 @@ import { acceptListUpdate, removeList, disableList, enableList } from '../../sta
 import { useIsListActive, useAllLists, useActiveListUrls } from '../../state/lists/hooks'
 import { ExternalLink, LinkStyledButton, TYPE, IconWrapper } from '../../theme'
 import listVersionLabel from '../../utils/listVersionLabel'
-import { parseENSAddress } from '../../utils/parseENSAddress'
-import uriToHttp from '../../utils/uriToHttp'
 import { ButtonEmpty, ButtonPrimary } from '../Button'
 
 import Column, { AutoColumn } from '../Column'
@@ -241,12 +238,6 @@ export function ManageLists({
     setListUrlInput(e.target.value)
   }, [])
 
-  const fetchList = useFetchListCallback()
-
-  const validUrl: boolean = useMemo(() => {
-    return uriToHttp(listUrlInput).length > 0 || Boolean(parseENSAddress(listUrlInput))
-  }, [listUrlInput])
-
   const sortedLists = useMemo(() => {
     const listUrls = Object.keys(lists)
     return listUrls
@@ -280,28 +271,9 @@ export function ManageLists({
   }, [lists, activeCopy])
 
   // temporary fetched list for import flow
-  const [tempList, setTempList] = useState<TokenList>()
-  const [addError, setAddError] = useState<string | undefined>()
+  const [tempList] = useState<TokenList>()
+  const [addError] = useState<string | undefined>()
 
-  useEffect(() => {
-    async function fetchTempList() {
-      fetchList(listUrlInput, false)
-        .then(list => setTempList(list))
-        .catch(() => setAddError('Error importing list'))
-    }
-    // if valid url, fetch details for card
-    if (validUrl) {
-      fetchTempList()
-    } else {
-      setTempList(undefined)
-      listUrlInput !== '' && setAddError('Enter valid list location')
-    }
-
-    // reset error
-    if (listUrlInput === '') {
-      setAddError(undefined)
-    }
-  }, [fetchList, listUrlInput, validUrl])
 
   // check if list is already imported
   const isImported = Object.keys(lists).includes(listUrlInput)

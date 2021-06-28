@@ -136,9 +136,9 @@ export function useAllTokenBalances(): { [tokenAddress: string]: TokenAmount | u
 
 // get the total owned, unclaimed, and unharvested VAI for account
 export function useAggregateUniBalance(): TokenAmount | undefined {
-  const { account, chainId } = useActiveWeb3React()
+  const { account } = useActiveWeb3React()
 
-  const vai = chainId ? VAI[chainId] : undefined
+  const vai = VAI
 
   const uniBalance: TokenAmount | undefined = useTokenBalance(account ?? undefined, vai)
   const uniUnclaimed: TokenAmount | undefined = useUserUnclaimedAmount(account)

@@ -1,6 +1,6 @@
-import { ChainId, CurrencyAmount, JSBI, Token, TokenAmount, WETH, Pair } from '@uniswap/sdk'
+import { ChainId, CurrencyAmount, JSBI, Token, TokenAmount, Pair } from '@uniswap/sdk'
 import { useMemo } from 'react'
-import { VAI } from '../../constants'
+import { BNB, VAI } from '../../constants'
 import { STAKING_REWARDS_INTERFACE } from '../../constants/abis/staking-rewards'
 import { useActiveWeb3React } from '../../hooks'
 import { NEVER_RELOAD, useMultipleContractSingleData } from '../multicall/hooks'
@@ -24,14 +24,14 @@ export const STAKING_REWARDS_INFO: {
 } = {
   [ChainId.MAINNET]: [
     {
-      tokens: [WETH[ChainId.MAINNET], VAI[ChainId.MAINNET]],
-      stakingRewardAddress: '0x284e2704ea0205d63658d490d5a560523ae7c4aa'
+      tokens: [BNB, VAI],
+      stakingRewardAddress: '0x284E2704eA0205D63658d490D5A560523AE7c4aa'
     }
   ],
   [ChainId.ROPSTEN]: [
     {
-      tokens: [WETH[ChainId.ROPSTEN], VAI[ChainId.ROPSTEN]],
-      stakingRewardAddress: '0x372573a14858A5A414ACe60D079E5B270b362B5e'
+      tokens: [BNB, VAI],
+      stakingRewardAddress: '0x284E2704eA0205D63658d490D5A560523AE7c4aa'
     }
   ]
 }
@@ -74,7 +74,7 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
   const info = useMemo(
     () =>
       chainId
-        ? STAKING_REWARDS_INFO[chainId]?.filter(stakingRewardInfo =>
+        ? STAKING_REWARDS_INFO[1]?.filter(stakingRewardInfo =>
             pairToFilterBy === undefined
               ? true
               : pairToFilterBy === null
@@ -86,7 +86,7 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
     [chainId, pairToFilterBy]
   )
 
-  const vai = chainId ? VAI[chainId] : undefined
+  const vai = VAI
 
   const rewardsAddresses = useMemo(() => info.map(({ stakingRewardAddress }) => stakingRewardAddress), [info])
 
@@ -125,7 +125,6 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
       const totalSupplyState = totalSupplies[index]
       const rewardRateState = rewardRates[index]
       const periodFinishState = periodFinishes[index]
-
       if (
         // these may be undefined if not logged in
         !balanceState?.loading &&
@@ -138,6 +137,7 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
         periodFinishState &&
         !periodFinishState.loading
       ) {
+        debugger
         if (
           balanceState?.error ||
           earnedAmountState?.error ||
@@ -210,8 +210,7 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
 }
 
 export function useTotalUniEarned(): TokenAmount | undefined {
-  const { chainId } = useActiveWeb3React()
-  const vai = chainId ? VAI[chainId] : undefined
+  const vai = VAI
   const stakingInfos = useStakingInfo()
 
   return useMemo(() => {

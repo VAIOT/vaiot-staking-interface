@@ -1,8 +1,8 @@
-import { ChainId, TokenAmount } from '@uniswap/sdk'
+import {  TokenAmount } from '@uniswap/sdk'
 import React, { useState } from 'react'
 import { Text } from 'rebass'
-import { NavLink } from 'react-router-dom'
-import { darken } from 'polished'
+/*import { NavLink } from 'react-router-dom'
+import { darken } from 'polished'*/
 
 import styled from 'styled-components'
 
@@ -16,7 +16,7 @@ import { TYPE } from '../../theme'
 
 import { YellowCard } from '../Card'
 
-import Row, { RowFixed } from '../Row'
+import  { RowFixed } from '../Row'
 import Web3Status from '../Web3Status'
 import ClaimModal from '../claim/ClaimModal'
 import { useShowClaimPopup, useToggleSelfClaimModal } from '../../state/application/hooks'
@@ -101,14 +101,14 @@ const HeaderRow = styled(RowFixed)`
    width: 100%;
   `};
 `
-
+/*
 const HeaderLinks = styled(Row)`
   justify-content: center;
   ${({ theme }) => theme.mediaWidth.upToMedium`
     padding: 2rem 0 1rem 1rem;
     justify-content: flex-end;
 `};
-`
+`*/
 
 const AccountElement = styled.div<{ active: boolean }>`
   display: flex;
@@ -194,9 +194,9 @@ const UniIcon = styled.div`
   }
 `
 
-const activeClassName = 'ACTIVE'
+// const activeClassName = 'ACTIVE'
 
-const StyledNavLink = styled(NavLink).attrs({
+/*const StyledNavLink = styled(NavLink).attrs({
   activeClassName
 })`
   ${({ theme }) => theme.flexRowNoWrap}
@@ -221,7 +221,7 @@ const StyledNavLink = styled(NavLink).attrs({
   :focus {
     color: ${({ theme }) => darken(0.1, theme.text1)};
   }
-`
+`*/
 
 /*const TmpNavLink = styled.div`
   ${({ theme }) => theme.flexRowNoWrap}
@@ -286,15 +286,15 @@ export const StyledMenuButton = styled.button`
   }
 `
 
-const NETWORK_LABELS: { [chainId in ChainId]?: string } = {
+/*const NETWORK_LABELS: { [chainId in ChainId]?: string } = {
   [ChainId.RINKEBY]: 'Rinkeby',
   [ChainId.ROPSTEN]: 'Ropsten',
   [ChainId.GÖRLI]: 'Görli',
   [ChainId.KOVAN]: 'Kovan'
-}
+}*/
 
 export default function Header() {
-  const { account, chainId } = useActiveWeb3React()
+  const { account } = useActiveWeb3React()
 
   const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
   // const [isDark] = useDarkModeManager()
@@ -328,7 +328,7 @@ export default function Header() {
             <img width={'100px'} src={darkMode ? LogoDark : Logo} alt="logo" />
           </UniIcon>
         </Title>
-        <HeaderLinks>
+{/*        <HeaderLinks>
           <StyledNavLink id={`stake-nav-link`} to={'/stake'}>
             Liquidity Staking
           </StyledNavLink>
@@ -337,16 +337,14 @@ export default function Header() {
           <StyledNavLink id={`pre-stake-nav-link`} to={'/prestake'}>
             Pre-Staking
           </StyledNavLink>
-          {/*          <TmpNavLink id={`pre-stake-nav-link`}>Pre-Staking</TmpNavLink>
-          <ComingSoon>Coming soon!</ComingSoon>*/}
-        </HeaderLinks>
+                    <TmpNavLink id={`pre-stake-nav-link`}>Pre-Staking</TmpNavLink>
+          <ComingSoon>Coming soon!</ComingSoon>
+        </HeaderLinks>*/}
       </HeaderRow>
       <HeaderControls>
         <HeaderElement>
           <HideSmall>
-            {chainId && NETWORK_LABELS[chainId] && (
-              <NetworkCard title={NETWORK_LABELS[chainId]}>{NETWORK_LABELS[chainId]}</NetworkCard>
-            )}
+              <NetworkCard title={'BSC MAINNET'}>{'BSC MAINNET'}</NetworkCard>
           </HideSmall>
           {availableClaim && !showClaimPopup && (
             <VAIWrapper onClick={toggleClaimModal}>

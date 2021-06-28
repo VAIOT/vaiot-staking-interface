@@ -68,9 +68,9 @@ export function IsWithdrawalAccessible(init: number, finalize: number | undefine
 }
 
 export default function PreStake() {
-  const { chainId, account } = useActiveWeb3React()
+  const { account } = useActiveWeb3React()
 
-  const token = chainId ? VAI[chainId] : undefined
+  const token = VAI
 
   const currency0 = token ? unwrappedToken(token) : undefined
 
@@ -79,6 +79,7 @@ export default function PreStake() {
   const stakingInfo = usePreStakingInfo()?.[0]
 
   const userVaiUnstaked = useTokenBalance(account ?? undefined, stakingInfo?.stakedAmount?.token)
+
 
   const [showStakingModal, setShowStakingModal] = useState(false)
   const [showUnstakingModal, setShowUnstakingModal] = useState(false)

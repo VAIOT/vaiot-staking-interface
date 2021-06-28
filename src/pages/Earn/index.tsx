@@ -43,7 +43,7 @@ export default function Earn() {
   const stakingInfos = useStakingInfo()
 
   // toggle copy if rewards are inactive
-  const stakingRewardsExist = Boolean(typeof chainId === 'number' && (STAKING_REWARDS_INFO[chainId]?.length ?? 0) > 0)
+  const stakingRewardsExist = Boolean(typeof chainId === 'number' && (STAKING_REWARDS_INFO[1]?.length ?? 0) > 0)
 
   return (
     <PageWrapper gap="lg" justify="center">
@@ -54,7 +54,7 @@ export default function Earn() {
           <CardSection>
             <AutoColumn gap="md">
               <RowBetween>
-                <TYPE.white fontWeight={600}>Uniswap liquidity staking</TYPE.white>
+                <TYPE.white fontWeight={600}>Pancake liquidity staking</TYPE.white>
               </RowBetween>
               <RowBetween>
                 <TYPE.white fontSize={14}>

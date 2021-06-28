@@ -13,13 +13,13 @@ export const PRE_STAKING_REWARDS_INFO: {
 } = {
   [ChainId.MAINNET]: [
     {
-      token: VAI[ChainId.MAINNET],
+      token: VAI,
       stakingRewardAddress: '0xafea6ab8ab06bf803026cc2099bff4f20e977ded'
     }
   ],
   [ChainId.ROPSTEN]: [
     {
-      token: VAI[ChainId.ROPSTEN],
+      token: VAI,
       stakingRewardAddress: '0x590d4780eD198e17F1592F17Bb214322da7694aE'
     }
   ]
@@ -60,7 +60,7 @@ export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[
         : [],
     [chainId, pairToFilterBy]
   )
-  const vai = chainId ? VAI[chainId] : undefined
+  const vai = VAI
 
   const rewardsAddresses = useMemo(() => info.map(({ stakingRewardAddress }) => stakingRewardAddress), [info])
 

@@ -76,11 +76,10 @@ export function useUserHasAvailableClaim(account: string | null | undefined): bo
 }
 
 export function useUserUnclaimedAmount(account: string | null | undefined): TokenAmount | undefined {
-  const { chainId } = useActiveWeb3React()
   const userClaimData = useUserClaimData(account)
   const canClaim = useUserHasAvailableClaim(account)
 
-  const vai = chainId ? VAI[chainId] : undefined
+  const vai = VAI
   if (!vai) return undefined
   if (!canClaim || !userClaimData) {
     return new TokenAmount(vai, JSBI.BigInt(0))

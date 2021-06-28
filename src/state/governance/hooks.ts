@@ -156,22 +156,22 @@ export function useUserDelegatee(): string {
 
 // gets the users current votes
 export function useUserVotes(): TokenAmount | undefined {
-  const { account, chainId } = useActiveWeb3React()
+  const { account } = useActiveWeb3React()
   const uniContract = useUniContract()
 
   // check for available votes
-  const vai = chainId ? VAI[chainId] : undefined
+  const vai = VAI
   const votes = useSingleCallResult(uniContract, 'getCurrentVotes', [account ?? undefined])?.result?.[0]
   return votes && vai ? new TokenAmount(vai, votes) : undefined
 }
 
 // fetch available votes as of block (usually proposal start block)
 export function useUserVotesAsOfBlock(block: number | undefined): TokenAmount | undefined {
-  const { account, chainId } = useActiveWeb3React()
+  const { account } = useActiveWeb3React()
   const uniContract = useUniContract()
 
   // check for available votes
-  const vai = chainId ? VAI[chainId] : undefined
+  const vai = VAI
   const votes = useSingleCallResult(uniContract, 'getPriorVotes', [account ?? undefined, block ?? undefined])
     ?.result?.[0]
   return votes && vai ? new TokenAmount(vai, votes) : undefined

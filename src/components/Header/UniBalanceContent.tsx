@@ -38,8 +38,8 @@ const StyledClose = styled(X)`
  * Content for balance stats modal
  */
 export default function UniBalanceContent({ setShowUniBalanceModal }: { setShowUniBalanceModal: any }) {
-  const { account, chainId } = useActiveWeb3React()
-  const vai = chainId ? VAI[chainId] : undefined
+  const { account } = useActiveWeb3React()
+  const vai = VAI
 
   const total = useAggregateUniBalance()
   const uniBalance: TokenAmount | undefined = useTokenBalance(account ?? undefined, vai)
@@ -48,14 +48,14 @@ export default function UniBalanceContent({ setShowUniBalanceModal }: { setShowU
   const totalSupply: TokenAmount | undefined = useTotalSupply(vai)
   const [uniPrice, setUniPrice] = useState(0)
 
-  const [circulation, setCirculation] = useState(new TokenAmount(vai ?? VAI[1], '0'))
+  const [circulation, setCirculation] = useState(new TokenAmount(vai ?? VAI, '0'))
 
   useEffect(() => {
     const fetchData = async () => {
       const result = await getCirculation()
       if (result.success) {
         setUniPrice(Number(result.data?.usdPrice ?? '0'))
-        setCirculation(new TokenAmount(vai ?? VAI[1], BigInt(result.data?.circulatingSupply ?? '0')))
+        setCirculation(new TokenAmount(vai ?? VAI, BigInt(result.data?.circulatingSupply ?? '0')))
       }
     }
     fetchData()

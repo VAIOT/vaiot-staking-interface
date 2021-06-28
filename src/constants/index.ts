@@ -1,7 +1,7 @@
 import { ChainId, JSBI, Percent, Token, WETH } from '@uniswap/sdk'
 import { AbstractConnector } from '@web3-react/abstract-connector'
 
-import { fortmatic, injected, portis, walletconnect, walletlink } from '../connectors'
+import { injected } from '../connectors'
 
 export const ROUTER_ADDRESS = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
 
@@ -32,13 +32,17 @@ export const GOVERNANCE_ADDRESS = '0x5e4be8Bc9637f0EAA1A755019e06A68ce081D58F'
 export const TIMELOCK_ADDRESS = '0x1a9C8182C09F50C8318d769245beA52c32BE35BC'
 
 const VAI_ADDRESS = '0x9F801c1F02AF03cC240546DadEf8e56Cd46EA2E9'
-export const VAI: { [chainId in ChainId]: Token } = {
+/*export const VAI: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, VAI_ADDRESS, 18, 'VAI', 'VAIOT'),
   [ChainId.RINKEBY]: new Token(ChainId.RINKEBY, VAI_ADDRESS, 18, 'VAI', 'VAIOT'),
   [ChainId.ROPSTEN]: new Token(ChainId.ROPSTEN, VAI_ADDRESS, 18, 'VAI', 'VAIOT'),
   [ChainId.GÖRLI]: new Token(ChainId.GÖRLI, VAI_ADDRESS, 18, 'VAI', 'VAIOT'),
   [ChainId.KOVAN]: new Token(ChainId.KOVAN, VAI_ADDRESS, 18, 'VAI', 'VAIOT')
-}
+}*/
+
+export const VAI = new Token(56, '0x9F801c1F02AF03cC240546DadEf8e56Cd46EA2E9', 18, 'VAI', 'VAIOT')
+
+export const BNB = new Token(56, '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', 18, 'BNB', 'BNB')
 
 export const COMMON_CONTRACT_NAMES: { [address: string]: string } = {
   [VAI_ADDRESS]: 'VAI',
@@ -127,50 +131,6 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     description: 'Easy-to-use browser extension.',
     href: null,
     color: '#E8831D'
-  },
-  WALLET_CONNECT: {
-    connector: walletconnect,
-    name: 'WalletConnect',
-    iconName: 'walletConnectIcon.svg',
-    description: 'Connect to Trust Wallet, Rainbow Wallet and more...',
-    href: null,
-    color: '#4196FC',
-    mobile: true
-  },
-  WALLET_LINK: {
-    connector: walletlink,
-    name: 'Coinbase Wallet',
-    iconName: 'coinbaseWalletIcon.svg',
-    description: 'Use Coinbase Wallet app on mobile device',
-    href: null,
-    color: '#315CF5'
-  },
-  COINBASE_LINK: {
-    name: 'Open in Coinbase Wallet',
-    iconName: 'coinbaseWalletIcon.svg',
-    description: 'Open in Coinbase Wallet app.',
-    href: 'https://go.cb-w.com/mtUDhEZPy1',
-    color: '#315CF5',
-    mobile: true,
-    mobileOnly: true
-  },
-  FORTMATIC: {
-    connector: fortmatic,
-    name: 'Fortmatic',
-    iconName: 'fortmaticIcon.png',
-    description: 'Login using Fortmatic hosted wallet',
-    href: null,
-    color: '#6748FF',
-    mobile: true
-  },
-  Portis: {
-    connector: portis,
-    name: 'Portis',
-    iconName: 'portisIcon.png',
-    description: 'Login using Portis hosted wallet',
-    href: null,
-    color: '#4A6C9B',
-    mobile: true
   }
 }
 
