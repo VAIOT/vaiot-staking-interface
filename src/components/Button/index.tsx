@@ -20,7 +20,7 @@ const Base = styled(RebassButton)<{
   border-radius: ${({ borderRadius }) => borderRadius && borderRadius};
   outline: none;
   border: 1px solid transparent;
-  color: white;
+  color: #fcd535;
   text-decoration: none;
   display: flex;
   justify-content: center;
@@ -28,6 +28,7 @@ const Base = styled(RebassButton)<{
   align-items: center;
   cursor: pointer;
   position: relative;
+  border: 1px solid
   z-index: 1;
   &:disabled {
     cursor: auto;
@@ -40,7 +41,7 @@ const Base = styled(RebassButton)<{
 
 export const ButtonPrimary = styled(Base)`
   background-color: ${({ theme }) => theme.primary1};
-  color: white;
+  color: #FCD535;
   &:focus {
     box-shadow: 0 0 0 1pt ${({ theme }) => darken(0.05, theme.primary1)};
     background-color: ${({ theme }) => darken(0.05, theme.primary1)};

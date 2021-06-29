@@ -52,7 +52,7 @@ export const BottomSection = styled(AutoColumn)`
 export const StyledDataCard = styled(DataCard)<{ bgColor?: any; showBackground?: any }>`
   z-index: 2;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  background: linear-gradient(160deg, #000, #6360b5);
+  background: linear-gradient(6deg, #000, #181818);
 `
 
 export const StyledBottomCard = styled(DataCard)<{ dim: any }>`
@@ -72,7 +72,7 @@ export const PoolData = styled(DataCard)`
 `
 
 export const VoteCard = styled(DataCard)`
-  background: linear-gradient(160deg, #000, #6360b5);
+  background: linear-gradient(6deg, #000, #181818);
   overflow: hidden;
 `
 

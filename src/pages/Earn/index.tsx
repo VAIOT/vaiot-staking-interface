@@ -62,7 +62,7 @@ export default function Earn() {
                 </TYPE.white>
               </RowBetween>{' '}
               <ExternalLink
-                style={{ color: 'white', textDecoration: 'underline' }}
+                style={{ color: '#FCD535', textDecoration: 'underline' }}
                 href="https://vaiot.ai"
                 target="_blank"
               >

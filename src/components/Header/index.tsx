@@ -7,7 +7,7 @@ import { darken } from 'polished'
 import styled from 'styled-components'
 
 import Logo from '../../assets/svg/vaiot-full-logo-horizontal-darkblue.svg'
-import LogoDark from '../../assets/svg/vaiot-full-logo-horizontal-white.svg'
+import LogoDark from '../../assets/svg/vaiot-full-logo-horizontal-yellow.svg'
 import { useActiveWeb3React } from '../../hooks'
 import { useAggregateUniBalance, useETHBalances } from '../../state/wallet/hooks'
 import { CardNoise } from '../earn/styled'
@@ -37,7 +37,7 @@ const HeaderFrame = styled.div`
   width: 100%;
   top: 0;
   position: relative;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #FCD535;
   padding: 1rem;
   z-index: 2;
   ${({ theme }) => theme.mediaWidth.upToMedium`
@@ -126,12 +126,13 @@ const AccountElement = styled.div<{ active: boolean }>`
 `
 
 const VAIAmount = styled(AccountElement)`
-  color: white;
+  color: ${({ theme }) => theme.text1};
   padding: 4px 8px;
   height: 36px;
   font-weight: 500;
   background-color: ${({ theme }) => theme.bg3};
-  background: linear-gradient(140deg, #232148, #8f74c1), #edeef2;
+  background: linear-gradient(6deg, #000, #181818);
+  border: 1px solid;
 `
 
 const VAIWrapper = styled.span`
@@ -325,7 +326,7 @@ export default function Header() {
       <HeaderRow>
         <Title href="https://vaiot.ai">
           <UniIcon>
-            <img width={'100px'} src={darkMode ? LogoDark : Logo} alt="logo" />
+            <img width={'100px'} src={darkMode ? LogoDark : Logo} alt="logo" color={'#FCD535'}/>
           </UniIcon>
         </Title>
         <HeaderLinks>

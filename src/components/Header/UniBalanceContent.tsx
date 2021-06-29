@@ -19,8 +19,7 @@ const ContentWrapper = styled(AutoColumn)`
 `
 
 const ModalUpper = styled(DataCard)`
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  background: linear-gradient(160deg, #000, #6360b5);
+  background: linear-gradient(6deg, #000, #181818);
   padding: 0.5rem;
 `
 
@@ -68,8 +67,8 @@ export default function UniBalanceContent({ setShowUniBalanceModal }: { setShowU
         <CardNoise />
         <CardSection gap="md">
           <RowBetween>
-            <TYPE.white color="white">Your VAI Breakdown</TYPE.white>
-            <StyledClose stroke="white" onClick={() => setShowUniBalanceModal(false)} />
+            <TYPE.white>Your VAI Breakdown</TYPE.white>
+            <StyledClose stroke="#FCD535" onClick={() => setShowUniBalanceModal(false)} />
           </RowBetween>
         </CardSection>
         <Break />
@@ -78,18 +77,18 @@ export default function UniBalanceContent({ setShowUniBalanceModal }: { setShowU
             <CardSection gap="sm">
               <AutoColumn gap="md" justify="center">
                 <UniTokenAnimated width="48px" src={tokenLogo} />{' '}
-                <TYPE.white fontSize={48} fontWeight={600} color="white">
+                <TYPE.white fontSize={48} fontWeight={600}>
                   {total?.toFixed(2, { groupSeparator: ',' })}
                 </TYPE.white>
               </AutoColumn>
               <AutoColumn gap="md">
                 <RowBetween>
-                  <TYPE.white color="white">Balance:</TYPE.white>
-                  <TYPE.white color="white">{uniBalance?.toFixed(2, { groupSeparator: ',' })}</TYPE.white>
+                  <TYPE.white>Balance:</TYPE.white>
+                  <TYPE.white>{uniBalance?.toFixed(2, { groupSeparator: ',' })}</TYPE.white>
                 </RowBetween>
                 <RowBetween>
-                  <TYPE.white color="white">Unclaimed:</TYPE.white>
-                  <TYPE.white color="white">
+                  <TYPE.white>Unclaimed:</TYPE.white>
+                  <TYPE.white>
                     {uniToClaim?.toFixed(4, { groupSeparator: ',' })}{' '}
                     {uniToClaim && uniToClaim.greaterThan('0') && (
                       <StyledInternalLink onClick={() => setShowUniBalanceModal(false)} to="/stake">
@@ -106,16 +105,16 @@ export default function UniBalanceContent({ setShowUniBalanceModal }: { setShowU
         <CardSection gap="sm">
           <AutoColumn gap="md">
             <RowBetween>
-              <TYPE.white color="white">VAI price:</TYPE.white>
-              <TYPE.white color="white">${uniPrice?.toFixed(2) ?? '-'}</TYPE.white>
+              <TYPE.white>VAI price:</TYPE.white>
+              <TYPE.white>${uniPrice?.toFixed(2) ?? '-'}</TYPE.white>
             </RowBetween>
             <RowBetween>
-              <TYPE.white color="white">VAI in circulation:</TYPE.white>
-              <TYPE.white color="white">{circulation?.toFixed(0, { groupSeparator: ',' })}</TYPE.white>
+              <TYPE.white>VAI in circulation:</TYPE.white>
+              <TYPE.white>{circulation?.toFixed(0, { groupSeparator: ',' })}</TYPE.white>
             </RowBetween>
             <RowBetween>
-              <TYPE.white color="white">Total Supply</TYPE.white>
-              <TYPE.white color="white">{totalSupply?.toFixed(0, { groupSeparator: ',' })}</TYPE.white>
+              <TYPE.white>Total Supply</TYPE.white>
+              <TYPE.white>{totalSupply?.toFixed(0, { groupSeparator: ',' })}</TYPE.white>
             </RowBetween>
             {vai && vai.chainId === ChainId.MAINNET ? (
               <ExternalLink href={`https://uniswap.info/token/${vai.address}`}>View VAI Analytics</ExternalLink>
