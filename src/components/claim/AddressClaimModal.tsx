@@ -17,7 +17,7 @@ import { isAddress } from 'ethers/lib/utils'
 import Confetti from '../Confetti'
 import { CardNoise, CardBGImage, CardBGImageSmaller } from '../earn/styled'
 import { useIsTransactionPending } from '../../state/transactions/hooks'
-import { TokenAmount } from '@uniswap/sdk'
+import { TokenAmount } from '@bscswap/sdk'
 import { getEtherscanLink, shortenAddress } from '../../utils'
 
 const ContentWrapper = styled(AutoColumn)`
@@ -106,7 +106,7 @@ export default function AddressClaimModal({ isOpen, onDismiss }: { isOpen: boole
                 <CloseIcon onClick={wrappedOnDismiss} style={{ zIndex: 99 }} stroke="white" />
               </RowBetween>
               <TYPE.white fontWeight={700} fontSize={36}>
-                {unclaimedAmount?.toFixed(0, { groupSeparator: ',' } ?? '-')} VAI
+                {unclaimedAmount?.toFixed(0, { groupSeparator: ',' })} VAI
               </TYPE.white>
             </CardSection>
             <Break />
@@ -155,7 +155,7 @@ export default function AddressClaimModal({ isOpen, onDismiss }: { isOpen: boole
               </TYPE.largeHeader>
               {!claimConfirmed && (
                 <Text fontSize={36} color={'#ff007a'} fontWeight={800}>
-                  {unclaimedAmount?.toFixed(0, { groupSeparator: ',' } ?? '-')} VAI
+                  {unclaimedAmount?.toFixed(0, { groupSeparator: ',' })} VAI
                 </Text>
               )}
               {parsedAddress && (
@@ -182,7 +182,7 @@ export default function AddressClaimModal({ isOpen, onDismiss }: { isOpen: boole
             )}
             {attempting && hash && !claimConfirmed && chainId && hash && (
               <ExternalLink href={getEtherscanLink(chainId, hash, 'transaction')} style={{ zIndex: 99 }}>
-                View transaction on Etherscan
+                View transaction on Bscscan
               </ExternalLink>
             )}
           </AutoColumn>

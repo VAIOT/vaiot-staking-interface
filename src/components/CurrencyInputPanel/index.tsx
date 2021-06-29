@@ -1,6 +1,6 @@
-import { Currency, Pair } from '@uniswap/sdk'
-import React, { useState, useCallback } from 'react'
-import styled from 'styled-components'
+import { Currency, Pair } from '@bscswap/sdk'
+import React, { useState, useContext, useCallback } from 'react'
+import styled, { ThemeContext } from 'styled-components'
 import { darken } from 'polished'
 import { useCurrencyBalance } from '../../state/wallet/hooks'
 import CurrencySearchModal from '../SearchModal/CurrencySearchModal'
@@ -13,7 +13,6 @@ import { ReactComponent as DropDown } from '../../assets/images/dropdown.svg'
 
 import { useActiveWeb3React } from '../../hooks'
 import { useTranslation } from 'react-i18next'
-import useTheme from '../../hooks/useTheme'
 
 const InputRow = styled.div<{ selected: boolean }>`
   ${({ theme }) => theme.flexRowNoWrap}
@@ -127,35 +126,36 @@ interface CurrencyInputPanelProps {
   hideBalance?: boolean
   pair?: Pair | null
   hideInput?: boolean
+  showSendWithSwap?: boolean
   otherCurrency?: Currency | null
   id: string
   showCommonBases?: boolean
-  customBalanceText?: string
 }
 
+// @ts-ignore
 export default function CurrencyInputPanel({
   value,
   onUserInput,
   onMax,
   showMaxButton,
   label = 'Input',
-  onCurrencySelect,
-  currency,
+  onCurrencySelect = null,
+  currency = null,
   disableCurrencySelect = false,
   hideBalance = false,
   pair = null, // used for double token logo
   hideInput = false,
-  otherCurrency,
+  showSendWithSwap = false,
+  otherCurrency = null,
   id,
-  showCommonBases,
-  customBalanceText
+  showCommonBases
 }: CurrencyInputPanelProps) {
   const { t } = useTranslation()
 
   const [modalOpen, setModalOpen] = useState(false)
   const { account } = useActiveWeb3React()
-  const selectedCurrencyBalance = useCurrencyBalance(account ?? undefined, currency ?? undefined)
-  const theme = useTheme()
+  const selectedCurrencyBalance = useCurrencyBalance(account, currency)
+  const theme = useContext(ThemeContext)
 
   const handleDismissSearch = useCallback(() => {
     setModalOpen(false)
@@ -179,7 +179,7 @@ export default function CurrencyInputPanel({
                   style={{ display: 'inline', cursor: 'pointer' }}
                 >
                   {!hideBalance && !!currency && selectedCurrencyBalance
-                    ? (customBalanceText ?? 'Balance: ') + selectedCurrencyBalance?.toSignificant(6)
+                    ? 'Balance: ' + selectedCurrencyBalance?.toSignificant(6)
                     : ' -'}
                 </TYPE.body>
               )}
@@ -234,12 +234,13 @@ export default function CurrencyInputPanel({
           </CurrencySelect>
         </InputRow>
       </Container>
-      {!disableCurrencySelect && onCurrencySelect && (
+      {!disableCurrencySelect && (
         <CurrencySearchModal
           isOpen={modalOpen}
           onDismiss={handleDismissSearch}
           onCurrencySelect={onCurrencySelect}
-          selectedCurrency={currency}
+          showSendWithSwap={showSendWithSwap}
+          hiddenCurrency={currency}
           otherSelectedCurrency={otherCurrency}
           showCommonBases={showCommonBases}
         />

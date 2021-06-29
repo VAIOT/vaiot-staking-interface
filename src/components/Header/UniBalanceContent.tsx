@@ -1,4 +1,4 @@
-import { ChainId, TokenAmount } from '@uniswap/sdk'
+import { ChainId, TokenAmount } from '@bscswap/sdk'
 import React, { useEffect, useState } from 'react'
 import { X } from 'react-feather'
 import styled from 'styled-components'

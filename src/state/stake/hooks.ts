@@ -1,11 +1,11 @@
-import { ChainId, CurrencyAmount, JSBI, Token, TokenAmount, WETH, Pair } from '@uniswap/sdk'
+import { ChainId, CurrencyAmount, JSBI, Token, TokenAmount, WETH, Pair } from '@bscswap/sdk'
 import { useMemo } from 'react'
-import { VAI } from '../../constants'
+import {BNB, VAI} from '../../constants'
 import { STAKING_REWARDS_INTERFACE } from '../../constants/abis/staking-rewards'
 import { useActiveWeb3React } from '../../hooks'
 import { NEVER_RELOAD, useMultipleContractSingleData } from '../multicall/hooks'
 import { tryParseAmount } from '../swap/hooks'
-import useCurrentBlockTimestamp from 'hooks/useCurrentBlockTimestamp'
+import useCurrentBlockTimestamp from '../../hooks/useCurrentBlockTimestamp'
 
 export const STAKING_GENESIS = 1612812322 //08.02.21
 
@@ -22,15 +22,15 @@ export const STAKING_REWARDS_INFO: {
     stakingRewardAddress: string
   }[]
 } = {
-  [ChainId.MAINNET]: [
+  [ChainId.BSC_MAINNET]: [
     {
-      tokens: [WETH[ChainId.MAINNET], VAI[ChainId.MAINNET]],
-      stakingRewardAddress: '0x284e2704ea0205d63658d490d5a560523ae7c4aa'
+      tokens: [BNB[ChainId.BSC_MAINNET], VAI[ChainId.BSC_MAINNET]],
+      stakingRewardAddress: '0xb7b6e8c7b6673308c075274c6B36107d007deBe2'
     }
   ],
   [ChainId.ROPSTEN]: [
     {
-      tokens: [WETH[ChainId.ROPSTEN], VAI[ChainId.ROPSTEN]],
+      tokens: [BNB[ChainId.ROPSTEN], VAI[ChainId.ROPSTEN]],
       stakingRewardAddress: '0x372573a14858A5A414ACe60D079E5B270b362B5e'
     }
   ]

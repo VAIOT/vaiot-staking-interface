@@ -1,5 +1,5 @@
 import { VAI } from './../../constants/index'
-import { TokenAmount, JSBI, ChainId } from '@uniswap/sdk'
+import { TokenAmount, JSBI, ChainId } from '@bscswap/sdk'
 import { TransactionResponse } from '@ethersproject/providers'
 import { useEffect, useState } from 'react'
 import { useActiveWeb3React } from '../../hooks'

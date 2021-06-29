@@ -12,7 +12,7 @@ import './i18n'
 import App from './pages/App'
 import store from './state'
 import ApplicationUpdater from './state/application/updater'
-import ListsUpdater from './state/lists/updater'
+// import ListsUpdater from './state/lists/updater'
 import MulticallUpdater from './state/multicall/updater'
 import TransactionUpdater from './state/transactions/updater'
 import UserUpdater from './state/user/updater'
@@ -45,7 +45,7 @@ window.addEventListener('error', error => {
 function Updaters() {
   return (
     <>
-      <ListsUpdater />
+      {/*<ListsUpdater />*/}
       <UserUpdater />
       <ApplicationUpdater />
       <TransactionUpdater />

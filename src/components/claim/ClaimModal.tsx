@@ -1,4 +1,4 @@
-import { JSBI, TokenAmount } from '@uniswap/sdk'
+import { JSBI, TokenAmount } from '@bscswap/sdk'
 import { isAddress } from 'ethers/lib/utils'
 import React, { useEffect, useState } from 'react'
 import { Text } from 'rebass'
@@ -102,7 +102,7 @@ export default function ClaimModal() {
                 <CloseIcon onClick={toggleClaimModal} style={{ zIndex: 99 }} color="white" />
               </RowBetween>
               <TYPE.white fontWeight={700} fontSize={36}>
-                {unclaimedAmount?.toFixed(0, { groupSeparator: ',' } ?? '-')} VAI
+                {unclaimedAmount?.toFixed(0, { groupSeparator: ',' } )} VAI
               </TYPE.white>
             </CardSection>
             <Break />
@@ -136,7 +136,7 @@ export default function ClaimModal() {
           </ModalUpper>
           <AutoColumn gap="md" style={{ padding: '1rem', paddingTop: '0' }} justify="center">
             <TYPE.subHeader fontWeight={500}>
-              As a member of the Uniswap community you may claim VAI to be used for voting and governance. <br /> <br />
+              As a member of the Pancake community you may claim VAI to be used for voting and governance. <br /> <br />
               <ExternalLink href="https://uniswap.org/blog/uni">Read more about VAI</ExternalLink>
             </TYPE.subHeader>
             <ButtonPrimary
@@ -174,7 +174,7 @@ export default function ClaimModal() {
               </TYPE.largeHeader>
               {!claimConfirmed && (
                 <Text fontSize={36} color={'#ff007a'} fontWeight={800}>
-                  {unclaimedAmount?.toFixed(0, { groupSeparator: ',' } ?? '-')} VAI
+                  {unclaimedAmount?.toFixed(0, { groupSeparator: ',' })} VAI
                 </Text>
               )}
             </AutoColumn>
@@ -196,7 +196,7 @@ export default function ClaimModal() {
             )}
             {attempting && claimSubmitted && !claimConfirmed && chainId && claimTxn?.hash && (
               <ExternalLink href={getEtherscanLink(chainId, claimTxn?.hash, 'transaction')} style={{ zIndex: 99 }}>
-                View transaction on Etherscan
+                View transaction on Bscscan
               </ExternalLink>
             )}
           </AutoColumn>

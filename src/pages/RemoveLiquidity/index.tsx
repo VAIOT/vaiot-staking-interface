@@ -1,7 +1,7 @@
 import { splitSignature } from '@ethersproject/bytes'
 import { Contract } from '@ethersproject/contracts'
 import { TransactionResponse } from '@ethersproject/providers'
-import { Currency, currencyEquals, ETHER, Percent, WETH } from '@uniswap/sdk'
+import { Currency, currencyEquals, ETHER, Percent, WETH } from '@bscswap/sdk'
 import React, { useCallback, useContext, useMemo, useState } from 'react'
 import { ArrowDown, Plus } from 'react-feather'
 import ReactGA from 'react-ga'
@@ -474,7 +474,7 @@ export default function RemoveLiquidity({
   return (
     <>
       <AppBody>
-        <AddRemoveTabs creating={false} adding={false} />
+        <AddRemoveTabs  adding={false} />
         <Wrapper>
           <TransactionConfirmationModal
             isOpen={showConfirm}

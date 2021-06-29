@@ -1124,6 +1124,34 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
+"@bscswap/binance-connector@^6.0.10":
+  version "6.0.10"
+  resolved "https://registry.yarnpkg.com/@bscswap/binance-connector/-/binance-connector-6.0.10.tgz#404144b225971635ad69abef84e359959bb5bb6d"
+  integrity sha512-mhyfLO3xVqBzviz/4ACPCWDgJNEOlQ2FoH3BRmTl0a7V2tRjElAMYvvXHHJTkY7yhQ3inEWIGXWsYuV3/8ABog==
+  dependencies:
+    "@web3-react/abstract-connector" "^6.0.7"
+    "@web3-react/types" "^6.0.7"
+    babel-plugin-transform-async-to-promises "^0.8.15"
+    tiny-warning "^1.0.3"
+
+"@bscswap/contracts@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@bscswap/contracts/-/contracts-1.0.2.tgz#c6d639a43018bec808be02004c6a103b923fd604"
+  integrity sha512-/tJ/GviHfCqzGAkO2W2YkDkWNgcySueHfjlqhbXAA1EmOAhIqHr0IbT7PJpE2/dkegEnuv3moCCl2hndK8dHRA==
+
+"@bscswap/sdk@^3.0.15":
+  version "3.0.15"
+  resolved "https://registry.yarnpkg.com/@bscswap/sdk/-/sdk-3.0.15.tgz#3d0d63b92471d16e24257156a1b8c241582ccdad"
+  integrity sha512-DSslMJyAlL3vUK+5Z3e6p2p0avIbHqj36ym2dCXNJ6G78sP79F4i51ivyFsWuW5n3LPesvi2OPO5l3zyWL9IgQ==
+  dependencies:
+    "@bscswap/contracts" "1.0.2"
+    big.js "^5.2.2"
+    decimal.js-light "^2.5.0"
+    jsbi "^3.1.1"
+    tiny-invariant "^1.1.0"
+    tiny-warning "^1.0.3"
+    toformat "^2.0.0"
+
 "@cloudflare/wrangler@^1.13.0":
   version "1.13.0"
   resolved "https://registry.yarnpkg.com/@cloudflare/wrangler/-/wrangler-1.13.0.tgz#10ee1eb593d9f91d5f43aca469b8d28fb2a28769"
@@ -3889,6 +3917,11 @@ babel-plugin-transform-async-to-generator@^6.22.0:
     babel-helper-remap-async-to-generator "^6.24.1"
     babel-plugin-syntax-async-functions "^6.8.0"
     babel-runtime "^6.22.0"
+
+babel-plugin-transform-async-to-promises@^0.8.15:
+  version "0.8.15"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-async-to-promises/-/babel-plugin-transform-async-to-promises-0.8.15.tgz#13b6d8ef13676b4e3c576d3600b85344bb1ba346"
+  integrity sha512-fDXP68ZqcinZO2WCiimCL9zhGjGXOnn3D33zvbh+yheZ/qOrNVVDDIBtAaM3Faz8TRvQzHiRKsu3hfrBAhEncQ==
 
 babel-plugin-transform-es2015-arrow-functions@^6.22.0:
   version "6.22.0"

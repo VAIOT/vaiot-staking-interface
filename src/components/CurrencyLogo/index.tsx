@@ -1,8 +1,8 @@
-import { ChainId, Currency, ETHER, Token } from '@uniswap/sdk'
+import { ChainId, Currency, ETHER, Token } from '@bscswap/sdk'
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 
-import EthereumLogo from '../../assets/images/ethereum-logo.png'
+import EthereumLogo from '../../assets/images/bnb.svg'
 import useHttpLocations from '../../hooks/useHttpLocations'
 import { WrappedTokenInfo } from '../../state/lists/hooks'
 import VaiLogo from '../../assets/images/vai-token-circular.png'
@@ -50,7 +50,6 @@ export default function CurrencyLogo({
     }
     return []
   }, [currency, uriLocations])
-
   if (currency === ETHER) {
     return <StyledEthereumLogo src={EthereumLogo} size={size} style={style} />
   }

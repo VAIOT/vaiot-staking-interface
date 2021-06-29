@@ -1,4 +1,4 @@
-import { ChainId, Pair, Token } from '@uniswap/sdk'
+import { ChainId, Pair, Token, Currency } from '@bscswap/sdk'
 import flatMap from 'lodash.flatmap'
 import ReactGA from 'react-ga'
 import { useCallback, useMemo } from 'react'
@@ -19,8 +19,11 @@ import {
   updateUserExpertMode,
   updateUserSlippageTolerance,
   toggleURLWarning,
-  updateUserSingleHopOnly
+  updateUserSingleHopOnly,
+  dismissTokenWarning
 } from './actions'
+import { useDefaultTokenList } from '../lists/hooks'
+import { isDefaultToken } from '../../utils'
 
 function serializeToken(token: Token): SerializedToken {
   return {
@@ -104,6 +107,32 @@ export function useUserSingleHopOnly(): [boolean, (newSingleHopOnly: boolean) =>
   return [singleHopOnly, setSingleHopOnly]
 }
 
+export function useTokenWarningDismissal(chainId?: number, token?: Currency): [boolean, null | (() => void)] {
+  const dismissalState = useSelector<AppState, AppState['user']['dismissedTokenWarnings']>(
+    state => state.user.dismissedTokenWarnings
+  )
+
+  const dispatch = useDispatch<AppDispatch>()
+
+  // get default list, mark as dismissed if on list
+  const defaultList = useDefaultTokenList()
+  const isDefault = isDefaultToken(defaultList, token)
+
+  return useMemo(() => {
+    if (!chainId || !token) return [false, null]
+
+    const dismissed: boolean =
+      token instanceof Token ? dismissalState?.[chainId]?.[token.address] === true || isDefault : true
+
+    const callback =
+      dismissed || !(token instanceof Token)
+        ? null
+        : () => dispatch(dismissTokenWarning({ chainId, tokenAddress: token.address }))
+
+    return [dismissed, callback]
+  }, [chainId, token, dismissalState, isDefault, dispatch])
+}
+
 export function useUserSlippageTolerance(): [number, (slippage: number) => void] {
   const dispatch = useDispatch<AppDispatch>()
   const userSlippageTolerance = useSelector<AppState, AppState['user']['userSlippageTolerance']>(state => {
@@ -118,6 +147,22 @@ export function useUserSlippageTolerance(): [number, (slippage: number) => void]
   )
 
   return [userSlippageTolerance, setUserSlippageTolerance]
+}
+
+export function useUserDeadline(): [number, (slippage: number) => void] {
+  const dispatch = useDispatch<AppDispatch>()
+  const userDeadline = useSelector<AppState, AppState['user']['userDeadline']>(state => {
+    return state.user.userDeadline
+  })
+
+  const setUserDeadline = useCallback(
+    (userDeadline: number) => {
+      dispatch(updateUserDeadline({ userDeadline }))
+    },
+    [dispatch]
+  )
+
+  return [userDeadline, setUserDeadline]
 }
 
 export function useUserTransactionTTL(): [number, (slippage: number) => void] {
@@ -199,7 +244,7 @@ export function useURLWarningToggle(): () => void {
  * @param tokenB the other token
  */
 export function toV2LiquidityToken([tokenA, tokenB]: [Token, Token]): Token {
-  return new Token(tokenA.chainId, Pair.getAddress(tokenA, tokenB), 18, 'UNI-V2', 'Uniswap V2')
+  return new Token(tokenA.chainId, Pair.getAddress(tokenA, tokenB), 18, 'CAKE-V2', 'Pancake V2')
 }
 
 /**

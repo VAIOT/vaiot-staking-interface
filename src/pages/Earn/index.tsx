@@ -54,7 +54,7 @@ export default function Earn() {
           <CardSection>
             <AutoColumn gap="md">
               <RowBetween>
-                <TYPE.white fontWeight={600}>Uniswap liquidity staking</TYPE.white>
+                <TYPE.white fontWeight={600}>Pancake liquidity staking</TYPE.white>
               </RowBetween>
               <RowBetween>
                 <TYPE.white fontSize={14}>

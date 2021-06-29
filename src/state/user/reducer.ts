@@ -14,7 +14,7 @@ import {
   updateUserSlippageTolerance,
   updateUserDeadline,
   toggleURLWarning,
-  updateUserSingleHopOnly
+  updateUserSingleHopOnly, dismissTokenWarning
 } from './actions'
 
 const currentTimestamp = () => new Date().getTime()
@@ -32,6 +32,13 @@ export interface UserState {
 
   // user defined slippage tolerance in bips, used in all txns
   userSlippageTolerance: number
+
+  // the token warnings that the user has dismissed
+  dismissedTokenWarnings?: {
+    [chainId: number]: {
+      [tokenAddress: string]: true
+    }
+  }
 
   // deadline set by user in minutes, used in all txns
   userDeadline: number
@@ -102,6 +109,11 @@ export default createReducer(initialState, builder =>
     .addCase(updateUserSlippageTolerance, (state, action) => {
       state.userSlippageTolerance = action.payload.userSlippageTolerance
       state.timestamp = currentTimestamp()
+    })
+    .addCase(dismissTokenWarning, (state, { payload: { chainId, tokenAddress } }) => {
+      state.dismissedTokenWarnings = state.dismissedTokenWarnings ?? {}
+      state.dismissedTokenWarnings[chainId] = state.dismissedTokenWarnings[chainId] ?? {}
+      state.dismissedTokenWarnings[chainId][tokenAddress] = true
     })
     .addCase(updateUserDeadline, (state, action) => {
       state.userDeadline = action.payload.userDeadline

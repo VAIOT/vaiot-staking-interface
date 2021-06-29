@@ -5,7 +5,7 @@ import { abi as STAKING_REWARDS_ABI } from '../hooks/StakingRewards.json'
 import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build/MerkleDistributor.json'
 import { abi as PRE_STAKING_REWARD_ABI } from '../hooks/PreStakingContract.json'
 
-import { ChainId, WETH } from '@uniswap/sdk'
+import { ChainId, WETH } from '@bscswap/sdk'
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import { useMemo } from 'react'
 import { GOVERNANCE_ADDRESS, MERKLE_DISTRIBUTOR_ADDRESS, VAI } from '../constants'

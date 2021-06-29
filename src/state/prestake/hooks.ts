@@ -1,4 +1,4 @@
-import { ChainId, JSBI, Pair, Token, TokenAmount } from '@uniswap/sdk'
+import { ChainId, JSBI, Pair, Token, TokenAmount } from '@bscswap/sdk'
 import { VAI } from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
 import { useMemo } from 'react'

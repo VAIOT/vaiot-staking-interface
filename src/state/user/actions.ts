@@ -12,7 +12,7 @@ export interface SerializedPair {
   token0: SerializedToken
   token1: SerializedToken
 }
-
+export const updateVersion = createAction<void>('user/updateVersion')
 export const updateMatchesDarkMode = createAction<{ matchesDarkMode: boolean }>('user/updateMatchesDarkMode')
 export const updateUserDarkMode = createAction<{ userDarkMode: boolean }>('user/updateUserDarkMode')
 export const updateUserExpertMode = createAction<{ userExpertMode: boolean }>('user/updateUserExpertMode')
@@ -28,3 +28,6 @@ export const removeSerializedPair = createAction<{ chainId: number; tokenAAddres
   'user/removeSerializedPair'
 )
 export const toggleURLWarning = createAction<void>('app/toggleURLWarning')
+
+export const dismissTokenWarning = createAction<{ chainId: number; tokenAddress: string }>('user/dismissTokenWarning')
+
