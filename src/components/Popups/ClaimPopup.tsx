@@ -1,4 +1,4 @@
-import { TokenAmount } from '@bscswap/sdk'
+import { TokenAmount } from '@pancakeswap/sdk'
 import React, { useEffect } from 'react'
 import { X } from 'react-feather'
 import styled, { keyframes } from 'styled-components'

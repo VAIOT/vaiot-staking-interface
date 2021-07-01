@@ -3,7 +3,7 @@ import { AutoColumn } from '../../components/Column'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 
-import { JSBI, TokenAmount, ETHER } from '@bscswap/sdk'
+import { JSBI, TokenAmount, ETHER } from '@pancakeswap/sdk'
 import { RouteComponentProps } from 'react-router-dom'
 import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { useCurrency } from '../../hooks/Tokens'
@@ -119,7 +119,7 @@ export default function Manage({
   const stakingInfo = useStakingInfo()?.[0]
   // detect existing unstaked LP position to show add button if none found
   const userLiquidityUnstaked = useTokenBalance(account ?? undefined, stakingInfo?.stakedAmount?.token)
-  const showAddLiquidityButton = Boolean(stakingInfo?.stakedAmount?.equalTo('0') && userLiquidityUnstaked?.equalTo('0'))
+  // const showAddLiquidityButton = Boolean(stakingInfo?.stakedAmount?.equalTo('0') && userLiquidityUnstaked?.equalTo('0'))
 
   // toggle for staking modal and unstaking modal
   const [showStakingModal, setShowStakingModal] = useState(false)
@@ -206,7 +206,7 @@ export default function Manage({
         </PoolData>
       </DataRow>
 
-      {showAddLiquidityButton && (
+      {/*      {showAddLiquidityButton && (
         <VoteCard>
           <CardBGImage />
           <CardNoise />
@@ -234,7 +234,7 @@ export default function Manage({
           <CardBGImage />
           <CardNoise />
         </VoteCard>
-      )}
+      )}*/}
 
       {stakingInfo && (
         <>
@@ -257,9 +257,9 @@ export default function Manage({
         </>
       )}
 
-      <PositionInfo gap="lg" justify="center" dim={showAddLiquidityButton}>
+      <PositionInfo gap="lg" justify="center" dim={false}>
         <BottomSection gap="lg" justify="center">
-          <StyledDataCard disabled={disableTop} bgColor={backgroundColor} showBackground={!showAddLiquidityButton}>
+          <StyledDataCard disabled={disableTop} bgColor={backgroundColor} showBackground={true}>
             <CardSection>
               <CardBGImage desaturate />
               <CardNoise />
@@ -332,30 +332,28 @@ export default function Manage({
           When you withdraw, the contract will automagically claim VAI on your behalf!
         </TYPE.main>
 
-        {!showAddLiquidityButton && (
-          <DataRow style={{ marginBottom: '1rem' }}>
-            {stakingInfo && stakingInfo.active && (
-              <ButtonPrimary padding="8px" borderRadius="8px" width="160px" onClick={handleDepositClick}>
-                {stakingInfo?.stakedAmount?.greaterThan(JSBI.BigInt(0)) ? 'Deposit' : 'Deposit CAKE-V2 LP Tokens'}
-              </ButtonPrimary>
-            )}
+        <DataRow style={{ marginBottom: '1rem' }}>
+          {stakingInfo && stakingInfo.active && (
+            <ButtonPrimary padding="8px" borderRadius="8px" width="160px" onClick={handleDepositClick}>
+              {stakingInfo?.stakedAmount?.greaterThan(JSBI.BigInt(0)) ? 'Deposit' : 'Deposit CAKE-V2 LP Tokens'}
+            </ButtonPrimary>
+          )}
 
-            {stakingInfo?.stakedAmount?.greaterThan(JSBI.BigInt(0)) && (
-              <>
-                <ButtonPrimary
-                  padding="8px"
-                  borderRadius="8px"
-                  width="160px"
-                  onClick={() => setShowUnstakingModal(true)}
-                  disabled={!isWithdrawalAccessible}
-                >
-                  Withdraw
-                </ButtonPrimary>
-              </>
-            )}
-          </DataRow>
-        )}
-        {!showAddLiquidityButton && <Countdown exactEnd={endDate} withdraw={true} />}
+          {stakingInfo?.stakedAmount?.greaterThan(JSBI.BigInt(0)) && (
+            <>
+              <ButtonPrimary
+                padding="8px"
+                borderRadius="8px"
+                width="160px"
+                onClick={() => setShowUnstakingModal(true)}
+                disabled={!isWithdrawalAccessible}
+              >
+                Withdraw
+              </ButtonPrimary>
+            </>
+          )}
+        </DataRow>
+        <Countdown exactEnd={endDate} withdraw={true} />
         {!userLiquidityUnstaked ? null : userLiquidityUnstaked.equalTo('0') ? null : !stakingInfo?.active ? null : (
           <TYPE.main>{userLiquidityUnstaked.toSignificant(6)} CAKE-V2 LP tokens available</TYPE.main>
         )}

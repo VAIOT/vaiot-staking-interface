@@ -1,4 +1,4 @@
-import { ChainId, CurrencyAmount, JSBI, Token, TokenAmount, WETH, Pair } from '@bscswap/sdk'
+import { ChainId, CurrencyAmount, JSBI, Token, TokenAmount, WETH, Pair } from '@pancakeswap/sdk'
 import { useMemo } from 'react'
 import {BNB, VAI} from '../../constants'
 import { STAKING_REWARDS_INTERFACE } from '../../constants/abis/staking-rewards'
@@ -22,16 +22,16 @@ export const STAKING_REWARDS_INFO: {
     stakingRewardAddress: string
   }[]
 } = {
-  [ChainId.BSC_MAINNET]: [
+  [ChainId.MAINNET]: [
     {
-      tokens: [BNB[ChainId.BSC_MAINNET], VAI[ChainId.BSC_MAINNET]],
-      stakingRewardAddress: '0xb7b6e8c7b6673308c075274c6B36107d007deBe2'
+      tokens: [WETH[ChainId.MAINNET], VAI[ChainId.MAINNET]],
+      stakingRewardAddress: '0x0E4A096F835B32DeE824a0eb157818E21F1769fD'
     }
   ],
-  [ChainId.ROPSTEN]: [
+  [ChainId.TESTNET]: [
     {
-      tokens: [BNB[ChainId.ROPSTEN], VAI[ChainId.ROPSTEN]],
-      stakingRewardAddress: '0x372573a14858A5A414ACe60D079E5B270b362B5e'
+      tokens: [BNB[ChainId.TESTNET], VAI[ChainId.TESTNET]],
+      stakingRewardAddress: '0x0E4A096F835B32DeE824a0eb157818E21F1769fD'
     }
   ]
 }

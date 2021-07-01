@@ -1,4 +1,4 @@
-import { Currency, Token } from '@bscswap/sdk'
+import { Currency, Token } from '@pancakeswap/sdk'
 import { transparentize } from 'polished'
 import React, { useMemo } from 'react'
 import styled from 'styled-components'

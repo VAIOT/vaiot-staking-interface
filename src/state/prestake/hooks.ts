@@ -1,4 +1,4 @@
-import { ChainId, JSBI, Pair, Token, TokenAmount } from '@bscswap/sdk'
+import { ChainId, JSBI, Pair, Token, TokenAmount } from '@pancakeswap/sdk'
 import { VAI } from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
 import { useMemo } from 'react'
@@ -17,9 +17,9 @@ export const PRE_STAKING_REWARDS_INFO: {
       stakingRewardAddress: '0xafea6ab8ab06bf803026cc2099bff4f20e977ded'
     }
   ],
-  [ChainId.ROPSTEN]: [
+  [ChainId.TESTNET]: [
     {
-      token: VAI[ChainId.ROPSTEN],
+      token: VAI[ChainId.TESTNET],
       stakingRewardAddress: '0x590d4780eD198e17F1592F17Bb214322da7694aE'
     }
   ]

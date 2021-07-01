@@ -1,4 +1,4 @@
-import { ChainId, TokenAmount } from '@bscswap/sdk'
+import { ChainId, TokenAmount } from '@pancakeswap/sdk'
 import React, { useState } from 'react'
 import { Text } from 'rebass'
 import { NavLink } from 'react-router-dom'
@@ -288,10 +288,8 @@ export const StyledMenuButton = styled.button`
 `
 
 const NETWORK_LABELS: { [chainId in ChainId]?: string } = {
-  [ChainId.RINKEBY]: 'Rinkeby',
-  [ChainId.ROPSTEN]: 'Ropsten',
-  [ChainId.GÖRLI]: 'Görli',
-  [ChainId.KOVAN]: 'Kovan'
+  [ChainId.MAINNET]: 'MAINNET',
+  [ChainId.TESTNET]: 'TESTNET'
 }
 
 export default function Header() {

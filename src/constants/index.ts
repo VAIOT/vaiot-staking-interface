@@ -1,4 +1,4 @@
-import { ChainId, JSBI, Percent, Token, WETH } from '@bscswap/sdk'
+import { ChainId, JSBI, Percent, Token, WETH } from '@pancakeswap/sdk'
 import { AbstractConnector } from '@web3-react/abstract-connector'
 
 import { binanceinjected, injected} from '../connectors'
@@ -23,28 +23,28 @@ export const AMPL = new Token(ChainId.MAINNET, '0xD46bA6D942050d489DBd938a2C909A
 export const WBTC = new Token(ChainId.MAINNET, '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', 8, 'WBTC', 'Wrapped BTC')
 
 export const BAI = new Token(
-  ChainId.BSC_MAINNET,
+  ChainId.MAINNET,
   '0xaA8012a0Ea627767545a8E435C2A2BD51f60173D',
   18,
   'BAI',
   'BAI Stablecoin'
 )
 export const B_DAI = new Token(
-  ChainId.BSC_MAINNET,
+  ChainId.MAINNET,
   '0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3',
   18,
   'DAI',
   'Dai Token'
 )
 export const BUSD = new Token(
-  ChainId.BSC_MAINNET,
+  ChainId.MAINNET,
   '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
   18,
   'BUSD',
   'BUSD Token'
 )
 export const B_USDT = new Token(
-  ChainId.BSC_MAINNET,
+  ChainId.MAINNET,
   '0x55d398326f99059fF775485246999027B3197955',
   18,
   'USDT',
@@ -52,21 +52,21 @@ export const B_USDT = new Token(
 )
 
 export const T_DAI = new Token(
-  ChainId.BSC_TESTNET,
+  ChainId.MAINNET,
   '0xEC5dCb5Dbf4B114C9d0F65BcCAb49EC54F6A0867',
   18,
   'DAI',
   'Dai Token'
 )
 export const T_BUSD = new Token(
-  ChainId.BSC_TESTNET,
+  ChainId.MAINNET,
   '0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee',
   6,
   'BUSD',
   'BUSD Token'
 )
 export const T_USDT = new Token(
-  ChainId.BSC_TESTNET,
+  ChainId.MAINNET,
   '0x337610d27c682E347C9cD60BD4b3b107C9d34dDd',
   6,
   'USDT',
@@ -87,24 +87,14 @@ export const TIMELOCK_ADDRESS = '0x1a9C8182C09F50C8318d769245beA52c32BE35BC'
 const VAI_ADDRESS = '0x9F801c1F02AF03cC240546DadEf8e56Cd46EA2E9'
 export const VAI: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, VAI_ADDRESS, 18, 'VAI', 'VAIOT'),
-  [ChainId.RINKEBY]: new Token(ChainId.RINKEBY, VAI_ADDRESS, 18, 'VAI', 'VAIOT'),
-  [ChainId.ROPSTEN]: new Token(ChainId.ROPSTEN, VAI_ADDRESS, 18, 'VAI', 'VAIOT'),
-  [ChainId.GÖRLI]: new Token(ChainId.GÖRLI, VAI_ADDRESS, 18, 'VAI', 'VAIOT'),
-  [ChainId.KOVAN]: new Token(ChainId.KOVAN, VAI_ADDRESS, 18, 'VAI', 'VAIOT'),
-  [ChainId.BSC_MAINNET]: new Token(ChainId.BSC_MAINNET, VAI_ADDRESS, 18, 'VAI', 'VAIOT'),
-  [ChainId.BSC_TESTNET]: new Token(ChainId.BSC_TESTNET, VAI_ADDRESS, 18, 'VAI', 'VAIOT')
+  [ChainId.TESTNET]: new Token(ChainId.TESTNET, VAI_ADDRESS, 18, 'VAI', 'VAIOT')
 }
 
 const BNB_ADDRESS = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
 
 export const BNB: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, BNB_ADDRESS, 18, 'BNB', 'BNB'),
-  [ChainId.RINKEBY]: new Token(ChainId.RINKEBY, BNB_ADDRESS, 18, 'BNB', 'BNB'),
-  [ChainId.ROPSTEN]: new Token(ChainId.ROPSTEN, BNB_ADDRESS, 18, 'BNB', 'BNB'),
-  [ChainId.GÖRLI]: new Token(ChainId.GÖRLI, BNB_ADDRESS, 18, 'BNB', 'BNB'),
-  [ChainId.KOVAN]: new Token(ChainId.KOVAN, BNB_ADDRESS, 18, 'BNB', 'BNB'),
-  [ChainId.BSC_MAINNET]: new Token(ChainId.BSC_MAINNET, BNB_ADDRESS, 18, 'BNB', 'BNB'),
-  [ChainId.BSC_TESTNET]: new Token(ChainId.BSC_TESTNET, BNB_ADDRESS, 18, 'BNB', 'BNB')
+  [ChainId.TESTNET]: new Token(ChainId.TESTNET, BNB_ADDRESS, 18, 'BNB', 'BNB')
 }
 
 export const COMMON_CONTRACT_NAMES: { [address: string]: string } = {
@@ -120,19 +110,14 @@ export const MERKLE_DISTRIBUTOR_ADDRESS: { [chainId in ChainId]?: string } = {
 
 const WETH_ONLY: ChainTokenList = {
   [ChainId.MAINNET]: [WETH[ChainId.MAINNET]],
-  [ChainId.ROPSTEN]: [WETH[ChainId.ROPSTEN]],
-  [ChainId.RINKEBY]: [WETH[ChainId.RINKEBY]],
-  [ChainId.GÖRLI]: [WETH[ChainId.GÖRLI]],
-  [ChainId.KOVAN]: [WETH[ChainId.KOVAN]],
-  [ChainId.BSC_MAINNET]: [WETH[ChainId.BSC_MAINNET]],
-  [ChainId.BSC_TESTNET]: [WETH[ChainId.BSC_TESTNET]]
+  [ChainId.TESTNET]: [WETH[ChainId.TESTNET]],
 }
 
 // used to construct intermediary pairs for trading
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
   ...WETH_ONLY,
   [ChainId.MAINNET]: [...WETH_ONLY[ChainId.MAINNET], DAI, USDC, USDT, COMP, MKR, WBTC],
-  [ChainId.BSC_MAINNET]: [...WETH_ONLY[ChainId.BSC_MAINNET], BAI, B_USDT, BUSD, B_DAI]
+  [ChainId.TESTNET]: [...WETH_ONLY[ChainId.TESTNET], BAI, B_USDT, BUSD, B_DAI]
 }
 
 /**
@@ -148,17 +133,15 @@ export const CUSTOM_BASES: { [chainId in ChainId]?: { [tokenAddress: string]: To
 // used for display in the default list when adding liquidity
 export const SUGGESTED_BASES: ChainTokenList = {
   ...WETH_ONLY,
-  [ChainId.MAINNET]: [...WETH_ONLY[ChainId.MAINNET], DAI, USDC, USDT, WBTC],
-  [ChainId.BSC_MAINNET]: [...WETH_ONLY[ChainId.BSC_MAINNET], BAI, B_USDT, BUSD, B_DAI],
-  [ChainId.BSC_TESTNET]: [...WETH_ONLY[ChainId.BSC_TESTNET], T_USDT, T_BUSD, T_DAI]
+  [ChainId.MAINNET]: [...WETH_ONLY[ChainId.MAINNET], BAI, B_USDT, BUSD, B_DAI],
+  [ChainId.TESTNET]: [...WETH_ONLY[ChainId.TESTNET], T_USDT, T_BUSD, T_DAI]
 }
 
 // used to construct the list of all pairs we consider by default in the frontend
 export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
   ...WETH_ONLY,
-  [ChainId.MAINNET]: [...WETH_ONLY[ChainId.MAINNET], DAI, USDC, USDT, WBTC],
-  [ChainId.BSC_MAINNET]: [...WETH_ONLY[ChainId.BSC_MAINNET], BAI, B_USDT, BUSD, B_DAI],
-  [ChainId.BSC_TESTNET]: [...WETH_ONLY[ChainId.BSC_TESTNET], T_USDT, T_BUSD, T_DAI]
+  [ChainId.MAINNET]: [...WETH_ONLY[ChainId.MAINNET], BAI, B_USDT, BUSD, B_DAI],
+  [ChainId.TESTNET]: [...WETH_ONLY[ChainId.TESTNET], T_USDT, T_BUSD, T_DAI]
 }
 
 export const PINNED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token][] } = {

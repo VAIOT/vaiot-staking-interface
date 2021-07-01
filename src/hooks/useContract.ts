@@ -5,7 +5,7 @@ import { abi as STAKING_REWARDS_ABI } from '../hooks/StakingRewards.json'
 import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build/MerkleDistributor.json'
 import { abi as PRE_STAKING_REWARD_ABI } from '../hooks/PreStakingContract.json'
 
-import { ChainId, WETH } from '@bscswap/sdk'
+import { ChainId, WETH } from '@pancakeswap/sdk'
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import { useMemo } from 'react'
 import { GOVERNANCE_ADDRESS, MERKLE_DISTRIBUTOR_ADDRESS, VAI } from '../constants'
@@ -77,9 +77,7 @@ export function useENSRegistrarContract(withSignerIfPossible?: boolean): Contrac
   if (chainId) {
     switch (chainId) {
       case ChainId.MAINNET:
-      case ChainId.GÖRLI:
-      case ChainId.ROPSTEN:
-      case ChainId.RINKEBY:
+      case ChainId.TESTNET:
         address = '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e'
         break
     }

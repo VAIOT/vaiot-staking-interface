@@ -1,4 +1,4 @@
-import { ChainId, Pair, Token, Currency } from '@bscswap/sdk'
+import { ChainId, Pair, Token, Currency } from '@pancakeswap/sdk'
 import flatMap from 'lodash.flatmap'
 import ReactGA from 'react-ga'
 import { useCallback, useMemo } from 'react'

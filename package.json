@@ -122,6 +122,7 @@
   "dependencies": {
     "@bscswap/binance-connector": "^6.0.10",
     "@bscswap/sdk": "^3.0.15",
+    "@pancakeswap/sdk": "^2.3.2",
     "@uniswap/default-token-list": "^2.0.0"
   }
 }

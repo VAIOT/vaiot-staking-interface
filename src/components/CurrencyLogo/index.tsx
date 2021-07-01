@@ -1,4 +1,4 @@
-import { ChainId, Currency, ETHER, Token } from '@bscswap/sdk'
+import { ChainId, Currency, ETHER, Token } from '@pancakeswap/sdk'
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 
