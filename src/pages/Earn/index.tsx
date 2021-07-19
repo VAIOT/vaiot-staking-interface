@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { STAKING_REWARDS_INFO, useStakingInfo } from '../../state/stake/hooks'
 import { ExternalLink, TYPE } from '../../theme'
 import PoolCard from '../../components/earn/PoolCard'
-import { RowBetween } from '../../components/Row'
+import {RowBetween, RowFlat} from '../../components/Row'
 import { CardBGImage, CardNoise, CardSection, DataCard } from '../../components/earn/styled'
 import { Countdown } from './Countdown'
 import Loader from '../../components/Loader'
@@ -60,14 +60,17 @@ export default function Earn() {
                 <TYPE.white fontSize={14}>
                   Deposit your Liquidity Provider tokens to receive VAI, the first VFAA-regulated token.
                 </TYPE.white>
-              </RowBetween>{' '}
-              <ExternalLink
-                style={{ color: '#FCD535', textDecoration: 'underline' }}
-                href="https://vaiot.ai"
-                target="_blank"
-              >
-                <TYPE.white fontSize={14}>Read more about VAIOT</TYPE.white>
-              </ExternalLink>
+              </RowBetween>
+              <RowFlat>
+                <TYPE.white fontSize={14}>For more information please read the </TYPE.white>
+                <ExternalLink
+                  style={{ color: '#FCD535', textDecoration: 'underline', marginLeft: '5px' }}
+                  href="https://medium.com/@vaiotltd/vaiot-bsc-liquidity-pool-step-by-step-guide-877e25a3f2b"
+                  target="_blank"
+                >
+                  <TYPE.white fontSize={14}>VAIOT BSC Liquidity Pool Step-by-Step Guide</TYPE.white>
+                </ExternalLink>
+              </RowFlat>
             </AutoColumn>
           </CardSection>
           <CardBGImage />

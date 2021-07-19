@@ -12,7 +12,7 @@ import { useActiveWeb3React } from '../../hooks'
 import { useAggregateUniBalance, useETHBalances } from '../../state/wallet/hooks'
 import { CardNoise } from '../earn/styled'
 import { CountUp } from 'use-count-up'
-import { TYPE } from '../../theme'
+import {ExternalLink, TYPE} from '../../theme'
 
 import { YellowCard } from '../Card'
 
@@ -329,8 +329,16 @@ export default function Header() {
         </Title>
         <HeaderLinks>
           <StyledNavLink id={`stake-nav-link`} to={'/stake'}>
-            Liquidity Staking
+            BSC Liquidity Staking
           </StyledNavLink>
+          <ExternalLink
+            id={`eth-stake-nav-link`}
+            href={'https://staking.vaiot.ai/'}
+            target={'_blank'}
+            style={{ textDecoration: 'none', fontSize: '14.4px' }}
+          >
+            Ethereum Liquidity Staking
+          </ExternalLink>
         </HeaderLinks>
         <HeaderLinks>
 {/*          <StyledNavLink id={`pre-stake-nav-link`} to={'/prestake'}>
