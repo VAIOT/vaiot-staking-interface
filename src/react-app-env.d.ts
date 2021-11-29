@@ -7,7 +7,9 @@ declare module 'jazzicon' {
 declare module 'fortmatic'
 
 interface Window {
+  walletLinkExtension?: any
   ethereum?: {
+    isCoinbaseWallet?: true
     isMetaMask?: true
     on?: (...args: any[]) => void
     removeListener?: (...args: any[]) => void
