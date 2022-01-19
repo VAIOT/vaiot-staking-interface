@@ -5,7 +5,7 @@ import { useMemo } from 'react'
 import { NEVER_RELOAD, useMultipleContractSingleData } from '../multicall/hooks'
 import { PRE_STAKING_REWARDS_INTERFACE } from '../../constants/abis/staking-rewards'
 
-export const PRE_STAKING_REWARDS_INFO: {
+export const PRE_STAKING_2_REWARDS_INFO: {
   [chainId in ChainId]?: {
     token: Token
     stakingRewardAddress: string
@@ -14,7 +14,7 @@ export const PRE_STAKING_REWARDS_INFO: {
   [ChainId.MAINNET]: [
     {
       token: VAI[ChainId.MAINNET],
-      stakingRewardAddress: '0xa635D5b9e72169d8164b837Eb864bb74365A9B8D'
+      stakingRewardAddress: '0x2A68Ced186E48Ff1f2230ae749dB73a5Fd35eC13'
     }
   ],
   [ChainId.ROPSTEN]: [
@@ -25,7 +25,7 @@ export const PRE_STAKING_REWARDS_INFO: {
   ]
 }
 
-export interface PreStakingInfo {
+export interface PreStaking2Info {
   // the address of the reward contract
   stakingRewardAddress: string
   // the tokens involved in this pair
@@ -41,12 +41,12 @@ export interface PreStakingInfo {
   totalRewardRate: JSBI
 }
 
-export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[] {
+export function usePreStaking2Info(pairToFilterBy?: Pair | null): PreStaking2Info[] {
   const { chainId, account } = useActiveWeb3React()
   const info = useMemo(
     () =>
       chainId
-        ? PRE_STAKING_REWARDS_INFO[chainId]?.filter(stakingRewardInfo =>
+        ? PRE_STAKING_2_REWARDS_INFO[chainId]?.filter(stakingRewardInfo =>
             pairToFilterBy === undefined
               ? true
               : pairToFilterBy === null
@@ -73,6 +73,8 @@ export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[
     'currentTotalStake'
   )
 
+  // ToDo reward rate as constant
+
   const rewardRates = useMultipleContractSingleData(
     rewardsAddresses,
     PRE_STAKING_REWARDS_INTERFACE,
@@ -91,7 +93,7 @@ export function usePreStakingInfo(pairToFilterBy?: Pair | null): PreStakingInfo[
   return useMemo(() => {
     if (!chainId || !vai) return []
 
-    return rewardsAddresses.reduce<PreStakingInfo[]>((memo, rewardsAddress, index) => {
+    return rewardsAddresses.reduce<PreStaking2Info[]>((memo, rewardsAddress, index) => {
       const balanceState = balances[index]
       const earnedAmountState = earnedAmounts[index]
 

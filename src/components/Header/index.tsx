@@ -337,6 +337,9 @@ export default function Header() {
           <StyledNavLink id={`pre-stake-nav-link`} to={'/prestake'}>
             Pre-Staking
           </StyledNavLink>
+          <StyledNavLink id={`pre-stake-2-nav-link`} to={'/prestake2'}>
+            Pre-Staking 2.0
+          </StyledNavLink>
           <ExternalLink id={`bsc-stake-nav-link`} href={'https://bscstaking.vaiot.ai/'} target={'_blank'}  style={{ textDecoration: 'none', fontSize: '14.4px' }}>
             BSC Liquidity Staking
           </ExternalLink>

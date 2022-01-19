@@ -14,23 +14,20 @@ import {
   StyledBottomCard,
   StyledDataCard
 } from '../Earn/Manage'
-import { usePreStakingInfo } from '../../state/prestake/hooks'
 import CurrencyLogo from '../../components/CurrencyLogo'
 import { useTokenBalance } from '../../state/wallet/hooks'
 import { useActiveWeb3React } from '../../hooks'
 import { useColor } from '../../hooks/useColor'
 import { JSBI, TokenAmount } from '@uniswap/sdk'
 import usePrevious from '../../hooks/usePrevious'
-import PreStakingModal from '../../components/PreStake/PreStakingModal'
 import { useWalletModalToggle } from '../../state/application/hooks'
-import UnstakingModal from '../../components/PreStake/UnstakingModal'
 import { CardBGImage, CardNoise, CardSection } from 'components/earn/styled'
 import { ButtonPrimary } from '../../components/Button'
 import { CountUp } from 'use-count-up'
 import { VAI } from '../../constants'
-import { matchPath } from 'react-router'
-import { useLocation } from 'react-router-dom'
-import { useLockupInfo } from '../../state/lockup/hooks'
+import { usePreStaking2Info } from '../../state/prestake-2.0/hooks'
+import PreStaking2Modal from '../../components/PreStake2/PreStaking2Modal';
+import Unstaking2Modal from '../../components/PreStake2/Unstaking2Modal';
 
 export function parseBigNumber(value: TokenAmount): string {
   return value.greaterThan(BigInt(100000))
@@ -38,12 +35,8 @@ export function parseBigNumber(value: TokenAmount): string {
     : value.toSignificant(2, { groupSeparator: ',' })
 }
 
-export default function PreStake() {
+export default function PreStake2() {
   const { chainId, account } = useActiveWeb3React()
-
-  const location = useLocation()
-
-  const privateSale = matchPath(location.pathname, '/prestake-lockup')?.isExact ?? undefined
 
   const token = chainId ? VAI[chainId] : undefined
 
@@ -51,13 +44,11 @@ export default function PreStake() {
 
   const currencyA = useCurrency(currency0 ? currencyId(currency0) : undefined)
 
-  const stakingInfo = usePreStakingInfo()?.[0]
-
-  const lockupInfo = useLockupInfo()?.[0]
+  const stakingInfo = usePreStaking2Info()?.[0]
 
   const tokenBalance = useTokenBalance(account ?? undefined, stakingInfo?.stakedAmount?.token)
 
-  const userVaiUnstaked = !privateSale ? tokenBalance : lockupInfo?.currentAmount
+  const userVaiUnstaked = tokenBalance
 
   const [showStakingModal, setShowStakingModal] = useState(false)
   const [showUnstakingModal, setShowUnstakingModal] = useState(false)
@@ -68,12 +59,11 @@ export default function PreStake() {
 
   const countUpAmount = stakingInfo?.earnedAmount?.toFixed(6) ?? '0'
   const countUpAmountPrevious = usePrevious(countUpAmount) ?? '0'
-
   const toggleWalletModal = useWalletModalToggle()
 
   const handleDepositClick = useCallback(() => {
     if (account) {
-      // setShowStakingModal(true)
+      setShowStakingModal(true)
     } else {
       toggleWalletModal()
     }
@@ -81,7 +71,7 @@ export default function PreStake() {
   return (
     <PageWrapper gap="lg" justify="center">
       <RowBetween style={{ gap: '24px' }}>
-        <TYPE.mediumHeader style={{ margin: 0 }}>{currencyA?.symbol} Pre-Staking</TYPE.mediumHeader>
+        <TYPE.mediumHeader style={{ margin: 0 }}>{currencyA?.symbol} Pre-Staking 2.0</TYPE.mediumHeader>
         <CurrencyLogo currency={currency0} size={'24'} />
       </RowBetween>
 
@@ -103,7 +93,7 @@ export default function PreStake() {
             <TYPE.body style={{ margin: 0 }}>Pool Rate</TYPE.body>
             <TYPE.body fontSize={24} fontWeight={500}>
               {stakingInfo ? stakingInfo?.totalRewardRate.toString() : '0'}
-              {'% ARR + 0.2% daily'}
+              {'% ARR'}
             </TYPE.body>
           </AutoColumn>
         </PoolData>
@@ -111,18 +101,16 @@ export default function PreStake() {
 
       {stakingInfo && (
         <>
-          <PreStakingModal
+          <PreStaking2Modal
             isOpen={showStakingModal}
             onDismiss={() => setShowStakingModal(false)}
             preStakingInfo={stakingInfo}
             userVaiUnstaked={userVaiUnstaked}
-            privateSale={privateSale}
           />
-          <UnstakingModal
+          <Unstaking2Modal
             isOpen={showUnstakingModal}
             onDismiss={() => setShowUnstakingModal(false)}
             preStakingInfo={stakingInfo}
-            privateSale={privateSale}
           />
         </>
       )}
@@ -179,10 +167,10 @@ export default function PreStake() {
               borderRadius="8px"
               width="160px"
               onClick={handleDepositClick}
-              disabled={true}
-              //{stakingInfo?.stakedAmount?.greaterThan(JSBI.BigInt(0))}
+              disabled={stakingInfo?.stakedAmount?.greaterThan(JSBI.BigInt(0))}
+              //
             >
-              Deposit temporarily disabled
+              Deposit
             </ButtonPrimary>
           )}
 
@@ -194,11 +182,6 @@ export default function PreStake() {
             </>
           )}
         </DataRow>
-
-        <TYPE.white>
-          Detailed Pre-Staking rules available{' '}
-          <a href={'https://vaiotltd.medium.com/vai-token-pre-staking-re-launch-fea723e178a9'}>here</a>
-        </TYPE.white>
       </PositionInfo>
     </PageWrapper>
   )

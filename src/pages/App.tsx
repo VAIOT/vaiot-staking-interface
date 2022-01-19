@@ -21,6 +21,7 @@ import Manage from './Earn/Manage'
 import RemoveLiquidity from './RemoveLiquidity'
 import { RedirectOldRemoveLiquidityPathStructure } from './RemoveLiquidity/redirects'
 import PreStake from './PreStake'
+import PreStake2 from './PreStake2'
 
 const AppWrapper = styled.div`
   display: flex;
@@ -84,6 +85,7 @@ export default function App() {
               <Route exact strict path="/stake" component={Earn} />
               <Route exact strict path="/prestake" component={PreStake} />
               <Route exact strict path="/prestake-lockup" component={PreStake} />
+              <Route exact strict path="/prestake2" component={PreStake2} />
               <Route exact strict path="/create" component={RedirectToAddLiquidity} />
               <Route exact path="/add" component={AddLiquidity} />
               <Route exact path="/add/:currencyIdA" component={RedirectOldAddLiquidityPathStructure} />

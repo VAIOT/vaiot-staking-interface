@@ -4,6 +4,8 @@ import { abi as UNI_ABI } from '@uniswap/governance/build/Uni.json'
 import { abi as STAKING_REWARDS_ABI } from '../hooks/StakingRewards.json'
 import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build/MerkleDistributor.json'
 import { abi as PRE_STAKING_REWARD_ABI } from '../hooks/PreStakingContract.json'
+import { abi as PRE_STAKING_2_REWARD_ABI } from '../hooks/PreStaking2Contract.json'
+
 
 import { ChainId, WETH } from '@uniswap/sdk'
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
@@ -124,6 +126,10 @@ export function useStakingContract(stakingAddress?: string, withSignerIfPossible
 
 export function usePreStakingContract(stakingAddress?: string, withSignerIfPossible?: boolean): Contract | null {
   return useContract(stakingAddress, PRE_STAKING_REWARD_ABI, withSignerIfPossible)
+}
+
+export function usePreStaking2Contract(stakingAddress?: string, withSignerIfPossible?: boolean): Contract | null {
+  return useContract(stakingAddress, PRE_STAKING_2_REWARD_ABI, withSignerIfPossible)
 }
 
 export function useSocksController(): Contract | null {
