@@ -12,21 +12,16 @@ import { useActiveWeb3React } from '../../hooks'
 import { useAggregateUniBalance, useETHBalances } from '../../state/wallet/hooks'
 import { CardNoise } from '../earn/styled'
 import { CountUp } from 'use-count-up'
-import { ExternalLink, TYPE } from '../../theme'
+import { TYPE } from '../../theme'
 
 import { YellowCard } from '../Card'
 
 import Row, { RowFixed } from '../Row'
 import Web3Status from '../Web3Status'
 import ClaimModal from '../claim/ClaimModal'
-import { useShowClaimPopup, useToggleSelfClaimModal } from '../../state/application/hooks'
-import { useUserHasAvailableClaim } from '../../state/claim/hooks'
-import { useUserHasSubmittedClaim } from '../../state/transactions/hooks'
-import { Dots } from '../swap/styleds'
 import Modal from '../Modal'
 import UniBalanceContent from './UniBalanceContent'
 import usePrevious from '../../hooks/usePrevious'
-import { useLockupInfo } from '../../state/lockup/hooks'
 
 const HeaderFrame = styled.div`
   display: grid;
@@ -303,20 +298,20 @@ export default function Header() {
 
   const darkMode = true
 
-  const toggleClaimModal = useToggleSelfClaimModal()
+  // const toggleClaimModal = useToggleSelfClaimModal()
 
-  const availableClaim: boolean = useUserHasAvailableClaim(account)
+  // const availableClaim: boolean = useUserHasAvailableClaim(account)
 
-  const { claimTxn } = useUserHasSubmittedClaim(account ?? undefined)
+  // const { claimTxn } = useUserHasSubmittedClaim(account ?? undefined)
 
   const aggregateBalance: TokenAmount | undefined = useAggregateUniBalance()
 
   const [showUniBalanceModal, setShowUniBalanceModal] = useState(false)
-  const showClaimPopup = useShowClaimPopup()
+  // const showClaimPopup = useShowClaimPopup()
 
   const countUpValue = aggregateBalance?.toFixed(0) ?? '0'
   const countUpValuePrevious = usePrevious(countUpValue) ?? '0'
-  const lockupInfo = useLockupInfo()[0]
+  // const lockupInfo = useLockupInfo()[0]
 
   return (
     <HeaderFrame>
@@ -332,22 +327,22 @@ export default function Header() {
         </Title>
         <HeaderLinks>
           <StyledNavLink id={`stake-nav-link`} to={'/stake'}>
-            Ethereum Liquidity Staking
+            Liquidity Staking
           </StyledNavLink>
-          <StyledNavLink id={`pre-stake-nav-link`} to={'/prestake'}>
+          {/*          <StyledNavLink id={`pre-stake-nav-link`} to={'/prestake'}>
             Pre-Staking
           </StyledNavLink>
           <ExternalLink id={`bsc-stake-nav-link`} href={'https://bscstaking.vaiot.ai/'} target={'_blank'}  style={{ textDecoration: 'none', fontSize: '14.4px' }}>
             BSC Liquidity Staking
-          </ExternalLink>
+          </ExternalLink>*/}
         </HeaderLinks>
-        {lockupInfo?.currentAmount?.greaterThan(BigInt(0)) && (
+        {/*        {lockupInfo?.currentAmount?.greaterThan(BigInt(0)) && (
           <HeaderLinks>
             <StyledNavLink id={`pre-stake-nav-link`} to={'/prestake-lockup'}>
               Pre-Staking Private Sale
             </StyledNavLink>
           </HeaderLinks>
-        )}
+        )}*/}
       </HeaderRow>
       <HeaderControls>
         <HeaderElement>
@@ -356,7 +351,7 @@ export default function Header() {
               <NetworkCard title={NETWORK_LABELS[chainId]}>{NETWORK_LABELS[chainId]}</NetworkCard>
             )}
           </HideSmall>
-          {availableClaim && !showClaimPopup && (
+          {/*          {availableClaim && !showClaimPopup && (
             <VAIWrapper onClick={toggleClaimModal}>
               <VAIAmount active={!!account && !availableClaim} style={{ pointerEvents: 'auto' }}>
                 <TYPE.white padding="0 2px">
@@ -365,10 +360,10 @@ export default function Header() {
               </VAIAmount>
               <CardNoise />
             </VAIWrapper>
-          )}
-          {!availableClaim && aggregateBalance && (
+          )}*/}
+          {aggregateBalance && (
             <VAIWrapper onClick={() => setShowUniBalanceModal(true)}>
-              <VAIAmount active={!!account && !availableClaim} style={{ pointerEvents: 'auto' }}>
+              <VAIAmount active={!!account} style={{ pointerEvents: 'auto' }}>
                 {account && (
                   <HideSmall>
                     <TYPE.white
