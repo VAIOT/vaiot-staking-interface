@@ -7,7 +7,6 @@ import DoubleCurrencyLogo from '../DoubleLogo'
 import { ETHER, JSBI, TokenAmount } from '@uniswap/sdk'
 import { ButtonPrimary } from '../Button'
 import { StakingInfo } from '../../state/stake/hooks'
-import { useColor } from '../../hooks/useColor'
 import { currencyId } from '../../utils/currencyId'
 import { Break, CardNoise, CardBGImage } from './styled'
 import { unwrappedToken } from '../../utils/wrappedCurrency'
@@ -29,7 +28,7 @@ const StatContainer = styled.div`
 `};
 `
 
-const Wrapper = styled(AutoColumn)<{ showBackground: boolean; bgColor: any }>`
+const Wrapper = styled(AutoColumn)<{ showBackground: boolean }>`
   border-radius: 12px;
   width: 100%;
   overflow: hidden;
@@ -76,10 +75,7 @@ export default function PoolCard({ stakingInfo }: { stakingInfo: StakingInfo }) 
 
   const isStaking = Boolean(stakingInfo.stakedAmount.greaterThan('0'))
 
-  // get the color of the token
-  const token = currency0 === ETHER ? token1 : token0
   const WETH = currency0 === ETHER ? token0 : token1
-  const backgroundColor = useColor(token)
 
   const totalSupplyOfStakingToken = useTotalSupply(stakingInfo.stakedAmount.token)
   const [, stakingTokenPair] = usePair(...stakingInfo.tokens)
@@ -106,7 +102,7 @@ export default function PoolCard({ stakingInfo }: { stakingInfo: StakingInfo }) 
     valueOfTotalStakedAmountInWETH && USDPrice?.quote(valueOfTotalStakedAmountInWETH)
 
   return (
-    <Wrapper showBackground={isStaking} bgColor={backgroundColor}>
+    <Wrapper showBackground={isStaking}>
       <CardBGImage desaturate />
       <CardNoise />
 

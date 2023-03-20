@@ -19,7 +19,6 @@ import UnstakingModal from '../../components/earn/UnstakingModal'
 import ClaimRewardModal from '../../components/earn/ClaimRewardModal'
 import { useTokenBalance } from '../../state/wallet/hooks'
 import { useActiveWeb3React } from '../../hooks'
-import { useColor } from '../../hooks/useColor'
 import { CountUp } from 'use-count-up'
 
 import { wrappedCurrency } from '../../utils/wrappedCurrency'
@@ -50,7 +49,7 @@ export const BottomSection = styled(AutoColumn)`
   position: relative;
 `
 
-export const StyledDataCard = styled(DataCard)<{ bgColor?: any; showBackground?: any }>`
+export const StyledDataCard = styled(DataCard)<{ showBackground?: any }>`
   z-index: 2;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   background: linear-gradient(160deg, #000, #6360b5);
@@ -151,9 +150,7 @@ export default function Manage({
   // fade cards if nothing staked or nothing earned yet
   const disableTop = !stakingInfo?.stakedAmount || stakingInfo.stakedAmount.equalTo(JSBI.BigInt(0))
 
-  const token = currencyA === ETHER ? tokenB : tokenA
   const WETH = currencyA === ETHER ? tokenA : tokenB
-  const backgroundColor = useColor(token)
 
   // get WETH value of staked LP tokens
   const totalSupplyOfStakingToken = useTotalSupply(stakingInfo?.stakedAmount?.token)
@@ -291,7 +288,7 @@ export default function Manage({
 
       <PositionInfo gap="lg" justify="center" dim={showAddLiquidityButton}>
         <BottomSection gap="lg" justify="center">
-          <StyledDataCard disabled={disableTop} bgColor={backgroundColor} showBackground={!showAddLiquidityButton}>
+          <StyledDataCard disabled={disableTop} showBackground={!showAddLiquidityButton}>
             <CardSection>
               <CardBGImage desaturate />
               <CardNoise />
