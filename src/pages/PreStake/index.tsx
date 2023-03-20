@@ -18,7 +18,6 @@ import { usePreStakingInfo } from '../../state/prestake/hooks'
 import CurrencyLogo from '../../components/CurrencyLogo'
 import { useTokenBalance } from '../../state/wallet/hooks'
 import { useActiveWeb3React } from '../../hooks'
-import { useColor } from '../../hooks/useColor'
 import { JSBI, TokenAmount } from '@uniswap/sdk'
 import usePrevious from '../../hooks/usePrevious'
 import PreStakingModal from '../../components/PreStake/PreStakingModal'
@@ -63,8 +62,6 @@ export default function PreStake() {
   const [showUnstakingModal, setShowUnstakingModal] = useState(false)
 
   const disableTop = !stakingInfo?.stakedAmount || stakingInfo.stakedAmount.equalTo(JSBI.BigInt(0))
-
-  const backgroundColor = useColor(token)
 
   const countUpAmount = stakingInfo?.earnedAmount?.toFixed(6) ?? '0'
   const countUpAmountPrevious = usePrevious(countUpAmount) ?? '0'
@@ -129,7 +126,7 @@ export default function PreStake() {
 
       <PositionInfo gap="lg" justify="center" dim={null}>
         <BottomSection gap="lg" justify="center">
-          <StyledDataCard disabled={disableTop} bgColor={backgroundColor} showBackground={true}>
+          <StyledDataCard disabled={disableTop} showBackground={true}>
             <CardSection>
               <CardBGImage desaturate />
               <CardNoise />
