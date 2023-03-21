@@ -19,10 +19,6 @@ import { YellowCard } from '../Card'
 import Row, { RowFixed } from '../Row'
 import Web3Status from '../Web3Status'
 import ClaimModal from '../claim/ClaimModal'
-import { useShowClaimPopup, useToggleSelfClaimModal } from '../../state/application/hooks'
-import { useUserHasAvailableClaim } from '../../state/claim/hooks'
-import { useUserHasSubmittedClaim } from '../../state/transactions/hooks'
-import { Dots } from '../swap/styleds'
 import Modal from '../Modal'
 import UniBalanceContent from './UniBalanceContent'
 import usePrevious from '../../hooks/usePrevious'
@@ -302,19 +298,20 @@ export default function Header() {
 
   const darkMode = true
 
-  const toggleClaimModal = useToggleSelfClaimModal()
+  // const toggleClaimModal = useToggleSelfClaimModal()
 
-  const availableClaim: boolean = useUserHasAvailableClaim(account)
+  // const availableClaim: boolean = useUserHasAvailableClaim(account)
 
-  const { claimTxn } = useUserHasSubmittedClaim(account ?? undefined)
+  // const { claimTxn } = useUserHasSubmittedClaim(account ?? undefined)
 
   const aggregateBalance: TokenAmount | undefined = useAggregateUniBalance()
 
   const [showUniBalanceModal, setShowUniBalanceModal] = useState(false)
-  const showClaimPopup = useShowClaimPopup()
+  // const showClaimPopup = useShowClaimPopup()
 
   const countUpValue = aggregateBalance?.toFixed(0) ?? '0'
   const countUpValuePrevious = usePrevious(countUpValue) ?? '0'
+  // const lockupInfo = useLockupInfo()[0]
 
   return (
     <HeaderFrame>
@@ -332,14 +329,20 @@ export default function Header() {
           <StyledNavLink id={`stake-nav-link`} to={'/stake'}>
             Liquidity Staking
           </StyledNavLink>
-        </HeaderLinks>
-        <HeaderLinks>
-          <StyledNavLink id={`pre-stake-nav-link`} to={'/prestake'}>
+          {/*          <StyledNavLink id={`pre-stake-nav-link`} to={'/prestake'}>
             Pre-Staking
           </StyledNavLink>
-          {/*          <TmpNavLink id={`pre-stake-nav-link`}>Pre-Staking</TmpNavLink>
-          <ComingSoon>Coming soon!</ComingSoon>*/}
+          <ExternalLink id={`bsc-stake-nav-link`} href={'https://bscstaking.vaiot.ai/'} target={'_blank'}  style={{ textDecoration: 'none', fontSize: '14.4px' }}>
+            BSC Liquidity Staking
+          </ExternalLink>*/}
         </HeaderLinks>
+        {/*        {lockupInfo?.currentAmount?.greaterThan(BigInt(0)) && (
+          <HeaderLinks>
+            <StyledNavLink id={`pre-stake-nav-link`} to={'/prestake-lockup'}>
+              Pre-Staking Private Sale
+            </StyledNavLink>
+          </HeaderLinks>
+        )}*/}
       </HeaderRow>
       <HeaderControls>
         <HeaderElement>
@@ -348,7 +351,7 @@ export default function Header() {
               <NetworkCard title={NETWORK_LABELS[chainId]}>{NETWORK_LABELS[chainId]}</NetworkCard>
             )}
           </HideSmall>
-          {availableClaim && !showClaimPopup && (
+          {/*          {availableClaim && !showClaimPopup && (
             <VAIWrapper onClick={toggleClaimModal}>
               <VAIAmount active={!!account && !availableClaim} style={{ pointerEvents: 'auto' }}>
                 <TYPE.white padding="0 2px">
@@ -357,10 +360,10 @@ export default function Header() {
               </VAIAmount>
               <CardNoise />
             </VAIWrapper>
-          )}
-          {!availableClaim && aggregateBalance && (
+          )}*/}
+          {aggregateBalance && (
             <VAIWrapper onClick={() => setShowUniBalanceModal(true)}>
-              <VAIAmount active={!!account && !availableClaim} style={{ pointerEvents: 'auto' }}>
+              <VAIAmount active={!!account} style={{ pointerEvents: 'auto' }}>
                 {account && (
                   <HideSmall>
                     <TYPE.white

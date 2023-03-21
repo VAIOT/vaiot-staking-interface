@@ -22,9 +22,10 @@ interface StakingModalProps {
   isOpen: boolean
   onDismiss: () => void
   preStakingInfo: PreStakingInfo
+  privateSale?: boolean | undefined
 }
 
-export default function UnstakingModal({ isOpen, onDismiss, preStakingInfo }: StakingModalProps) {
+export default function UnstakingModal({ isOpen, onDismiss, preStakingInfo, privateSale }: StakingModalProps) {
   const { account } = useActiveWeb3React()
 
   // monitor call to help UI loading state
@@ -40,39 +41,36 @@ export default function UnstakingModal({ isOpen, onDismiss, preStakingInfo }: St
 
   const stakingContract = usePreStakingContract(preStakingInfo.stakingRewardAddress)
 
-  async function onInitializeWithdraw() {
-    if (stakingContract && preStakingInfo?.stakedAmount) {
-      setAttempting(true)
-      await stakingContract
-        .initiateWithdrawal({ gasLimit: 300000 })
-        .then((response: TransactionResponse) => {
-          addTransaction(response, {
-            summary: `Initiate Withdrawal`
-          })
-          setHash(response.hash)
-        })
-        .catch((error: any) => {
-          setAttempting(false)
-          console.log(error)
-        })
-    }
-  }
-
   async function onWithdraw() {
     if (stakingContract && preStakingInfo?.stakedAmount) {
       setAttempting(true)
-      await stakingContract
-        .executeWithdrawal({ gasLimit: 300000 })
-        .then((response: TransactionResponse) => {
-          addTransaction(response, {
-            summary: `Execute Withdrawal`
+      if (privateSale) {
+        await stakingContract
+          .withdrawLockup({ gasLimit: 300000 })
+          .then((response: TransactionResponse) => {
+            addTransaction(response, {
+              summary: `Withdraw Private Sale`
+            })
+            setHash(response.hash)
           })
-          setHash(response.hash)
-        })
-        .catch((error: any) => {
-          setAttempting(false)
-          console.log(error)
-        })
+          .catch((error: any) => {
+            setAttempting(false)
+            console.log(error)
+          })
+      } else {
+        await stakingContract
+          .executeWithdrawal({ gasLimit: 300000 })
+          .then((response: TransactionResponse) => {
+            addTransaction(response, {
+              summary: `Withdraw`
+            })
+            setHash(response.hash)
+          })
+          .catch((error: any) => {
+            setAttempting(false)
+            console.log(error)
+          })
+      }
     }
   }
 
@@ -109,20 +107,9 @@ export default function UnstakingModal({ isOpen, onDismiss, preStakingInfo }: St
             </AutoColumn>
           )}
           <TYPE.subHeader style={{ textAlign: 'center' }}>
-            {preStakingInfo?.status === 2
-              ? 'You can execute withdrawal and claim both your stake deposit and earned reward.'
-              : "When you initiate withdrawal, rewards stop being charged and you'll be able to reclaim both your stake deposit and earned reward."}
+            You can withdraw and claim both your stake deposit and earned reward.
           </TYPE.subHeader>
-          {preStakingInfo?.status === 1 && (
-            <ButtonError
-              disabled={!!error}
-              error={!!error && !!preStakingInfo?.stakedAmount}
-              onClick={onInitializeWithdraw}
-            >
-              {error ?? 'Initiate withdrawal'}
-            </ButtonError>
-          )}
-          {preStakingInfo?.status === 2 && (
+          {preStakingInfo && (
             <ButtonError disabled={!!error} error={!!error && !!preStakingInfo?.stakedAmount} onClick={onWithdraw}>
               {error ?? 'Withdraw'}
             </ButtonError>
@@ -132,14 +119,8 @@ export default function UnstakingModal({ isOpen, onDismiss, preStakingInfo }: St
       {attempting && !hash && (
         <LoadingView onDismiss={wrappedOndismiss}>
           <AutoColumn gap="12px" justify={'center'}>
-            <TYPE.body fontSize={20}>
-              {preStakingInfo?.status === 1 ? 'Initializing withdrawal of' : 'Finalizing withdrawal of'}{' '}
-              {preStakingInfo?.stakedAmount?.toSignificant(4)} VAI
-            </TYPE.body>
-            <TYPE.body fontSize={20}>
-              {preStakingInfo?.status === 1 ? 'Initializing claim of' : 'Finalizing claim of'}{' '}
-              {preStakingInfo?.earnedAmount?.toSignificant(4)} VAI
-            </TYPE.body>
+            <TYPE.body fontSize={20}>Withdrawing {preStakingInfo?.stakedAmount?.toSignificant(4)} VAI</TYPE.body>
+            <TYPE.body fontSize={20}>Claiming {preStakingInfo?.earnedAmount?.toSignificant(4)} VAI</TYPE.body>
           </AutoColumn>
         </LoadingView>
       )}
@@ -147,9 +128,7 @@ export default function UnstakingModal({ isOpen, onDismiss, preStakingInfo }: St
         <SubmittedView onDismiss={wrappedOndismiss} hash={hash}>
           <AutoColumn gap="12px" justify={'center'}>
             <TYPE.largeHeader>Transaction Submitted</TYPE.largeHeader>
-            <TYPE.body fontSize={20}>
-              {preStakingInfo?.status === 1 ? 'Initiate Withdrawal' : 'Execute Withdrawal'}
-            </TYPE.body>
+            <TYPE.body fontSize={20}>Withdraw</TYPE.body>
             <TYPE.body fontSize={20}></TYPE.body>
           </AutoColumn>
         </SubmittedView>

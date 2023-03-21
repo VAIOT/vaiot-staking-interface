@@ -30,6 +30,7 @@ import usePrevious from '../../hooks/usePrevious'
 import useUSDCPrice from '../../utils/useUSDCPrice'
 import { BIG_INT_ZERO, BIG_INT_SECONDS_IN_WEEK } from '../../constants'
 import { Countdown } from './Countdown'
+import UnstakingStagesModal from '../../components/earn/UnstakingStagesModal'
 
 export const PageWrapper = styled(AutoColumn)`
   max-width: 640px;
@@ -103,6 +104,24 @@ export function IsWithdrawalAccessible(end: number) {
   return isWithdrawalAccessible
 }
 
+export function IsFinalizeAccessible(end: number) {
+  const [time, setTime] = useState(() => Math.floor(Date.now() / 1000))
+  const [isFinalizeAccessible, setIsFinalizeAccessible] = useState(() => false)
+  useEffect((): (() => void) | void => {
+    // we only need to tick if withdrawal is currently inaccessible
+    if (time <= end) {
+      setIsFinalizeAccessible(false)
+      const timeout = setTimeout(() => setTime(Math.floor(Date.now() / 1000)), 1000)
+      return () => {
+        clearTimeout(timeout)
+      }
+    } else {
+      setIsFinalizeAccessible(true)
+    }
+  }, [time, end, isFinalizeAccessible])
+  return isFinalizeAccessible
+}
+
 export default function Manage({
   match: {
     params: { currencyIdA, currencyIdB }
@@ -116,6 +135,7 @@ export default function Manage({
   const tokenB = wrappedCurrency(currencyB ?? undefined, chainId)
 
   const [, stakingTokenPair] = usePair(tokenA, tokenB)
+  console.log(stakingTokenPair)
   const stakingInfo = useStakingInfo(stakingTokenPair)?.[0]
 
   // detect existing unstaked LP position to show add button if none found
@@ -125,6 +145,7 @@ export default function Manage({
   // toggle for staking modal and unstaking modal
   const [showStakingModal, setShowStakingModal] = useState(false)
   const [showUnstakingModal, setShowUnstakingModal] = useState(false)
+  const [showUnstakingStagesModal, setShowUnstakingStagesModal] = useState(false)
   const [showClaimRewardModal, setShowClaimRewardModal] = useState(false)
 
   // fade cards if nothing staked or nothing earned yet
@@ -171,8 +192,11 @@ export default function Manage({
 
   const end = WITHDRAWAL_GENESIS
 
-  const endDate = new Date(WITHDRAWAL_GENESIS * 1000)
+  // const endDate = new Date(WITHDRAWAL_GENESIS * 1000)
   const isWithdrawalAccessible = IsWithdrawalAccessible(end)
+  const isFinalizeAccesible = IsFinalizeAccessible(
+    stakingInfo?.withdrawTime ? stakingInfo.withdrawTime.getTime() / 1000 : 0
+  )
 
   return (
     <PageWrapper gap="lg" justify="center">
@@ -250,6 +274,11 @@ export default function Manage({
           <UnstakingModal
             isOpen={showUnstakingModal}
             onDismiss={() => setShowUnstakingModal(false)}
+            stakingInfo={stakingInfo}
+          />
+          <UnstakingStagesModal
+            isOpen={showUnstakingStagesModal}
+            onDismiss={() => setShowUnstakingStagesModal(false)}
             stakingInfo={stakingInfo}
           />
           <ClaimRewardModal
@@ -344,21 +373,45 @@ export default function Manage({
             )}
 
             {stakingInfo?.stakedAmount?.greaterThan(JSBI.BigInt(0)) && (
-              <>
-                <ButtonPrimary
-                  padding="8px"
-                  borderRadius="8px"
-                  width="160px"
-                  onClick={() => setShowUnstakingModal(true)}
-                  disabled={!isWithdrawalAccessible}
-                >
-                  Withdraw
-                </ButtonPrimary>
-              </>
+              <ButtonPrimary
+                padding="8px"
+                borderRadius="8px"
+                width="160px"
+                onClick={() => setShowUnstakingModal(true)}
+                disabled={!isWithdrawalAccessible}
+              >
+                Withdraw Immediately
+              </ButtonPrimary>
+            )}
+            {stakingInfo?.stakedAmount?.greaterThan(JSBI.BigInt(0)) && !stakingInfo?.withdrawTime && (
+              <ButtonPrimary
+                padding="8px"
+                borderRadius="8px"
+                width="160px"
+                onClick={() => setShowUnstakingStagesModal(true)}
+                disabled={!isWithdrawalAccessible}
+              >
+                Initialize Withdraw
+              </ButtonPrimary>
+            )}
+            {stakingInfo?.stakedAmount?.greaterThan(JSBI.BigInt(0)) && stakingInfo?.withdrawTime && (
+              <ButtonPrimary
+                padding="8px"
+                borderRadius="8px"
+                width="160px"
+                onClick={() => setShowUnstakingStagesModal(true)}
+                disabled={!isFinalizeAccesible}
+              >
+                Finalize Withdraw
+              </ButtonPrimary>
             )}
           </DataRow>
         )}
-        {!showAddLiquidityButton && <Countdown exactEnd={endDate} withdraw={true} />}
+        {!showAddLiquidityButton && stakingInfo?.withdrawTime && (
+          <Countdown exactEnd={stakingInfo.withdrawTime} finalize={true} />
+        )}
+        {/*{!showAddLiquidityButton && <Countdown exactEnd={endDate} withdraw={true} />}*/}
+
         {!userLiquidityUnstaked ? null : userLiquidityUnstaked.equalTo('0') ? null : !stakingInfo?.active ? null : (
           <TYPE.main>{userLiquidityUnstaked.toSignificant(6)} UNI-V2 LP tokens available</TYPE.main>
         )}

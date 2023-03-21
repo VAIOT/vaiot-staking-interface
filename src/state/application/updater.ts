@@ -2,11 +2,14 @@ import { useCallback, useEffect, useState } from 'react'
 import { useActiveWeb3React } from '../../hooks'
 import useDebounce from '../../hooks/useDebounce'
 import useIsWindowVisible from '../../hooks/useIsWindowVisible'
-import { updateBlockNumber } from './actions'
+import { setImplements3085, updateBlockNumber } from './actions'
 import { useDispatch } from 'react-redux'
+import { InjectedConnector } from '@web3-react/injected-connector'
+import { WalletLinkConnector } from '@web3-react/walletlink-connector'
+import { switchToNetwork } from '../../utils/switchToNetwork'
 
 export default function Updater(): null {
-  const { library, chainId } = useActiveWeb3React()
+  const { account, library, chainId, connector } = useActiveWeb3React()
   const dispatch = useDispatch()
 
   const windowVisible = useIsWindowVisible()
@@ -53,5 +56,18 @@ export default function Updater(): null {
     dispatch(updateBlockNumber({ chainId: debouncedState.chainId, blockNumber: debouncedState.blockNumber }))
   }, [windowVisible, dispatch, debouncedState.blockNumber, debouncedState.chainId])
 
+  useEffect(() => {
+    const isCbWalletDappBrowser = window?.ethereum?.isCoinbaseWallet
+    const isWalletlink =
+      connector instanceof WalletLinkConnector || (connector instanceof InjectedConnector && window.walletLinkExtension)
+    const isCbWallet = isCbWalletDappBrowser || isWalletlink
+    const isMetamaskOrCbWallet = library?.provider?.isMetaMask || isCbWallet
+    if (!account || !library?.provider?.request || !isMetamaskOrCbWallet) {
+      return
+    }
+    switchToNetwork({ library })
+      .then(x => x ?? dispatch(setImplements3085({ implements3085: true })))
+      .catch(() => dispatch(setImplements3085({ implements3085: false })))
+  }, [account, chainId, dispatch, library])
   return null
 }

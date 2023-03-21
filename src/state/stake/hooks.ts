@@ -25,13 +25,13 @@ export const STAKING_REWARDS_INFO: {
   [ChainId.MAINNET]: [
     {
       tokens: [WETH[ChainId.MAINNET], VAI[ChainId.MAINNET]],
-      stakingRewardAddress: '0x284e2704ea0205d63658d490d5a560523ae7c4aa'
+      stakingRewardAddress: '0xCD8E69A5187cFdcEc0cC8F6283437b5FF7C2E418'
     }
   ],
-  [ChainId.ROPSTEN]: [
+  [ChainId.GÖRLI]: [
     {
-      tokens: [WETH[ChainId.ROPSTEN], VAI[ChainId.ROPSTEN]],
-      stakingRewardAddress: '0x372573a14858A5A414ACe60D079E5B270b362B5e'
+      tokens: [WETH[ChainId.GÖRLI], VAI[ChainId.GÖRLI]],
+      stakingRewardAddress: '0x4eE794789Db5BA4F068DcaCE542F83B9F58C2A99'
     }
   ]
 }
@@ -62,6 +62,8 @@ export interface StakingInfo {
     totalStakedAmount: TokenAmount,
     totalRewardRate: TokenAmount
   ) => TokenAmount
+
+  withdrawTime: Date | undefined
 }
 
 // gets the staking info from the network for the active chain id
@@ -113,6 +115,13 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
     NEVER_RELOAD
   )
 
+  const withdrawTime = useMultipleContractSingleData(
+    rewardsAddresses,
+    STAKING_REWARDS_INTERFACE,
+    'withdrawTime',
+    accountArg
+  )
+
   return useMemo(() => {
     if (!chainId || !vai) return []
 
@@ -125,11 +134,13 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
       const totalSupplyState = totalSupplies[index]
       const rewardRateState = rewardRates[index]
       const periodFinishState = periodFinishes[index]
+      const withdrawTimeState = withdrawTime[index]
 
       if (
         // these may be undefined if not logged in
         !balanceState?.loading &&
         !earnedAmountState?.loading &&
+        !withdrawTimeState?.loading &&
         // always need these
         totalSupplyState &&
         !totalSupplyState.loading &&
@@ -180,6 +191,8 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
         // compare period end timestamp vs current block timestamp (in seconds)
         const active =
           periodFinishSeconds && currentBlockTimestamp ? periodFinishSeconds > currentBlockTimestamp.toNumber() : true
+        const withdrawTimeSeconds = withdrawTimeState?.result?.[0]?.toNumber() ?? 0
+        const withdrawTimeMS = withdrawTimeSeconds * 1000
         memo.push({
           stakingRewardAddress: rewardsAddress,
           tokens: info[index].tokens,
@@ -190,7 +203,8 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
           stakedAmount: stakedAmount,
           totalStakedAmount: totalStakedAmount,
           getHypotheticalRewardRate,
-          active
+          active,
+          withdrawTime: withdrawTimeMS > 0 ? new Date(withdrawTimeMS) : undefined
         })
       }
       return memo
@@ -205,6 +219,7 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
     rewardRates,
     rewardsAddresses,
     totalSupplies,
+    withdrawTime,
     vai
   ])
 }

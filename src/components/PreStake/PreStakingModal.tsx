@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import { AutoColumn } from '../Column'
-import { TokenAmount } from '@uniswap/sdk'
+import { JSBI, TokenAmount } from '@uniswap/sdk'
 import { PreStakingInfo } from '../../state/prestake/hooks'
 import { useActiveWeb3React } from '../../hooks'
 import React, { useCallback, useState } from 'react'
@@ -17,6 +17,7 @@ import CurrencyInputPanel from '../CurrencyInputPanel'
 import { ButtonConfirmed, ButtonError } from '../Button'
 import ProgressCircles from '../ProgressSteps'
 import { LoadingView, SubmittedView } from '../ModalViews'
+import { useCurrencyBalance } from '../../state/wallet/hooks'
 
 const ContentWrapper = styled(AutoColumn)`
   width: 100%;
@@ -28,15 +29,21 @@ interface PreStakingModalProps {
   onDismiss: () => void
   preStakingInfo: PreStakingInfo
   userVaiUnstaked: TokenAmount | undefined
+  privateSale?: boolean
 }
 
-export default function PreStakingModal({ isOpen, onDismiss, preStakingInfo, userVaiUnstaked }: PreStakingModalProps) {
-  const { library } = useActiveWeb3React()
+export default function PreStakingModal({
+  isOpen,
+  onDismiss,
+  preStakingInfo,
+  userVaiUnstaked,
+  privateSale
+}: PreStakingModalProps) {
+  const { library, account } = useActiveWeb3React()
 
   const [typedValue, setTypedValue] = useState('')
   const { parsedAmount, error } = useDerivedStakeInfo(typedValue, preStakingInfo.stakedAmount.token, userVaiUnstaked)
   // const parsedAmountWrapped = wrappedCurrencyAmount(parsedAmount, chainId)
-
   const addTransaction = useTransactionAdder()
   const [attempting, setAttempting] = useState<boolean>(false)
   const [hash, setHash] = useState<string | undefined>()
@@ -55,7 +62,20 @@ export default function PreStakingModal({ isOpen, onDismiss, preStakingInfo, use
     setAttempting(true)
     if (stakingContract && parsedAmount) {
       if (deadline) {
-        if (approval === ApprovalState.APPROVED) {
+        if (privateSale) {
+          await stakingContract
+            .depositLockup(`0x${parsedAmount.raw.toString(16)}`, { gasLimit: 350000 })
+            .then((response: TransactionResponse) => {
+              addTransaction(response, {
+                summary: `Deposit VAI private sale`
+              })
+              setHash(response.hash)
+            })
+            .catch((error: any) => {
+              setAttempting(false)
+              console.log(error)
+            })
+        } else if (approval === ApprovalState.APPROVED) {
           await stakingContract
             .deposit(`0x${parsedAmount.raw.toString(16)}`, { gasLimit: 350000 })
             .then((response: TransactionResponse) => {
@@ -84,12 +104,20 @@ export default function PreStakingModal({ isOpen, onDismiss, preStakingInfo, use
   const onUserInput = useCallback((typedValue: string) => {
     setTypedValue(typedValue)
   }, [])
-
   const maxAmountInput = preStakingInfo.currentStakingLimit.subtract(preStakingInfo.totalStakedAmount)
+  const currencyBalance = useCurrencyBalance(account ?? undefined, preStakingInfo.stakedAmount.token ?? undefined)
+  const selectedCurrencyBalance = !privateSale ? currencyBalance : userVaiUnstaked
   const atMaxAmount = Boolean(maxAmountInput && parsedAmount?.equalTo(maxAmountInput))
   const handleMax = useCallback(() => {
-    maxAmountInput && onUserInput(maxAmountInput.toExact())
-  }, [maxAmountInput, onUserInput])
+    maxAmountInput &&
+      onUserInput(
+        !selectedCurrencyBalance
+          ? maxAmountInput.toExact()
+          : maxAmountInput.greaterThan(JSBI.BigInt(selectedCurrencyBalance.toFixed(0)))
+          ? selectedCurrencyBalance?.toExact()
+          : maxAmountInput.toExact()
+      )
+  }, [maxAmountInput, onUserInput, selectedCurrencyBalance])
   return (
     <Modal isOpen={isOpen} onDismiss={wrappedOnDismiss} maxHeight={90}>
       {!attempting && !hash && (
@@ -107,20 +135,23 @@ export default function PreStakingModal({ isOpen, onDismiss, preStakingInfo, use
             label={''}
             disableCurrencySelect={true}
             customBalanceText={'Available to deposit: '}
+            selectedCurrencyBalance={selectedCurrencyBalance}
             id="stake-vai-token"
           />
 
           <RowBetween>
-            <ButtonConfirmed
-              mr="0.5rem"
-              onClick={onAttemptToApprove}
-              confirmed={approval === ApprovalState.APPROVED}
-              disabled={approval !== ApprovalState.NOT_APPROVED}
-            >
-              Approve
-            </ButtonConfirmed>
+            {!privateSale && (
+              <ButtonConfirmed
+                mr="0.5rem"
+                onClick={onAttemptToApprove}
+                confirmed={approval === ApprovalState.APPROVED}
+                disabled={approval !== ApprovalState.NOT_APPROVED}
+              >
+                Approve
+              </ButtonConfirmed>
+            )}
             <ButtonError
-              disabled={!!error || approval !== ApprovalState.APPROVED}
+              disabled={!!error || (!privateSale && approval !== ApprovalState.APPROVED)}
               error={!!error && !!parsedAmount}
               onClick={onStake}
             >

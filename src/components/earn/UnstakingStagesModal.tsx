@@ -24,7 +24,7 @@ export interface StakingModalProps {
   stakingInfo: StakingInfo
 }
 
-export default function UnstakingModal({ isOpen, onDismiss, stakingInfo }: StakingModalProps) {
+export default function UnstakingStagesModal({ isOpen, onDismiss, stakingInfo }: StakingModalProps) {
   const { account } = useActiveWeb3React()
 
   // monitor call to help UI loading state
@@ -43,18 +43,33 @@ export default function UnstakingModal({ isOpen, onDismiss, stakingInfo }: Staki
   async function onWithdraw() {
     if (stakingContract && stakingInfo?.stakedAmount) {
       setAttempting(true)
-      await stakingContract
-        .exitImmediately({ gasLimit: 300000 })
-        .then((response: TransactionResponse) => {
-          addTransaction(response, {
-            summary: `Withdraw deposited liquidity`
+      if (stakingInfo?.withdrawTime != undefined) {
+        await stakingContract
+          .exit({ gasLimit: 300000 })
+          .then((response: TransactionResponse) => {
+            addTransaction(response, {
+              summary: `Withdraw deposited liquidity`
+            })
+            setHash(response.hash)
           })
-          setHash(response.hash)
-        })
-        .catch((error: any) => {
-          setAttempting(false)
-          console.log(error)
-        })
+          .catch((error: any) => {
+            setAttempting(false)
+            console.log(error)
+          })
+      } else {
+        await stakingContract
+          .initializeWithdrawal({ gasLimit: 300000 })
+          .then((response: TransactionResponse) => {
+            addTransaction(response, {
+              summary: `Withdrawal initialized`
+            })
+            setHash(response.hash)
+          })
+          .catch((error: any) => {
+            setAttempting(false)
+            console.log(error)
+          })
+      }
     }
   }
 
@@ -91,11 +106,12 @@ export default function UnstakingModal({ isOpen, onDismiss, stakingInfo }: Staki
             </AutoColumn>
           )}
           <TYPE.subHeader style={{ textAlign: 'center' }}>
-            You can withdraw your liquidity without the need to wait the grace period, but it will cost you 10% of the
-            liquidity you provided.
+            {stakingInfo?.withdrawTime
+              ? 'Grace period ended. You can now withdraw your liquidity.'
+              : 'If you want to withdraw your liquidity, you have to initialise the process, which means that counting your rewards will stop immediately and you will be able to withdraw your LP Tokens after 7 days grace period.'}
           </TYPE.subHeader>
           <ButtonError disabled={!!error} error={!!error && !!stakingInfo?.stakedAmount} onClick={onWithdraw}>
-            {error ?? 'Withdraw & Claim'}
+            {error ?? stakingInfo?.withdrawTime ? 'Withdraw & Claim' : 'Initialize Withdraw'}
           </ButtonError>
         </ContentWrapper>
       )}
