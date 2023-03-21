@@ -134,7 +134,6 @@ export default function Manage({
   const tokenB = wrappedCurrency(currencyB ?? undefined, chainId)
 
   const [, stakingTokenPair] = usePair(tokenA, tokenB)
-  console.log(stakingTokenPair)
   const stakingInfo = useStakingInfo(stakingTokenPair)?.[0]
 
   // detect existing unstaked LP position to show add button if none found
