@@ -2,14 +2,11 @@ import React, { Suspense } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import styled from 'styled-components'
 import GoogleAnalyticsReporter from '../components/analytics/GoogleAnalyticsReporter'
-import AddressClaimModal from '../components/claim/AddressClaimModal'
 import Header from '../components/Header'
 import Polling from '../components/Header/Polling'
 import URLWarning from '../components/Header/URLWarning'
 import Popups from '../components/Popups'
 import Web3ReactManager from '../components/Web3ReactManager'
-import { ApplicationModal } from '../state/application/actions'
-import { useModalOpen, useToggleModal } from '../state/application/hooks'
 import AddLiquidity from './AddLiquidity'
 import {
   RedirectDuplicateTokenIds,
@@ -57,17 +54,10 @@ const Marginer = styled.div`
   margin-top: 5rem;
 `
 
-function TopLevelModals() {
-  const open = useModalOpen(ApplicationModal.ADDRESS_CLAIM)
-  const toggle = useToggleModal(ApplicationModal.ADDRESS_CLAIM)
-  return <AddressClaimModal isOpen={open} onDismiss={toggle} />
-}
-
 export default function App() {
   return (
     <Suspense fallback={null}>
       <Route component={GoogleAnalyticsReporter} />
-      {/*<Route component={DarkModeQueryParamReader} />*/}
 
       <AppWrapper>
         <URLWarning />
@@ -77,12 +67,9 @@ export default function App() {
         <BodyWrapper>
           <Popups />
           <Polling />
-          <TopLevelModals />
           <Web3ReactManager>
             <Switch>
               <Route exact strict path="/stake" component={Earn} />
-              {/*<Route exact strict path="/prestake" component={PreStake} />*/}
-              {/*<Route exact strict path="/prestake-lockup" component={PreStake} />*/}
               <Route exact strict path="/create" component={RedirectToAddLiquidity} />
               <Route exact path="/add" component={AddLiquidity} />
               <Route exact path="/add/:currencyIdA" component={RedirectOldAddLiquidityPathStructure} />
