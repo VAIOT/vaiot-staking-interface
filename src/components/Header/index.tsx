@@ -18,7 +18,6 @@ import { YellowCard } from '../Card'
 
 import Row, { RowFixed } from '../Row'
 import Web3Status from '../Web3Status'
-import ClaimModal from '../claim/ClaimModal'
 import Modal from '../Modal'
 import UniBalanceContent from './UniBalanceContent'
 import usePrevious from '../../hooks/usePrevious'
@@ -86,11 +85,6 @@ const HeaderElement = styled.div`
     align-items: center;
   `};
 `
-
-/*const HeaderElementWrap = styled.div`
-  display: flex;
-  align-items: center;
-`*/
 
 const HeaderRow = styled(RowFixed)`
   ${({ theme }) => theme.mediaWidth.upToMedium`
@@ -219,40 +213,6 @@ const StyledNavLink = styled(NavLink).attrs({
   }
 `
 
-/*const TmpNavLink = styled.div`
-  ${({ theme }) => theme.flexRowNoWrap}
-  align-items: left;
-  border-radius: 3rem;
-  outline: none;
-  cursor: pointer;
-  text-decoration: none;
-  color: ${({ theme }) => theme.text2};
-  font-size: 0.9rem;
-  width: fit-content;
-  margin: 0 2px;
-  font-weight: 500;
-`
-
-const ComingSoon = styled.span`
-background-color rgb(121 99 172);
-border-radius 10px;
-box-sizing border-box;
-color rgb(255, 255, 255);
-display inline-block;
-font-size 12px;
-font-weight 700;
-height 18px;
-line-height 12px;
-padding-bottom 3px;
-padding-left 4.8px;
-padding-right 4.8px;
-padding-top 3px;
-text-align center;
-text-size-adjust 100%;
-vertical-align baseline;
-white-space nowrap;
-`*/
-
 export const StyledMenuButton = styled.button`
   position: relative;
   width: 100%;
@@ -293,29 +253,18 @@ export default function Header() {
   const { account, chainId } = useActiveWeb3React()
 
   const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
-  // const [isDark] = useDarkModeManager()
-  // const [darkMode, toggleDarkMode] = useDarkModeManager()
 
   const darkMode = true
-
-  // const toggleClaimModal = useToggleSelfClaimModal()
-
-  // const availableClaim: boolean = useUserHasAvailableClaim(account)
-
-  // const { claimTxn } = useUserHasSubmittedClaim(account ?? undefined)
 
   const aggregateBalance: TokenAmount | undefined = useAggregateUniBalance()
 
   const [showUniBalanceModal, setShowUniBalanceModal] = useState(false)
-  // const showClaimPopup = useShowClaimPopup()
 
   const countUpValue = aggregateBalance?.toFixed(0) ?? '0'
   const countUpValuePrevious = usePrevious(countUpValue) ?? '0'
-  // const lockupInfo = useLockupInfo()[0]
 
   return (
     <HeaderFrame>
-      <ClaimModal />
       <Modal isOpen={showUniBalanceModal} onDismiss={() => setShowUniBalanceModal(false)}>
         <UniBalanceContent setShowUniBalanceModal={setShowUniBalanceModal} />
       </Modal>
@@ -329,20 +278,7 @@ export default function Header() {
           <StyledNavLink id={`stake-nav-link`} to={'/stake'}>
             Liquidity Staking
           </StyledNavLink>
-          {/*          <StyledNavLink id={`pre-stake-nav-link`} to={'/prestake'}>
-            Pre-Staking
-          </StyledNavLink>
-          <ExternalLink id={`bsc-stake-nav-link`} href={'https://bscstaking.vaiot.ai/'} target={'_blank'}  style={{ textDecoration: 'none', fontSize: '14.4px' }}>
-            BSC Liquidity Staking
-          </ExternalLink>*/}
         </HeaderLinks>
-        {/*        {lockupInfo?.currentAmount?.greaterThan(BigInt(0)) && (
-          <HeaderLinks>
-            <StyledNavLink id={`pre-stake-nav-link`} to={'/prestake-lockup'}>
-              Pre-Staking Private Sale
-            </StyledNavLink>
-          </HeaderLinks>
-        )}*/}
       </HeaderRow>
       <HeaderControls>
         <HeaderElement>
@@ -351,16 +287,6 @@ export default function Header() {
               <NetworkCard title={NETWORK_LABELS[chainId]}>{NETWORK_LABELS[chainId]}</NetworkCard>
             )}
           </HideSmall>
-          {/*          {availableClaim && !showClaimPopup && (
-            <VAIWrapper onClick={toggleClaimModal}>
-              <VAIAmount active={!!account && !availableClaim} style={{ pointerEvents: 'auto' }}>
-                <TYPE.white padding="0 2px">
-                  {claimTxn && !claimTxn?.receipt ? <Dots>Claiming VAI</Dots> : 'Claim VAI'}
-                </TYPE.white>
-              </VAIAmount>
-              <CardNoise />
-            </VAIWrapper>
-          )}*/}
           {aggregateBalance && (
             <VAIWrapper onClick={() => setShowUniBalanceModal(true)}>
               <VAIAmount active={!!account} style={{ pointerEvents: 'auto' }}>
@@ -396,12 +322,6 @@ export default function Header() {
             <Web3Status />
           </AccountElement>
         </HeaderElement>
-        {/*        <HeaderElementWrap>
-          <StyledMenuButton onClick={() => toggleDarkMode()}>
-            {darkMode ? <Moon size={20} /> : <Sun size={20} />}
-          </StyledMenuButton>
-          <Menu />
-        </HeaderElementWrap>*/}
       </HeaderControls>
     </HeaderFrame>
   )
