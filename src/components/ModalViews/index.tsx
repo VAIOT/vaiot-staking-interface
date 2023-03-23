@@ -8,7 +8,7 @@ import { TYPE, CloseIcon, CustomLightSpinner } from '../../theme'
 import { ArrowUpCircle } from 'react-feather'
 
 import Circle from '../../assets/images/blue-loader.svg'
-import { getEtherscanLink } from '../../utils'
+import { getEtherscanLink, getEtherscanName } from '../../utils'
 import { ExternalLink } from '../../theme/components'
 
 const ConfirmOrLoadingWrapper = styled.div`
@@ -63,7 +63,7 @@ export function SubmittedView({
         {children}
         {chainId && hash && (
           <ExternalLink href={getEtherscanLink(chainId, hash, 'transaction')} style={{ marginLeft: '4px' }}>
-            <TYPE.subHeader>View transaction on Etherscan</TYPE.subHeader>
+            <TYPE.subHeader>View transaction on {getEtherscanName(chainId)}</TYPE.subHeader>
           </ExternalLink>
         )}
       </AutoColumn>
