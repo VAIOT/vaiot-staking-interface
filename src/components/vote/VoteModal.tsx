@@ -10,7 +10,7 @@ import { X, ArrowUpCircle } from 'react-feather'
 import { ButtonPrimary } from '../Button'
 import Circle from '../../assets/images/blue-loader.svg'
 import { useVoteCallback, useUserVotes } from '../../state/governance/hooks'
-import { getEtherscanLink } from '../../utils'
+import { getEtherscanLink, getEtherscanName } from '../../utils'
 import { ExternalLink } from '../../theme/components'
 import { TokenAmount } from '@uniswap/sdk'
 
@@ -133,7 +133,7 @@ export default function VoteModal({ isOpen, onDismiss, proposalId, support }: Vo
             </AutoColumn>
             {chainId && (
               <ExternalLink href={getEtherscanLink(chainId, hash, 'transaction')} style={{ marginLeft: '4px' }}>
-                <TYPE.subHeader>View transaction on Etherscan</TYPE.subHeader>
+                <TYPE.subHeader>View transaction on {getEtherscanName(chainId)}</TYPE.subHeader>
               </ExternalLink>
             )}
           </AutoColumn>

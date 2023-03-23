@@ -7,6 +7,7 @@ import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUnisw
 import { ROUTER_ADDRESS } from '../constants'
 import { ChainId, JSBI, Percent, Token, CurrencyAmount, Currency, ETHER } from '@uniswap/sdk'
 import { TokenAddressMap } from '../state/lists/hooks'
+import { SupportedChainId } from 'constants/chains'
 
 // returns the checksummed address if the address is valid, otherwise returns false
 export function isAddress(value: any): string | false {
@@ -17,12 +18,20 @@ export function isAddress(value: any): string | false {
   }
 }
 
-const ETHERSCAN_PREFIXES: { [chainId in ChainId]: string } = {
-  1: '',
-  3: 'ropsten.',
-  4: 'rinkeby.',
-  5: 'goerli.',
-  42: 'kovan.'
+const ETHERSCAN_PREFIXES: Record<number, string> = {
+  [SupportedChainId.MAINNET]: 'https://etherscan.io',
+  [SupportedChainId.GOERLI]: 'https://goerli.etherscan.io',
+
+  [SupportedChainId.POLYGON]: 'https://polygonscan.com',
+  [SupportedChainId.MUMBAI]: 'https://mumbai.polygonscan.com'
+}
+
+const ETHERSCAN_NAMES: Record<number, string> = {
+  [SupportedChainId.MAINNET]: 'Etherscan',
+  [SupportedChainId.GOERLI]: 'Etherscan (Goerlie)',
+
+  [SupportedChainId.POLYGON]: 'Polygonscan',
+  [SupportedChainId.MUMBAI]: 'Polygonscan (Mumbai)'
 }
 
 export function getEtherscanLink(
@@ -30,7 +39,7 @@ export function getEtherscanLink(
   data: string,
   type: 'transaction' | 'token' | 'address' | 'block'
 ): string {
-  const prefix = `https://${ETHERSCAN_PREFIXES[chainId] || ETHERSCAN_PREFIXES[1]}etherscan.io`
+  const prefix = ETHERSCAN_PREFIXES[chainId]
 
   switch (type) {
     case 'transaction': {
@@ -47,6 +56,10 @@ export function getEtherscanLink(
       return `${prefix}/address/${data}`
     }
   }
+}
+
+export function getEtherscanName(chainId: ChainId) {
+  return ETHERSCAN_NAMES[chainId] ?? 'Etherscan'
 }
 
 // shorten the checksummed version of the input address to have 0x + 4 characters at start and end
