@@ -2,6 +2,7 @@ import { ChainId, JSBI, Percent, Token, WETH } from '@uniswap/sdk'
 import { AbstractConnector } from '@web3-react/abstract-connector'
 
 import { fortmatic, injected, portis, walletconnect, walletlink } from '../connectors'
+import { SupportedChainId } from './chains'
 
 export const ROUTER_ADDRESS = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
 
@@ -33,12 +34,15 @@ export const TIMELOCK_ADDRESS = '0x1a9C8182C09F50C8318d769245beA52c32BE35BC'
 
 const VAI_ADDRESS = '0xD13cfD3133239a3c73a9E535A5c4DadEE36b395c'
 const VAI_ADDRESS_TESTNET = '0x148594652004e860f2ae0d92891b4365274de5cc'
-export const VAI: { [chainId in ChainId]: Token } = {
-  [ChainId.MAINNET]: new Token(ChainId.MAINNET, VAI_ADDRESS, 18, 'VAI', 'VAIOT'),
-  [ChainId.RINKEBY]: new Token(ChainId.RINKEBY, VAI_ADDRESS, 18, 'VAI', 'VAIOT'),
-  [ChainId.ROPSTEN]: new Token(ChainId.ROPSTEN, VAI_ADDRESS, 18, 'VAI', 'VAIOT'),
-  [ChainId.GÖRLI]: new Token(ChainId.GÖRLI, VAI_ADDRESS_TESTNET, 18, 'VAI', 'VAIOT'),
-  [ChainId.KOVAN]: new Token(ChainId.KOVAN, VAI_ADDRESS, 18, 'VAI', 'VAIOT')
+const VAI_ADDRESS_MUMBAI = '0xb6733EdFC3B6211CB881e8B1D149A09CDa5eF94f'
+export const VAI = {
+  [SupportedChainId.MAINNET]: new Token(SupportedChainId.MAINNET as any, VAI_ADDRESS, 18, 'VAI', 'VAIOT'),
+  [SupportedChainId.RINKEBY]: new Token(SupportedChainId.RINKEBY as any, VAI_ADDRESS, 18, 'VAI', 'VAIOT'),
+  [SupportedChainId.ROPSTEN]: new Token(SupportedChainId.ROPSTEN as any, VAI_ADDRESS, 18, 'VAI', 'VAIOT'),
+  [SupportedChainId.GOERLI]: new Token(SupportedChainId.GOERLI as any, VAI_ADDRESS_TESTNET, 18, 'VAI', 'VAIOT'),
+  [SupportedChainId.KOVAN]: new Token(SupportedChainId.KOVAN as any, VAI_ADDRESS, 18, 'VAI', 'VAIOT'),
+  [SupportedChainId.POLYGON]: new Token(SupportedChainId.POLYGON as any, VAI_ADDRESS, 18, 'VAI', 'VAIOT'),
+  [SupportedChainId.MUMBAI]: new Token(SupportedChainId.MUMBAI as any, VAI_ADDRESS_MUMBAI, 18, 'VAI', 'VAIOT')
 }
 
 export const COMMON_CONTRACT_NAMES: { [address: string]: string } = {
