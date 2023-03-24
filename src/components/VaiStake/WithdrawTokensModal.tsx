@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import styled from 'styled-components'
 import { TransactionResponse } from '@ethersproject/providers'
 
-import { useActiveWeb3React } from '../../hooks'
 import { VaiStakingInfo } from '../../state/vai-stake/hooks'
 import { useVaiStakingContract } from '../../hooks/useContract'
 import { useTransactionAdder } from '../../state/transactions/hooks'
@@ -14,6 +13,8 @@ import { ButtonError } from '../Button'
 import { LoadingView, SubmittedView } from '../ModalViews'
 import { CloseIcon, TYPE } from '../../theme'
 import FormattedCurrencyAmount from '../FormattedCurrencyAmount'
+import CurrencyInputPanel from '../../components/CurrencyInputPanel'
+import { useDerivedUnstakeInfo } from 'state/stake/hooks'
 
 interface WithdrawTokensModalProps {
   isOpen: boolean
@@ -22,21 +23,30 @@ interface WithdrawTokensModalProps {
 }
 
 export default function WithdrawTokensModal({ isOpen, onDismiss, stakingInfo }: WithdrawTokensModalProps) {
-  const { account } = useActiveWeb3React()
-
   const addTransaction = useTransactionAdder()
   const [hash, setHash] = useState<string | undefined>()
   const [attempting, setAttempting] = useState(false)
-  const [error, setError] = useState<string>()
+
+  const [typedValue, setTypedValue] = useState('')
+  const { parsedAmount, error: inputError } = useDerivedUnstakeInfo(typedValue, stakingInfo.stakedAmount)
+  const atMaxAmount = Boolean(stakingInfo.stakedAmount && parsedAmount?.equalTo(stakingInfo.stakedAmount))
 
   const stakingContract = useVaiStakingContract(stakingInfo.stakingRewardAddress)
 
+  const onUserInput = useCallback((typedValue: string) => {
+    setTypedValue(typedValue)
+  }, [])
+
+  const handleMax = useCallback(() => {
+    stakingInfo?.stakedAmount && onUserInput(stakingInfo.stakedAmount?.toExact())
+  }, [onUserInput, stakingInfo.stakedAmount])
+
   const onWithdraw = async () => {
-    if (stakingContract && stakingInfo?.stakedAmount) {
+    if (stakingContract && parsedAmount) {
       setAttempting(true)
 
       await stakingContract
-        .withdraw(`0x${stakingInfo?.stakedAmount.raw.toString(16)}`, { gasLimit: 300000 })
+        .withdraw(`0x${parsedAmount.raw.toString(16)}`, { gasLimit: 300000 })
         .then((response: TransactionResponse) => {
           addTransaction(response, {
             summary: `Withdraw`
@@ -56,15 +66,6 @@ export default function WithdrawTokensModal({ isOpen, onDismiss, stakingInfo }: 
     onDismiss()
   }, [onDismiss])
 
-  useEffect(() => {
-    if (!account) {
-      setError('Connect Wallet')
-    }
-    if (!stakingInfo?.stakedAmount) {
-      setError(prevError => prevError ?? 'Enter an amount')
-    }
-  }, [account, stakingInfo?.stakedAmount])
-
   return (
     <Modal isOpen={isOpen} onDismiss={handleDismiss} maxHeight={90}>
       {!attempting && !hash && (
@@ -74,18 +75,32 @@ export default function WithdrawTokensModal({ isOpen, onDismiss, stakingInfo }: 
             <CloseIcon onClick={handleDismiss} />
           </RowBetween>
           {stakingInfo?.stakedAmount && (
-            <AutoColumn justify="center" gap="md">
-              <TYPE.body fontWeight={600} fontSize={36}>
-                {<FormattedCurrencyAmount currencyAmount={stakingInfo.stakedAmount} />}
-              </TYPE.body>
-              <TYPE.body>Deposited VAI</TYPE.body>
-            </AutoColumn>
+            <>
+              <AutoColumn justify="center" gap="md">
+                <TYPE.body fontWeight={600} fontSize={36}>
+                  {<FormattedCurrencyAmount currencyAmount={stakingInfo.stakedAmount} />}
+                </TYPE.body>
+                <TYPE.body>Deposited VAI</TYPE.body>
+              </AutoColumn>
+
+              <CurrencyInputPanel
+                value={typedValue}
+                onUserInput={onUserInput}
+                onMax={handleMax}
+                showMaxButton={!atMaxAmount}
+                currency={stakingInfo.stakedAmount.token}
+                label={'Withdraw amount'}
+                disableCurrencySelect={true}
+                hideBalance
+                id="withdraw-vai-token"
+              />
+            </>
           )}
 
           <TYPE.subHeader style={{ textAlign: 'center' }}>You can withdraw your stake deposit.</TYPE.subHeader>
           {stakingInfo && (
-            <ButtonError disabled={!!error} error={!!error && !!stakingInfo?.stakedAmount} onClick={onWithdraw}>
-              {error ?? 'Withdraw'}
+            <ButtonError disabled={!!inputError} error={!!inputError && !!parsedAmount} onClick={onWithdraw}>
+              {inputError ?? 'Withdraw'}
             </ButtonError>
           )}
         </ContentWrapper>
@@ -93,7 +108,7 @@ export default function WithdrawTokensModal({ isOpen, onDismiss, stakingInfo }: 
       {attempting && !hash && (
         <LoadingView onDismiss={handleDismiss}>
           <AutoColumn gap="12px" justify={'center'}>
-            <TYPE.body fontSize={20}>Withdrawing {stakingInfo?.stakedAmount?.toSignificant(4)} VAI</TYPE.body>
+            <TYPE.body fontSize={20}>Withdrawing {parsedAmount?.toSignificant(4)} VAI</TYPE.body>
           </AutoColumn>
         </LoadingView>
       )}
