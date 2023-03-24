@@ -6,13 +6,13 @@ import { darken } from 'polished'
 
 import styled from 'styled-components'
 
-import Logo from '../../assets/svg/vaiot-full-logo-horizontal-darkblue.svg'
 import LogoDark from '../../assets/svg/vaiot-full-logo-horizontal-white.svg'
 import { useActiveWeb3React } from '../../hooks'
 import { useAggregateUniBalance, useETHBalances } from '../../state/wallet/hooks'
 import { CardNoise } from '../earn/styled'
 import { CountUp } from 'use-count-up'
 import { TYPE } from '../../theme'
+import { SupportedChainId } from '../../constants/chains'
 
 import { YellowCard } from '../Card'
 
@@ -242,20 +242,18 @@ export const StyledMenuButton = styled.button`
   }
 `
 
-const NETWORK_LABELS: { [chainId in ChainId]?: string } = {
-  [ChainId.RINKEBY]: 'Rinkeby',
-  [ChainId.ROPSTEN]: 'Ropsten',
-  [ChainId.GÖRLI]: 'Görli',
-  [ChainId.KOVAN]: 'Kovan'
+const TEST_NETWORK_LABELS: { [chainId in SupportedChainId]?: string } = {
+  [SupportedChainId.RINKEBY]: 'Rinkeby',
+  [SupportedChainId.ROPSTEN]: 'Ropsten',
+  [SupportedChainId.GOERLI]: 'Görli',
+  [SupportedChainId.KOVAN]: 'Kovan',
+  [SupportedChainId.MUMBAI]: 'Mumbai'
 }
 
 export default function Header() {
   const { account, chainId } = useActiveWeb3React()
 
   const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
-
-  const darkMode = true
-
   const aggregateBalance: TokenAmount | undefined = useAggregateUniBalance()
 
   const [showUniBalanceModal, setShowUniBalanceModal] = useState(false)
@@ -271,20 +269,23 @@ export default function Header() {
       <HeaderRow>
         <Title href="https://vaiot.ai">
           <UniIcon>
-            <img width={'100px'} src={darkMode ? LogoDark : Logo} alt="logo" />
+            <img width={'100px'} src={LogoDark} alt="logo" />
           </UniIcon>
         </Title>
         <HeaderLinks>
           <StyledNavLink id={`stake-nav-link`} to={'/stake'}>
             Liquidity Staking
           </StyledNavLink>
+          <StyledNavLink id={`vai-stake-nav-link`} to={'/vai-stake'}>
+            Vai Staking
+          </StyledNavLink>
         </HeaderLinks>
       </HeaderRow>
       <HeaderControls>
         <HeaderElement>
           <HideSmall>
-            {chainId && NETWORK_LABELS[chainId] && (
-              <NetworkCard title={NETWORK_LABELS[chainId]}>{NETWORK_LABELS[chainId]}</NetworkCard>
+            {chainId && TEST_NETWORK_LABELS[chainId] && (
+              <NetworkCard title={TEST_NETWORK_LABELS[chainId]}>{TEST_NETWORK_LABELS[chainId]}</NetworkCard>
             )}
           </HideSmall>
           {aggregateBalance && (
@@ -316,7 +317,7 @@ export default function Header() {
           <AccountElement active={!!account} style={{ pointerEvents: 'auto' }}>
             {account && userEthBalance ? (
               <BalanceText style={{ flexShrink: 0 }} pl="0.75rem" pr="0.5rem" fontWeight={500}>
-                {userEthBalance?.toSignificant(4)} ETH
+                {userEthBalance?.toSignificant(4)} {chainId === ChainId.MAINNET ? 'ETH' : 'MATIC'}
               </BalanceText>
             ) : null}
             <Web3Status />

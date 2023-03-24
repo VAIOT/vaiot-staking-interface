@@ -17,6 +17,7 @@ import Earn from './Earn'
 import Manage from './Earn/Manage'
 import RemoveLiquidity from './RemoveLiquidity'
 import { RedirectOldRemoveLiquidityPathStructure } from './RemoveLiquidity/redirects'
+import VaiStake from './VaiStake'
 
 const AppWrapper = styled.div`
   display: flex;
@@ -70,6 +71,7 @@ export default function App() {
           <Web3ReactManager>
             <Switch>
               <Route exact strict path="/stake" component={Earn} />
+              <Route exact strict path="/vai-stake" component={VaiStake} />
               <Route exact strict path="/create" component={RedirectToAddLiquidity} />
               <Route exact path="/add" component={AddLiquidity} />
               <Route exact path="/add/:currencyIdA" component={RedirectOldAddLiquidityPathStructure} />

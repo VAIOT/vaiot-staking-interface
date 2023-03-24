@@ -1,9 +1,10 @@
 import { Contract } from '@ethersproject/contracts'
 import { abi as GOVERNANCE_ABI } from '@uniswap/governance/build/GovernorAlpha.json'
 import { abi as UNI_ABI } from '@uniswap/governance/build/Uni.json'
-import { abi as STAKING_REWARDS_ABI } from '../constants/abis/vaiot/StakingRewards.json'
 import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build/MerkleDistributor.json'
+import { abi as STAKING_REWARDS_ABI } from '../constants/abis/vaiot/StakingRewards.json'
 import { abi as PRE_STAKING_REWARD_ABI } from '../constants/abis/vaiot/PreStakingContract.json'
+import { abi as VAI_STAKING_REWARD_ABI } from '../constants/abis/vaiot/VaiStakingContract.json'
 
 import { ChainId, WETH } from '@uniswap/sdk'
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
@@ -126,9 +127,8 @@ export function usePreStakingContract(stakingAddress?: string, withSignerIfPossi
   return useContract(stakingAddress, PRE_STAKING_REWARD_ABI, withSignerIfPossible)
 }
 
-// TODO-Yaroslav: Add ABI when ready
 export function useVaiStakingContract(stakingAddress?: string, withSignerIfPossible?: boolean): Contract | null {
-  return useContract(stakingAddress, PRE_STAKING_REWARD_ABI, withSignerIfPossible)
+  return useContract(stakingAddress, VAI_STAKING_REWARD_ABI, withSignerIfPossible)
 }
 
 export function useSocksController(): Contract | null {
