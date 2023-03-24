@@ -20,20 +20,18 @@ if (typeof ETH_NETWORK_URL === 'undefined') {
   throw new Error(`REACT_APP_ETH_NETWORK_URL must be a defined environment variable`)
 }
 
-if (typeof MUMBAI_NETWORK_URL === 'undefined') {
-  throw new Error(`REACT_APP_MUMBAI_NETWORK_URL must be a defined environment variable`)
-}
-
 if (typeof POLYGON_NETWORK_URL === 'undefined') {
   throw new Error(`REACT_APP_POLYGON_NETWORK_URL must be a defined environment variable`)
 }
 
+const RPC_URLS: Record<number, string> = {
+  [SupportedChainId.MAINNET]: ETH_NETWORK_URL,
+  [SupportedChainId.POLYGON]: POLYGON_NETWORK_URL,
+  ...(MUMBAI_NETWORK_URL ? ({ [SupportedChainId.MUMBAI]: MUMBAI_NETWORK_URL } as Record<number, string>) : {})
+}
+
 export const network = new NetworkConnector({
-  urls: {
-    [NETWORK_CHAIN_ID]: ETH_NETWORK_URL,
-    [SupportedChainId.POLYGON]: POLYGON_NETWORK_URL,
-    [SupportedChainId.MUMBAI]: MUMBAI_NETWORK_URL
-  },
+  urls: RPC_URLS,
   defaultChainId: 80001
 })
 
@@ -43,31 +41,26 @@ export function getNetworkLibrary(): Web3Provider {
 }
 
 export const injected = new InjectedConnector({
-  supportedChainIds: [1, 3, 4, 5, 42, 137, 80001]
+  supportedChainIds: [SupportedChainId.MAINNET, SupportedChainId.POLYGON, SupportedChainId.MUMBAI]
 })
 
 // mainnet only
 export const walletconnect = new WalletConnectConnector({
-  rpc: {
-    [NETWORK_CHAIN_ID]: ETH_NETWORK_URL,
-    [SupportedChainId.POLYGON]: POLYGON_NETWORK_URL,
-    [SupportedChainId.MUMBAI]: MUMBAI_NETWORK_URL
-  },
+  rpc: RPC_URLS,
   bridge: 'https://bridge.walletconnect.org',
   qrcode: true
-  // pollingInterval: 15000
 })
 
 // mainnet only
 export const fortmatic = new FortmaticConnector({
   apiKey: FORMATIC_KEY ?? '',
-  chainId: 1
+  chainId: SupportedChainId.MAINNET
 })
 
 // mainnet only
 export const portis = new PortisConnector({
   dAppId: PORTIS_ID ?? '',
-  networks: [1]
+  networks: [SupportedChainId.MAINNET]
 })
 
 // mainnet only

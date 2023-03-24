@@ -9,12 +9,13 @@ import { SupportedChainId } from 'constants/chains'
 
 const SECONDS_IN_YEAR = 24 * 60 * 60 * 365
 
-export const VAI_STAKING_REWARD_INFO: {
-  [chainId in SupportedChainId]?: {
+export const VAI_STAKING_REWARD_INFO: Partial<Record<
+  SupportedChainId,
+  {
     token: Token
     stakingRewardAddress: string
   }[]
-} = {
+>> = {
   [SupportedChainId.POLYGON]: [
     {
       token: VAI[SupportedChainId.POLYGON],
@@ -140,20 +141,7 @@ export function useVaiStakingInfo() {
       const balanceAmount = new TokenAmount(token, accountBalanceState.result?.[0] ?? 0)
       const earnedAmount = new TokenAmount(token, accountEarnedState.result?.[0] ?? 0)
 
-      const totalRewardRate = rewardRatesAmount
-        .multiply(JSBI.BigInt(100 * SECONDS_IN_YEAR))
-        .divide(totalSupplyAmount)
-        .divide(JSBI.BigInt(100))
-
-      console.log('useVaiStakingInfo', {
-        totalSupplyAmount: totalSupplyAmount.toSignificant(4),
-        poolLimitAmount: poolLimitAmount.toSignificant(4),
-        rewardRatesAmount: rewardRatesAmount.toSignificant(4),
-        balanceAmount: balanceAmount.toSignificant(4),
-        earnedAmount: earnedAmount.toSignificant(4),
-        totalRewardRate: totalRewardRate.toSignificant(4),
-        maxStakeAmount: maxStakeAmount.toSignificant(4)
-      })
+      const totalRewardRate = rewardRatesAmount.multiply(JSBI.BigInt(100 * SECONDS_IN_YEAR)).divide(totalSupplyAmount)
 
       return {
         stakingRewardAddress: rewardsAddress,

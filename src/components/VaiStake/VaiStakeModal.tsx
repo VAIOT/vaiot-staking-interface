@@ -57,6 +57,8 @@ export default function VaiStackingModal({ isOpen, onDismiss, vaiStakingInfo }: 
   }, [onDismiss])
 
   const currencyBalance = useCurrencyBalance(account ?? undefined, vaiStakingInfo.stakedAmount.token ?? undefined)
+  const maxAmountOrCurrentBalance =
+    currencyBalance && maxAmountInput.greaterThan(currencyBalance) ? currencyBalance : maxAmountInput
   const atMaxAmount = Boolean(maxAmountInput && parsedAmount?.equalTo(maxAmountInput))
 
   const handleMax = useCallback(() => {
@@ -118,7 +120,7 @@ export default function VaiStackingModal({ isOpen, onDismiss, vaiStakingInfo }: 
             label={''}
             disableCurrencySelect={true}
             customBalanceText={'Available to deposit: '}
-            selectedCurrencyBalance={currencyBalance}
+            selectedCurrencyBalance={maxAmountOrCurrentBalance}
             id="stake-vai-token"
           />
 
