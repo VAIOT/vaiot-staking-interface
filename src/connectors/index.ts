@@ -32,7 +32,7 @@ const RPC_URLS: Record<number, string> = {
 
 export const network = new NetworkConnector({
   urls: RPC_URLS,
-  defaultChainId: 80001
+  defaultChainId: SupportedChainId.MAINNET
 })
 
 let networkLibrary: Web3Provider | undefined
