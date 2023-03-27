@@ -138,8 +138,8 @@ export function useVaiStakingInfo() {
       const poolLimitAmount = new TokenAmount(token, getPoolLimitState.result?.[0] ?? 0)
       const rewardRatesAmount = new TokenAmount(token, getRewardRateState.result?.[0] ?? 0)
       const maxStakeAmount = new TokenAmount(token, getStakeLimitState.result?.[0] ?? 0)
-      const balanceAmount = new TokenAmount(token, accountBalanceState.result?.[0] ?? 0)
-      const earnedAmount = new TokenAmount(token, accountEarnedState.result?.[0] ?? 0)
+      const balanceAmount = new TokenAmount(token, accountBalanceState?.result?.[0] ?? 0)
+      const earnedAmount = new TokenAmount(token, accountEarnedState?.result?.[0] ?? 0)
 
       const totalRewardRate = rewardRatesAmount.multiply(JSBI.BigInt(100 * SECONDS_IN_YEAR)).divide(totalSupplyAmount)
 
