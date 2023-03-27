@@ -1,4 +1,4 @@
-import { ChainId, TokenAmount } from '@uniswap/sdk'
+import { ChainId, JSBI, TokenAmount } from '@uniswap/sdk'
 import React, { useEffect, useState } from 'react'
 import { X } from 'react-feather'
 import styled from 'styled-components'
@@ -54,8 +54,16 @@ export default function UniBalanceContent({ setShowUniBalanceModal }: { setShowU
     const fetchData = async () => {
       const result = await getCirculation()
       if (result.success) {
-        setUniPrice(Number(result.data?.usdPrice ?? '0'))
-        setCirculation(new TokenAmount(vai ?? VAI[1], BigInt(result.data?.circulatingSupply ?? '0')))
+        setUniPrice(Number(result.data?.price ?? '0'))
+        setCirculation(
+          new TokenAmount(
+            vai ?? VAI[1],
+            JSBI.multiply(
+              JSBI.BigInt((result.data?.circulation ?? 0).toFixed(0)),
+              JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(18))
+            )
+          )
+        )
       }
     }
     fetchData()
@@ -111,7 +119,7 @@ export default function UniBalanceContent({ setShowUniBalanceModal }: { setShowU
                 <TYPE.white color="white">${uniPrice?.toFixed(2) ?? '-'}</TYPE.white>
               </RowBetween>
             )}
-            {circulation.toFixed(0) !== '0' && (
+            {circulation.greaterThan(JSBI.BigInt(0)) && (
               <RowBetween>
                 <TYPE.white color="white">VAI in circulation:</TYPE.white>
                 <TYPE.white color="white">{circulation?.toFixed(0, { groupSeparator: ',' })}</TYPE.white>
