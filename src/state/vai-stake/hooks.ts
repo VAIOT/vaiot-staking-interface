@@ -141,7 +141,9 @@ export function useVaiStakingInfo() {
       const balanceAmount = new TokenAmount(token, accountBalanceState?.result?.[0] ?? 0)
       const earnedAmount = new TokenAmount(token, accountEarnedState?.result?.[0] ?? 0)
 
-      const totalRewardRate = rewardRatesAmount.multiply(JSBI.BigInt(100 * SECONDS_IN_YEAR)).divide(totalSupplyAmount)
+      const totalRewardRate = rewardRatesAmount
+        .multiply(JSBI.BigInt(100 * SECONDS_IN_YEAR))
+        .divide(totalSupplyAmount.greaterThan(JSBI.BigInt(0)) ? totalSupplyAmount : JSBI.BigInt(1))
 
       return {
         stakingRewardAddress: rewardsAddress,

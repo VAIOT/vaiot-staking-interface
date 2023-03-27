@@ -42,7 +42,7 @@ flex-direction: column;
 const SUPPORTED_CHAIN_IDS = [SupportedChainId.MAINNET]
 
 export default function Earn() {
-  const { chainId, library } = useActiveWeb3React()
+  const { chainId, account, library } = useActiveWeb3React()
 
   const isChainIdSupported = Boolean(SUPPORTED_CHAIN_IDS.includes(chainId as any))
 
@@ -112,11 +112,13 @@ export default function Earn() {
         ) : (
           <>
             <OutlineCard>This network is not supported, please switch to Ethereum Mainnet</OutlineCard>
-            <DataRow style={{ justifyContent: 'center' }}>
-              <ButtonPrimary padding="8px" borderRadius="8px" width="200px" onClick={handleSwitchToEthNetwork}>
-                Switch to Ethereum
-              </ButtonPrimary>
-            </DataRow>
+            {account && (
+              <DataRow style={{ justifyContent: 'center' }}>
+                <ButtonPrimary padding="8px" borderRadius="8px" width="200px" onClick={handleSwitchToEthNetwork}>
+                  Switch to Ethereum
+                </ButtonPrimary>
+              </DataRow>
+            )}
           </>
         )}
       </AutoColumn>
