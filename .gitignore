@@ -41,3 +41,4 @@ wrangler.toml
 
 .env.production
 /dist
+.vercel
