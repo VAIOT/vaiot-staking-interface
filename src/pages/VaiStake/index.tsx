@@ -211,9 +211,13 @@ export default function VaiStake() {
         <>
           <OutlineCard>This network is not supported, please switch to Polygon Mainnet</OutlineCard>
           <DataRow style={{ justifyContent: 'center' }}>
-            <ButtonPrimary padding="8px" borderRadius="8px" width="200px" onClick={handleSwitchToPolygonNetwork}>
-              Switch to Polygon
-            </ButtonPrimary>
+            {account && (
+              <DataRow style={{ justifyContent: 'center' }}>
+                <ButtonPrimary padding="8px" borderRadius="8px" width="200px" onClick={handleSwitchToPolygonNetwork}>
+                  Switch to Polygon
+                </ButtonPrimary>
+              </DataRow>
+            )}
           </DataRow>
         </>
       )}
