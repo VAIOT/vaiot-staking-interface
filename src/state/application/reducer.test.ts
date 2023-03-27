@@ -1,5 +1,6 @@
+import { configureStore } from '@reduxjs/toolkit'
 import { ChainId } from '@uniswap/sdk'
-import { createStore, Store } from 'redux'
+import { Store } from 'redux'
 import { addPopup, ApplicationModal, removePopup, setOpenModal, updateBlockNumber } from './actions'
 import reducer, { ApplicationState } from './reducer'
 
@@ -7,12 +8,15 @@ describe('application reducer', () => {
   let store: Store<ApplicationState>
 
   beforeEach(() => {
-    store = createStore(reducer, {
-      popupList: [],
-      blockNumber: {
-        [ChainId.MAINNET]: 3
-      },
-      openModal: null
+    store = configureStore({
+      reducer,
+      preloadedState: {
+        popupList: [],
+        blockNumber: {
+          [ChainId.MAINNET]: 3
+        },
+        openModal: null
+      }
     })
   })
 

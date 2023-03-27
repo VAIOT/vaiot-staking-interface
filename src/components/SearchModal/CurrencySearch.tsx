@@ -225,7 +225,7 @@ export function CurrencySearch({
           <AutoSizer disableWidth>
             {({ height }) => (
               <CurrencyList
-                height={height}
+                height={height ?? 0}
                 showETH={showETH}
                 currencies={
                   showExpanded && inactiveTokens ? filteredSortedTokens.concat(inactiveTokens) : filteredSortedTokens

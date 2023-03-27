@@ -1,13 +1,13 @@
 import { Contract } from '@ethersproject/contracts'
-import { abi as GOVERNANCE_ABI } from '@uniswap/governance/build/GovernorAlpha.json'
-import { abi as UNI_ABI } from '@uniswap/governance/build/Uni.json'
-import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build/MerkleDistributor.json'
-import { abi as STAKING_REWARDS_ABI } from '../constants/abis/vaiot/StakingRewards.json'
-import { abi as PRE_STAKING_REWARD_ABI } from '../constants/abis/vaiot/PreStakingContract.json'
-import { abi as VAI_STAKING_REWARD_ABI } from '../constants/abis/vaiot/VaiStakingContract.json'
+import GOVERNANCE_ABI from '@uniswap/governance/build/GovernorAlpha.json'
+import UNI_ABI from '@uniswap/governance/build/Uni.json'
+import MERKLE_DISTRIBUTOR_ABI from '@uniswap/merkle-distributor/build/MerkleDistributor.json'
+import STAKING_REWARDS_ABI from '../constants/abis/vaiot/StakingRewards.json'
+import PRE_STAKING_REWARD_ABI from '../constants/abis/vaiot/PreStakingContract.json'
+import VAI_STAKING_REWARD_ABI from '../constants/abis/vaiot/VaiStakingContract.json'
 
 import { ChainId, WETH } from '@uniswap/sdk'
-import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
+import IUniswapV2PairABI from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import { useMemo } from 'react'
 import { GOVERNANCE_ADDRESS, MERKLE_DISTRIBUTOR_ADDRESS, VAI } from '../constants'
 import {
@@ -97,7 +97,7 @@ export function useBytes32TokenContract(tokenAddress?: string, withSignerIfPossi
 }
 
 export function usePairContract(pairAddress?: string, withSignerIfPossible?: boolean): Contract | null {
-  return useContract(pairAddress, IUniswapV2PairABI, withSignerIfPossible)
+  return useContract(pairAddress, IUniswapV2PairABI.abi, withSignerIfPossible)
 }
 
 export function useMulticallContract(): Contract | null {
@@ -107,28 +107,28 @@ export function useMulticallContract(): Contract | null {
 
 export function useMerkleDistributorContract(): Contract | null {
   const { chainId } = useActiveWeb3React()
-  return useContract(chainId ? MERKLE_DISTRIBUTOR_ADDRESS[chainId] : undefined, MERKLE_DISTRIBUTOR_ABI, true)
+  return useContract(chainId ? MERKLE_DISTRIBUTOR_ADDRESS[chainId] : undefined, MERKLE_DISTRIBUTOR_ABI.abi, true)
 }
 
 export function useGovernanceContract(): Contract | null {
-  return useContract(GOVERNANCE_ADDRESS, GOVERNANCE_ABI, true)
+  return useContract(GOVERNANCE_ADDRESS, GOVERNANCE_ABI.abi, true)
 }
 
 export function useUniContract(): Contract | null {
   const { chainId } = useActiveWeb3React()
-  return useContract(chainId ? VAI[chainId].address : undefined, UNI_ABI, true)
+  return useContract(chainId ? VAI[chainId].address : undefined, UNI_ABI.abi, true)
 }
 
 export function useStakingContract(stakingAddress?: string, withSignerIfPossible?: boolean): Contract | null {
-  return useContract(stakingAddress, STAKING_REWARDS_ABI, withSignerIfPossible)
+  return useContract(stakingAddress, STAKING_REWARDS_ABI.abi, withSignerIfPossible)
 }
 
 export function usePreStakingContract(stakingAddress?: string, withSignerIfPossible?: boolean): Contract | null {
-  return useContract(stakingAddress, PRE_STAKING_REWARD_ABI, withSignerIfPossible)
+  return useContract(stakingAddress, PRE_STAKING_REWARD_ABI.abi, withSignerIfPossible)
 }
 
 export function useVaiStakingContract(stakingAddress?: string, withSignerIfPossible?: boolean): Contract | null {
-  return useContract(stakingAddress, VAI_STAKING_REWARD_ABI, withSignerIfPossible)
+  return useContract(stakingAddress, VAI_STAKING_REWARD_ABI.abi, withSignerIfPossible)
 }
 
 export function useSocksController(): Contract | null {
