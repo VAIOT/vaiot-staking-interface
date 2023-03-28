@@ -277,7 +277,7 @@ export default function Header() {
             Liquidity Staking
           </StyledNavLink>
           <StyledNavLink id={`vai-stake-nav-link`} to={'/vai-stake'}>
-            Vai Staking
+            VAI Staking
           </StyledNavLink>
         </HeaderLinks>
       </HeaderRow>
