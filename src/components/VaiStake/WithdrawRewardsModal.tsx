@@ -81,9 +81,7 @@ export default function WithdrawRewardsModal({ isOpen, onDismiss, stakingInfo }:
               <TYPE.body>Earned VAI</TYPE.body>
             </AutoColumn>
           )}
-          <TYPE.subHeader style={{ textAlign: 'center' }}>
-            You can withdraw and claim your earned reward.
-          </TYPE.subHeader>
+          <TYPE.subHeader style={{ textAlign: 'center' }}>You can withdraw your earned rewards</TYPE.subHeader>
           {stakingInfo && (
             <ButtonError disabled={!!error} error={!!error && !!stakingInfo?.earnedAmount} onClick={onWithdraw}>
               {error ?? 'Claim Rewards'}
