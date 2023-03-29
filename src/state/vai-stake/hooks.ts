@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { ChainId, Fraction, JSBI, Token, TokenAmount } from '@uniswap/sdk'
+import { Fraction, JSBI, Token, TokenAmount } from '@uniswap/sdk'
 
 import { VAI_STAKING_REWARDS_INTERFACE } from '../../constants/abis/staking-rewards'
 import { VAI } from '../../constants'
@@ -9,26 +9,21 @@ import { SupportedChainId } from 'constants/chains'
 
 const SECONDS_IN_YEAR = 24 * 60 * 60 * 365
 
-export const VAI_STAKING_REWARD_INFO: Partial<Record<
-  SupportedChainId,
-  {
-    token: Token
-    stakingRewardAddress: string
-  }[]
->> = {
-  [SupportedChainId.POLYGON]: [
-    {
-      token: VAI[SupportedChainId.POLYGON],
-      stakingRewardAddress: '0x15b661FB563432BBbe3cE8A6CaCec148131f16BE'
-    }
-  ],
-  [SupportedChainId.MUMBAI]: [
-    {
-      token: VAI[SupportedChainId.MUMBAI],
-      stakingRewardAddress: '0x15b661FB563432BBbe3cE8A6CaCec148131f16BE'
-    }
-  ]
+type TokenInfo = {
+  token: Token
+  stakingRewardAddress: string
 }
+
+export const VAI_STAKING_REWARD_INFO: Partial<Record<SupportedChainId, TokenInfo>> = {
+  [SupportedChainId.POLYGON]: {
+    token: VAI[SupportedChainId.POLYGON],
+    stakingRewardAddress: '0x15b661FB563432BBbe3cE8A6CaCec148131f16BE'
+  },
+  [SupportedChainId.MUMBAI]: {
+    token: VAI[SupportedChainId.MUMBAI],
+    stakingRewardAddress: '0x15b661FB563432BBbe3cE8A6CaCec148131f16BE'
+  }
+} as const
 
 export interface VaiStakingInfo {
   // the address of the reward contract
@@ -46,16 +41,24 @@ export interface VaiStakingInfo {
   totalRewardRate: Fraction
   // max stake amount for account
   maxStakeAmount: TokenAmount
+  // pool finish time
+  finishAtAmount: Date | undefined
 }
 
 export function useVaiStakingInfo() {
   const { chainId, account } = useActiveWeb3React()
 
-  const info = useMemo(() => (chainId ? VAI_STAKING_REWARD_INFO[chainId] ?? [] : []), [chainId])
+  const info = useMemo(
+    () =>
+      (chainId
+        ? VAI_STAKING_REWARD_INFO[chainId] ?? VAI_STAKING_REWARD_INFO[SupportedChainId.POLYGON]
+        : VAI_STAKING_REWARD_INFO[SupportedChainId.POLYGON]) as TokenInfo,
+    [chainId]
+  )
 
-  const vai = chainId ? VAI[chainId] : undefined
+  const vai = chainId ? VAI[chainId] : VAI[SupportedChainId.POLYGON]
 
-  const rewardsAddresses = useMemo(() => info.map(({ stakingRewardAddress }) => stakingRewardAddress), [info])
+  const rewardsAddresses = useMemo(() => [info.stakingRewardAddress], [info])
 
   const accountsArgs = useMemo(() => [account ?? undefined], [account])
 
@@ -79,6 +82,7 @@ export function useVaiStakingInfo() {
     VAI_STAKING_REWARDS_INTERFACE,
     'getRewardRate'
   )
+  const getFinishAtQuery = useMultipleContractSingleData(rewardsAddresses, VAI_STAKING_REWARDS_INTERFACE, 'getFinishAt')
   const accountBalanceQuery = useMultipleContractSingleData(
     rewardsAddresses,
     VAI_STAKING_REWARDS_INTERFACE,
@@ -102,8 +106,9 @@ export function useVaiStakingInfo() {
     // these get fetched regardless of account
     const getTotalSupplyState = getTotalSupplyQuery[responseIndex]
     const getPoolLimitState = getPoolLimitQuery[responseIndex]
-    const getRewardRateState = getRewardRateQuery[responseIndex]
     const getStakeLimitState = getStakeLimitQuery[responseIndex]
+    const getRewardRateState = getRewardRateQuery[responseIndex]
+    const getFinishAtState = getFinishAtQuery[responseIndex]
     const accountBalanceState = accountBalanceQuery[responseIndex]
     const accountEarnedState = accountEarnedQuery[responseIndex]
 
@@ -116,6 +121,8 @@ export function useVaiStakingInfo() {
       !getStakeLimitState.loading &&
       getRewardRateState &&
       !getRewardRateState.loading &&
+      getFinishAtState &&
+      !getFinishAtState.loading &&
       !accountBalanceState?.loading &&
       !accountEarnedState?.loading
 
@@ -126,13 +133,14 @@ export function useVaiStakingInfo() {
         getRewardRateState?.error ||
         getStakeLimitState?.error ||
         accountBalanceState?.error ||
+        getFinishAtState?.error ||
         accountEarnedState?.error
 
       if (hasError) {
         return null
       }
 
-      const token = info[responseIndex].token
+      const token = info.token
 
       const totalSupplyAmount = new TokenAmount(token, getTotalSupplyState.result?.[0] ?? 0)
       const poolLimitAmount = new TokenAmount(token, getPoolLimitState.result?.[0] ?? 0)
@@ -140,6 +148,8 @@ export function useVaiStakingInfo() {
       const maxStakeAmount = new TokenAmount(token, getStakeLimitState.result?.[0] ?? 0)
       const balanceAmount = new TokenAmount(token, accountBalanceState?.result?.[0] ?? 0)
       const earnedAmount = new TokenAmount(token, accountEarnedState?.result?.[0] ?? 0)
+      const finishAtAmount = getFinishAtState?.result?.[0]?.toNumber()
+      const finishAtAmountInMs = finishAtAmount * 1000
 
       const totalRewardRate = rewardRatesAmount
         .multiply(JSBI.BigInt(100 * SECONDS_IN_YEAR))
@@ -147,13 +157,14 @@ export function useVaiStakingInfo() {
 
       return {
         stakingRewardAddress: rewardsAddress,
-        token: VAI[ChainId.MAINNET],
+        token: token,
         earnedAmount: earnedAmount,
         stakedAmount: balanceAmount,
         totalStakedAmount: totalSupplyAmount,
         currentStakingLimit: poolLimitAmount,
         totalRewardRate: totalRewardRate,
-        maxStakeAmount: maxStakeAmount
+        maxStakeAmount: maxStakeAmount,
+        finishAtAmount: finishAtAmountInMs > 0 ? new Date(finishAtAmountInMs) : undefined
       }
     }
 
@@ -164,10 +175,11 @@ export function useVaiStakingInfo() {
     rewardsAddresses,
     getTotalSupplyQuery,
     getPoolLimitQuery,
-    getRewardRateQuery,
     getStakeLimitQuery,
+    getRewardRateQuery,
+    getFinishAtQuery,
     accountBalanceQuery,
     accountEarnedQuery,
-    info
+    info.token
   ])
 }
