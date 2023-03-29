@@ -1,7 +1,7 @@
 import { ChainId, TokenAmount } from '@uniswap/sdk'
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { Text } from 'rebass'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { darken } from 'polished'
 
 import styled from 'styled-components'
@@ -13,10 +13,11 @@ import { CardNoise } from '../earn/styled'
 import { CountUp } from 'use-count-up'
 import { TYPE } from '../../theme'
 import { SupportedChainId } from '../../constants/chains'
+import { switchToNetwork } from '../../utils/switchToNetwork'
 
 import { YellowCard } from '../Card'
-
 import Row, { RowFixed } from '../Row'
+import { ButtonPrimary } from '../../components/Button'
 import Web3Status from '../Web3Status'
 import Modal from '../Modal'
 import UniBalanceContent from './UniBalanceContent'
@@ -251,7 +252,8 @@ const TEST_NETWORK_LABELS: { [chainId in SupportedChainId]?: string } = {
 }
 
 export default function Header() {
-  const { account, chainId } = useActiveWeb3React()
+  const { account, chainId, library } = useActiveWeb3React()
+  const location = useLocation()
 
   const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
   const aggregateBalance: TokenAmount | undefined = useAggregateUniBalance()
@@ -260,6 +262,18 @@ export default function Header() {
 
   const countUpValue = aggregateBalance?.toFixed(0) ?? '0'
   const countUpValuePrevious = usePrevious(countUpValue) ?? '0'
+
+  const isVaiStakePage = location.pathname.includes('vai-stake')
+  const isChainIdSupported =
+    (isVaiStakePage && (chainId as any) === SupportedChainId.POLYGON) ||
+    (!isVaiStakePage && (chainId as any) === SupportedChainId.MAINNET)
+  const isMetamaskProvider = Boolean(library?.provider?.request)
+
+  const handleNetworkSwitch = useCallback(() => {
+    if (library) {
+      switchToNetwork({ library, chainId: isVaiStakePage ? SupportedChainId.POLYGON : SupportedChainId.MAINNET })
+    }
+  }, [isVaiStakePage, library])
 
   return (
     <HeaderFrame>
@@ -284,6 +298,12 @@ export default function Header() {
       <HeaderControls>
         <HeaderElement>
           <HideSmall>
+            {account && !isChainIdSupported && isMetamaskProvider && (
+              <ButtonPrimary padding="8px" borderRadius="12px" width="180px" onClick={handleNetworkSwitch}>
+                Switch to {isVaiStakePage ? 'Polygon' : 'Ethereum'}
+              </ButtonPrimary>
+            )}
+
             {chainId && TEST_NETWORK_LABELS[chainId] && (
               <NetworkCard title={TEST_NETWORK_LABELS[chainId]}>{TEST_NETWORK_LABELS[chainId]}</NetworkCard>
             )}
