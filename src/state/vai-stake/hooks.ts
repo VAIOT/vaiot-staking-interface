@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Fraction, JSBI, Token, TokenAmount } from '@uniswap/sdk'
 
 import { VAI_STAKING_REWARDS_INTERFACE } from '../../constants/abis/staking-rewards'
@@ -6,8 +6,15 @@ import { VAI } from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
 import { useMultipleContractSingleData } from '../multicall/hooks'
 import { SupportedChainId } from 'constants/chains'
+import { useConnectToVaiStakingContract } from '../../hooks/useConnectToContract'
 
 const SECONDS_IN_YEAR = 24 * 60 * 60 * 365
+
+function getTotalRewardRate(rewardRate: TokenAmount, totalSupply: TokenAmount) {
+  return rewardRate
+    .multiply(JSBI.BigInt(100 * SECONDS_IN_YEAR))
+    .divide(totalSupply.greaterThan(JSBI.BigInt(0)) ? totalSupply : JSBI.BigInt(1))
+}
 
 type TokenInfo = {
   token: Token
@@ -46,7 +53,17 @@ export interface VaiStakingInfo {
 }
 
 export function useVaiStakingInfo() {
-  const { chainId, account } = useActiveWeb3React()
+  const { chainId: currentChainId, account } = useActiveWeb3React()
+  const isProperChainId = (currentChainId as any) === SupportedChainId.POLYGON
+  const chainId = SupportedChainId.POLYGON
+
+  const [fallbackData, setFallbackData] = useState<{
+    getTotalSupplyResult: PromiseSettledResult<any>
+    getPoolLimitResult: PromiseSettledResult<any>
+    getStakeLimitResult: PromiseSettledResult<any>
+    getRewardRateResult: PromiseSettledResult<any>
+    getFinishAtResult: PromiseSettledResult<any>
+  } | null>(null)
 
   const info = useMemo(
     () =>
@@ -55,8 +72,6 @@ export function useVaiStakingInfo() {
         : VAI_STAKING_REWARD_INFO[SupportedChainId.POLYGON]) as TokenInfo,
     [chainId]
   )
-
-  const vai = chainId ? VAI[chainId] : VAI[SupportedChainId.POLYGON]
 
   const rewardsAddresses = useMemo(() => [info.stakingRewardAddress], [info])
 
@@ -96,12 +111,91 @@ export function useVaiStakingInfo() {
     accountsArgs
   )
 
+  const stakingContract = useConnectToVaiStakingContract('0x15b661FB563432BBbe3cE8A6CaCec148131f16BE')
+
+  useEffect(() => {
+    async function getFallbackData() {
+      if (stakingContract) {
+        const [
+          getTotalSupplyResult,
+          getPoolLimitResult,
+          getStakeLimitResult,
+          getRewardRateResult,
+          getFinishAtResult
+        ] = await Promise.allSettled([
+          stakingContract.getTotalSupply(),
+          stakingContract.getPoolLimit(),
+          stakingContract.getStakeLimit(),
+          stakingContract.getRewardRate(),
+          stakingContract.getFinishAt()
+        ])
+
+        setFallbackData({
+          getTotalSupplyResult,
+          getPoolLimitResult,
+          getStakeLimitResult,
+          getRewardRateResult,
+          getFinishAtResult
+        })
+      }
+    }
+
+    if (currentChainId && !isProperChainId) {
+      getFallbackData()
+    }
+  }, [isProperChainId, stakingContract, currentChainId])
+
   return useMemo(() => {
-    if (!chainId || !vai) return null
+    if (!currentChainId) {
+      return null
+    }
 
     const responseIndex = 0
-
     const rewardsAddress = rewardsAddresses[responseIndex]
+    const token = info.token
+
+    // get data straight from the contract in case there is different chainId selected
+    if (!isProperChainId) {
+      if (
+        fallbackData &&
+        fallbackData.getTotalSupplyResult.status === 'fulfilled' &&
+        fallbackData.getPoolLimitResult.status === 'fulfilled' &&
+        fallbackData.getStakeLimitResult.status === 'fulfilled' &&
+        fallbackData.getRewardRateResult.status === 'fulfilled' &&
+        fallbackData.getFinishAtResult.status === 'fulfilled'
+      ) {
+        const {
+          getTotalSupplyResult,
+          getPoolLimitResult,
+          getStakeLimitResult,
+          getRewardRateResult,
+          getFinishAtResult
+        } = fallbackData
+
+        const totalSupplyAmount = new TokenAmount(token, getTotalSupplyResult?.value ?? 0)
+        const poolLimitAmount = new TokenAmount(token, getPoolLimitResult?.value ?? 0)
+        const rewardRatesAmount = new TokenAmount(token, getRewardRateResult?.value ?? 0)
+        const maxStakeAmount = new TokenAmount(token, getStakeLimitResult?.value ?? 0)
+        const finishAtAmount = getFinishAtResult?.value?.toNumber()
+        const finishAtAmountInMs = finishAtAmount * 1000
+
+        const totalRewardRate = getTotalRewardRate(rewardRatesAmount, totalSupplyAmount)
+
+        return {
+          stakingRewardAddress: rewardsAddress,
+          token: token,
+          earnedAmount: new TokenAmount(token, '0'),
+          stakedAmount: new TokenAmount(token, '0'),
+          totalStakedAmount: totalSupplyAmount,
+          currentStakingLimit: poolLimitAmount,
+          totalRewardRate: totalRewardRate,
+          maxStakeAmount: maxStakeAmount,
+          finishAtAmount: finishAtAmountInMs > 0 ? new Date(finishAtAmountInMs) : undefined
+        }
+      }
+
+      return null
+    }
 
     // these get fetched regardless of account
     const getTotalSupplyState = getTotalSupplyQuery[responseIndex]
@@ -140,8 +234,6 @@ export function useVaiStakingInfo() {
         return null
       }
 
-      const token = info.token
-
       const totalSupplyAmount = new TokenAmount(token, getTotalSupplyState.result?.[0] ?? 0)
       const poolLimitAmount = new TokenAmount(token, getPoolLimitState.result?.[0] ?? 0)
       const rewardRatesAmount = new TokenAmount(token, getRewardRateState.result?.[0] ?? 0)
@@ -151,9 +243,7 @@ export function useVaiStakingInfo() {
       const finishAtAmount = getFinishAtState?.result?.[0]?.toNumber()
       const finishAtAmountInMs = finishAtAmount * 1000
 
-      const totalRewardRate = rewardRatesAmount
-        .multiply(JSBI.BigInt(100 * SECONDS_IN_YEAR))
-        .divide(totalSupplyAmount.greaterThan(JSBI.BigInt(0)) ? totalSupplyAmount : JSBI.BigInt(1))
+      const totalRewardRate = getTotalRewardRate(rewardRatesAmount, totalSupplyAmount)
 
       return {
         stakingRewardAddress: rewardsAddress,
@@ -170,9 +260,10 @@ export function useVaiStakingInfo() {
 
     return null
   }, [
-    chainId,
-    vai,
+    currentChainId,
     rewardsAddresses,
+    info.token,
+    isProperChainId,
     getTotalSupplyQuery,
     getPoolLimitQuery,
     getStakeLimitQuery,
@@ -180,6 +271,6 @@ export function useVaiStakingInfo() {
     getFinishAtQuery,
     accountBalanceQuery,
     accountEarnedQuery,
-    info.token
+    fallbackData
   ])
 }
