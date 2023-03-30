@@ -4,13 +4,14 @@ import { TransactionResponse } from '@ethersproject/providers'
 import { JSBI } from '@uniswap/sdk'
 
 import { useActiveWeb3React } from '../../hooks'
-import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
+import { ApprovalState } from '../../hooks/useApproveCallback'
 import useTransactionDeadline from '../../hooks/useTransactionDeadline'
 import { useCurrencyBalance } from '../../state/wallet/hooks'
 import { VaiStakingInfo } from '../../state/vai-stake/hooks'
 import { useDerivedStakeInfo } from '../../state/stake/hooks'
 import { useVaiStakingContract } from '../../hooks/useContract'
 import { useTransactionAdder } from '../../state/transactions/hooks'
+import { useVaiApprovalState } from './useVaiApprovalState'
 
 import { AutoColumn } from '../Column'
 import Modal from '../Modal'
@@ -19,6 +20,7 @@ import CurrencyInputPanel from '../CurrencyInputPanel'
 import { ButtonConfirmed, ButtonError } from '../Button'
 import { LoadingView, SubmittedView } from '../ModalViews'
 import { CloseIcon, TYPE } from '../../theme'
+import Loader from '../../components/Loader'
 import ProgressCircles from '../ProgressSteps'
 
 interface VaiStackingModalProps {
@@ -42,7 +44,11 @@ export default function VaiStackingModal({ isOpen, onDismiss, vaiStakingInfo }: 
 
   const addTransaction = useTransactionAdder()
   const deadline = useTransactionDeadline()
-  const [approval, approveCallback] = useApproveCallback(parsedAmount, vaiStakingInfo.stakingRewardAddress)
+  const [approval, approveCallback] = useVaiApprovalState(
+    parsedAmount,
+    vaiStakingInfo.stakingRewardAddress,
+    vaiStakingInfo.token
+  )
 
   const stakingContract = useVaiStakingContract(vaiStakingInfo.stakingRewardAddress)
 
@@ -131,7 +137,7 @@ export default function VaiStackingModal({ isOpen, onDismiss, vaiStakingInfo }: 
               confirmed={approval === ApprovalState.APPROVED}
               disabled={approval !== ApprovalState.NOT_APPROVED}
             >
-              Approve
+              {approval === ApprovalState.PENDING ? <Loader /> : 'Approve'}
             </ButtonConfirmed>
 
             <ButtonError
