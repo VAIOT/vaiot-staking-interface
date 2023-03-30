@@ -178,7 +178,7 @@ export default function VaiStakeDeposit() {
         </BottomSection>
 
         <DataRow>
-          {stakingInfo && (
+          {stakingInfo && isChainIdSupported && (
             <ButtonPrimary padding="8px" borderRadius="8px" width="160px" onClick={handleDepositClick}>
               Deposit
             </ButtonPrimary>
