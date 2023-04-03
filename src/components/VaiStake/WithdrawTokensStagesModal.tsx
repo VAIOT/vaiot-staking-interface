@@ -42,7 +42,7 @@ export default function WithdrawTokensStagesModal({ isOpen, onDismiss, stakingIn
   const handleMax = useCallback(() => {
     stakingInfo?.stakedAmount && onUserInput(stakingInfo.stakedAmount?.toExact())
   }, [onUserInput, stakingInfo.stakedAmount])
-  const { parsedAmount } = useDerivedUnstakeInfo(typedValue, stakingInfo.stakedAmount)
+  const { parsedAmount, error: amountError } = useDerivedUnstakeInfo(typedValue, stakingInfo.stakedAmount)
   const atMaxAmount = Boolean(stakingInfo.stakedAmount && parsedAmount?.equalTo(stakingInfo.stakedAmount))
 
   function wrappedOndismiss() {
@@ -54,9 +54,8 @@ export default function WithdrawTokensStagesModal({ isOpen, onDismiss, stakingIn
   const stakingContract = useVaiStakingContract(stakingInfo.stakingRewardAddress)
 
   async function onWithdraw() {
-    if (stakingContract && stakingInfo?.stakedAmount && parsedAmount) {
-      console.log('claimWithdrawal', stakingInfo?.timeLeftToWithdraw, stakingInfo?.withdrawalInitiated)
-      if (stakingInfo?.withdrawalInitiated) {
+    if (stakingContract && stakingInfo?.stakedAmount) {
+      if (stakingInfo?.withdrawalInitiated && parsedAmount) {
         setAttempting(true)
         await stakingContract
           .claimWithdrawal(`0x${parsedAmount.raw.toString(16)}`, { gasLimit: 300000 })
@@ -72,7 +71,6 @@ export default function WithdrawTokensStagesModal({ isOpen, onDismiss, stakingIn
             console.log(error)
           })
       } else {
-        console.log('initializeWithdrawal')
         await stakingContract
           .initializeWithdrawal({ gasLimit: 300000 })
           .then((response: TransactionResponse) => {
@@ -122,25 +120,31 @@ export default function WithdrawTokensStagesModal({ isOpen, onDismiss, stakingIn
             </AutoColumn>
           )}
 
-          <CurrencyInputPanel
-            value={typedValue}
-            onUserInput={onUserInput}
-            onMax={handleMax}
-            showMaxButton={!atMaxAmount}
-            currency={stakingInfo.stakedAmount.token}
-            label={'Withdraw amount'}
-            disableCurrencySelect={true}
-            hideBalance
-            id="withdraw-vai-token"
-          />
+          {stakingInfo.withdrawalInitiated && (
+            <CurrencyInputPanel
+              value={typedValue}
+              onUserInput={onUserInput}
+              onMax={handleMax}
+              showMaxButton={!atMaxAmount}
+              currency={stakingInfo.stakedAmount.token}
+              label={'Withdraw amount'}
+              disableCurrencySelect={true}
+              hideBalance
+              id="withdraw-vai-token"
+            />
+          )}
 
           <TYPE.subHeader style={{ textAlign: 'center' }}>
-            {stakingInfo?.timeLeftToWithdraw
+            {stakingInfo?.withdrawalInitiated
               ? 'Grace period ended. You can now withdraw your liquidity.'
               : 'If you want to withdraw your liquidity, you have to initialise the process, which means that counting your rewards will stop immediately and you will be able to withdraw your LP Tokens after 7 days grace period.'}
           </TYPE.subHeader>
-          <ButtonError disabled={!!error} error={!!error && !!stakingInfo?.stakedAmount} onClick={onWithdraw}>
-            {error ?? stakingInfo?.timeLeftToWithdraw ? 'Withdraw & Claim' : 'Initialize Withdraw'}
+          <ButtonError
+            disabled={!!error || (stakingInfo?.withdrawalInitiated && !!amountError)}
+            error={!!error && !!stakingInfo?.stakedAmount}
+            onClick={onWithdraw}
+          >
+            {error ?? stakingInfo?.withdrawalInitiated ? 'Withdraw & Claim' : 'Initialize Withdraw'}
           </ButtonError>
         </ContentWrapper>
       )}
