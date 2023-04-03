@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import { CountUp } from 'use-count-up'
 import { JSBI, TokenAmount } from '@uniswap/sdk'
 
@@ -45,6 +45,7 @@ export function parseBigNumber(value: TokenAmount): string {
 }
 
 export default function VaiStakeDeposit() {
+  const timeLeft = useRef<Date | undefined>()
   const { chainId, account } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
 
@@ -59,6 +60,15 @@ export default function VaiStakeDeposit() {
   const withdrawTokensStagesModalState = useDialogState()
 
   const stakingInfo = useVaiStakingInfo()
+  const stakingReturnValue = stakingInfo?.timeLeftToWithdraw
+
+  useEffect(() => {
+    if (stakingReturnValue && !timeLeft.current) {
+      timeLeft.current = stakingReturnValue
+    } else if (!stakingReturnValue && timeLeft.current) {
+      timeLeft.current = undefined
+    }
+  }, [stakingReturnValue])
 
   const userLiquidityUnstaked = useTokenBalance(account ?? undefined, stakingInfo?.stakedAmount?.token)
   const showAddLiquidityButton = Boolean(stakingInfo?.stakedAmount?.equalTo('0') && userLiquidityUnstaked?.equalTo('0'))
@@ -249,9 +259,7 @@ export default function VaiStakeDeposit() {
           )}
         </DataRow>
 
-        {!showAddLiquidityButton && stakingInfo?.timeLeftToWithdraw && (
-          <Countdown exactEnd={stakingInfo.timeLeftToWithdraw} finalize={true} />
-        )}
+        {!showAddLiquidityButton && timeLeft.current && <Countdown exactEnd={timeLeft.current} finalize={true} />}
       </PositionInfo>
 
       {stakingInfo && (
