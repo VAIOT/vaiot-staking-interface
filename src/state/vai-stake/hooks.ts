@@ -24,7 +24,7 @@ type TokenInfo = {
 export const VAI_STAKING_REWARD_INFO: Partial<Record<SupportedChainId, TokenInfo>> = {
   [SupportedChainId.POLYGON]: {
     token: VAI[SupportedChainId.POLYGON],
-    stakingRewardAddress: '0x15b661FB563432BBbe3cE8A6CaCec148131f16BE'
+    stakingRewardAddress: '0x0Ffb564630865ca870435038d6f5A3568DD32E9C'
   },
   [SupportedChainId.MUMBAI]: {
     token: VAI[SupportedChainId.MUMBAI],
@@ -50,6 +50,10 @@ export interface VaiStakingInfo {
   maxStakeAmount: TokenAmount
   // pool finish time
   finishAtAmount: Date | undefined
+
+  timeLeftToWithdraw: Date | undefined
+
+  withdrawalInitiated: boolean
 }
 
 export function useVaiStakingInfo() {
@@ -111,6 +115,20 @@ export function useVaiStakingInfo() {
     accountsArgs
   )
 
+  const getTimeLeftToWithdrawQuery = useMultipleContractSingleData(
+    rewardsAddresses,
+    VAI_STAKING_REWARDS_INTERFACE,
+    'getTimeLeftToWithdraw',
+    accountsArgs
+  )
+
+  const withdrawalInitiatedQuery = useMultipleContractSingleData(
+    rewardsAddresses,
+    VAI_STAKING_REWARDS_INTERFACE,
+    'withdrawalInitiated',
+    accountsArgs
+  )
+
   const stakingContract = useConnectToVaiStakingContract('0x15b661FB563432BBbe3cE8A6CaCec148131f16BE')
 
   useEffect(() => {
@@ -153,7 +171,6 @@ export function useVaiStakingInfo() {
     const responseIndex = 0
     const rewardsAddress = rewardsAddresses[responseIndex]
     const token = info.token
-
     // get data straight from the contract in case there is different chainId selected
     if (!isProperChainId) {
       if (
@@ -190,7 +207,9 @@ export function useVaiStakingInfo() {
           currentStakingLimit: poolLimitAmount,
           totalRewardRate: totalRewardRate,
           maxStakeAmount: maxStakeAmount,
-          finishAtAmount: finishAtAmountInMs > 0 ? new Date(finishAtAmountInMs) : undefined
+          finishAtAmount: finishAtAmountInMs > 0 ? new Date(finishAtAmountInMs) : undefined,
+          timeLeftToWithdraw: undefined,
+          withdrawalInitiated: false
         }
       }
 
@@ -205,6 +224,8 @@ export function useVaiStakingInfo() {
     const getFinishAtState = getFinishAtQuery[responseIndex]
     const accountBalanceState = accountBalanceQuery[responseIndex]
     const accountEarnedState = accountEarnedQuery[responseIndex]
+    const timeLeftToWithdrawState = getTimeLeftToWithdrawQuery[responseIndex]
+    const withdrawalInitiatedState = withdrawalInitiatedQuery[responseIndex]
 
     const isNotPending =
       getTotalSupplyState &&
@@ -218,7 +239,10 @@ export function useVaiStakingInfo() {
       getFinishAtState &&
       !getFinishAtState.loading &&
       !accountBalanceState?.loading &&
-      !accountEarnedState?.loading
+      !accountEarnedState?.loading &&
+      timeLeftToWithdrawState &&
+      !timeLeftToWithdrawState?.loading &&
+      !withdrawalInitiatedState?.loading
 
     if (isNotPending) {
       const hasError =
@@ -228,7 +252,9 @@ export function useVaiStakingInfo() {
         getStakeLimitState?.error ||
         accountBalanceState?.error ||
         getFinishAtState?.error ||
-        accountEarnedState?.error
+        accountEarnedState?.error ||
+        timeLeftToWithdrawState?.error ||
+        withdrawalInitiatedState?.error
 
       if (hasError) {
         return null
@@ -242,7 +268,8 @@ export function useVaiStakingInfo() {
       const earnedAmount = new TokenAmount(token, accountEarnedState?.result?.[0] ?? 0)
       const finishAtAmount = getFinishAtState?.result?.[0]?.toNumber()
       const finishAtAmountInMs = finishAtAmount * 1000
-
+      const timeLeftToWithdraw = timeLeftToWithdrawState?.result?.[0]?.toNumber()
+      const timeLeftToWithdrawInMs = timeLeftToWithdraw * 1000
       const totalRewardRate = getTotalRewardRate(rewardRatesAmount, totalSupplyAmount)
 
       return {
@@ -254,7 +281,10 @@ export function useVaiStakingInfo() {
         currentStakingLimit: poolLimitAmount,
         totalRewardRate: totalRewardRate,
         maxStakeAmount: maxStakeAmount,
-        finishAtAmount: finishAtAmountInMs > 0 ? new Date(finishAtAmountInMs) : undefined
+        finishAtAmount: finishAtAmountInMs > 0 ? new Date(finishAtAmountInMs) : undefined,
+        timeLeftToWithdraw:
+          timeLeftToWithdrawInMs > 0 ? new Date(new Date().getTime() + timeLeftToWithdrawInMs) : undefined,
+        withdrawalInitiated: withdrawalInitiatedState?.result?.[0]?.toNumber() !== 0
       }
     }
 
@@ -271,6 +301,8 @@ export function useVaiStakingInfo() {
     getFinishAtQuery,
     accountBalanceQuery,
     accountEarnedQuery,
+    getTimeLeftToWithdrawQuery,
+    withdrawalInitiatedQuery,
     fallbackData
   ])
 }
