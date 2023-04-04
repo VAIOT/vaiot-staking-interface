@@ -137,7 +137,7 @@ export default function WithdrawTokensStagesModal({ isOpen, onDismiss, stakingIn
           <TYPE.subHeader style={{ textAlign: 'center' }}>
             {stakingInfo?.withdrawalInitiated
               ? 'Grace period ended. You can now withdraw your liquidity.'
-              : 'If you want to withdraw your liquidity, you have to initialise the process, which means that counting your rewards will stop immediately and you will be able to withdraw your LP Tokens after 7 days grace period.'}
+              : 'If you want to withdraw your liquidity, you have to initialise the process, which means that counting your rewards will stop immediately and you will be able to withdraw your VAI Tokens after 7 days grace period.'}
           </TYPE.subHeader>
           <ButtonError
             disabled={!!error || (stakingInfo?.withdrawalInitiated && !!amountError)}
@@ -152,7 +152,6 @@ export default function WithdrawTokensStagesModal({ isOpen, onDismiss, stakingIn
         <LoadingView onDismiss={wrappedOndismiss}>
           <AutoColumn gap="12px" justify={'center'}>
             <TYPE.body fontSize={20}>Withdrawing {stakingInfo?.stakedAmount?.toSignificant(4)} VAI</TYPE.body>
-            <TYPE.body fontSize={20}>Claiming {stakingInfo?.earnedAmount?.toSignificant(4)} UNI-V2</TYPE.body>
           </AutoColumn>
         </LoadingView>
       )}
@@ -161,7 +160,6 @@ export default function WithdrawTokensStagesModal({ isOpen, onDismiss, stakingIn
           <AutoColumn gap="12px" justify={'center'}>
             <TYPE.largeHeader>Transaction Submitted</TYPE.largeHeader>
             <TYPE.body fontSize={20}>Withdrew VAI!</TYPE.body>
-            <TYPE.body fontSize={20}>Claimed UNI-V2!</TYPE.body>
           </AutoColumn>
         </SubmittedView>
       )}
