@@ -111,14 +111,6 @@ export default function WithdrawTokensStagesModal({ isOpen, onDismiss, stakingIn
               <TYPE.body>Deposited liquidity:</TYPE.body>
             </AutoColumn>
           )}
-          {stakingInfo?.earnedAmount && (
-            <AutoColumn justify="center" gap="md">
-              <TYPE.body fontWeight={600} fontSize={36}>
-                {<FormattedCurrencyAmount currencyAmount={stakingInfo?.earnedAmount} />}
-              </TYPE.body>
-              <TYPE.body>Unclaimed VAI</TYPE.body>
-            </AutoColumn>
-          )}
 
           {stakingInfo.withdrawalInitiated && (
             <CurrencyInputPanel
