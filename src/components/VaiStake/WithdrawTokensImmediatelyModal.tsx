@@ -97,15 +97,6 @@ export default function WithdrawTokensImmediatelyModal({ isOpen, onDismiss, stak
             </AutoColumn>
           )}
 
-          {stakingInfo?.earnedAmount && (
-            <AutoColumn justify="center" gap="md">
-              <TYPE.body fontWeight={600} fontSize={36}>
-                {<FormattedCurrencyAmount currencyAmount={stakingInfo?.earnedAmount} />}
-              </TYPE.body>
-              <TYPE.body>Unclaimed VAI</TYPE.body>
-            </AutoColumn>
-          )}
-
           <CurrencyInputPanel
             value={typedValue}
             onUserInput={onUserInput}
