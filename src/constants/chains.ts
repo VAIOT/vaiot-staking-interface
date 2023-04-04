@@ -154,7 +154,17 @@ export const CHAIN_INFO: ChainInfo = {
     rpcUrls: ['https://kovan.optimism.io'],
     logoUrl: ethereumLogoUrl,
     nativeCurrency: { name: 'Optimistic kovETH', symbol: 'kovOpETH', decimals: 18 }
-  }
+  },
+  [SupportedChainId.POLYGON]: {
+    label: 'Polygon',
+    rpcUrls: ['https://polygon-rpc.com/'],
+    nativeCurrency: {
+      name: 'MATIC',
+      symbol: 'MATIC',
+      decimals: 18
+    },
+    explorer: 'https://polygonscan.com/'
+  } as L2ChainInfo
 }
 
 export const ARBITRUM_HELP_CENTER_LINK = 'https://help.uniswap.org/en/collections/3137787-uniswap-on-arbitrum'

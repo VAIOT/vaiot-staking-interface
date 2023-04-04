@@ -130,7 +130,6 @@ export default function WithdrawTokensImmediatelyModal({ isOpen, onDismiss, stak
         <LoadingView onDismiss={wrappedOndismiss}>
           <AutoColumn gap="12px" justify={'center'}>
             <TYPE.body fontSize={20}>Withdrawing {stakingInfo?.stakedAmount?.toSignificant(4)} VAI</TYPE.body>
-            <TYPE.body fontSize={20}>Claiming {stakingInfo?.earnedAmount?.toSignificant(4)} UNI-V2</TYPE.body>
           </AutoColumn>
         </LoadingView>
       )}
@@ -139,7 +138,6 @@ export default function WithdrawTokensImmediatelyModal({ isOpen, onDismiss, stak
           <AutoColumn gap="12px" justify={'center'}>
             <TYPE.largeHeader>Transaction Submitted</TYPE.largeHeader>
             <TYPE.body fontSize={20}>Withdrew VAI!</TYPE.body>
-            <TYPE.body fontSize={20}>Claimed UNI-V2!</TYPE.body>
           </AutoColumn>
         </SubmittedView>
       )}
