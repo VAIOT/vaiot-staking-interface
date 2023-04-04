@@ -78,7 +78,7 @@ export default function WithdrawRewardsModal({ isOpen, onDismiss, stakingInfo }:
               <TYPE.body fontWeight={600} fontSize={36}>
                 {<FormattedCurrencyAmount currencyAmount={stakingInfo?.earnedAmount} />}
               </TYPE.body>
-              <TYPE.body>Earned VAI</TYPE.body>
+              <TYPE.body>Earned VAI Tokens</TYPE.body>
             </AutoColumn>
           )}
           <TYPE.subHeader style={{ textAlign: 'center' }}>You can withdraw your earned rewards</TYPE.subHeader>
@@ -92,7 +92,7 @@ export default function WithdrawRewardsModal({ isOpen, onDismiss, stakingInfo }:
       {attempting && !hash && (
         <LoadingView onDismiss={handleDismiss}>
           <AutoColumn gap="12px" justify={'center'}>
-            <TYPE.body fontSize={20}>Claiming {stakingInfo?.earnedAmount?.toSignificant(4)} VAI</TYPE.body>
+            <TYPE.body fontSize={20}>Claiming {stakingInfo?.earnedAmount?.toSignificant(4)} VAI Tokens</TYPE.body>
           </AutoColumn>
         </LoadingView>
       )}
@@ -100,7 +100,7 @@ export default function WithdrawRewardsModal({ isOpen, onDismiss, stakingInfo }:
         <SubmittedView onDismiss={handleDismiss} hash={hash}>
           <AutoColumn gap="12px" justify={'center'}>
             <TYPE.largeHeader>Transaction Submitted</TYPE.largeHeader>
-            <TYPE.body fontSize={20}>Claim rewards</TYPE.body>
+            <TYPE.body fontSize={20}>Rewards have been claimed!</TYPE.body>
             <TYPE.body fontSize={20}></TYPE.body>
           </AutoColumn>
         </SubmittedView>

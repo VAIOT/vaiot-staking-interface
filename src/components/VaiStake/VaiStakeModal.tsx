@@ -155,8 +155,8 @@ export default function VaiStackingModal({ isOpen, onDismiss, vaiStakingInfo }: 
       {attempting && !hash && (
         <LoadingView onDismiss={handleDismiss}>
           <AutoColumn gap="12px" justify={'center'}>
-            <TYPE.largeHeader>Depositing VAI</TYPE.largeHeader>
-            <TYPE.body fontSize={20}>{parsedAmount?.toSignificant(4)} VAI</TYPE.body>
+            <TYPE.largeHeader>Depositing VAI Tokens</TYPE.largeHeader>
+            <TYPE.body fontSize={20}>{parsedAmount?.toSignificant(4)} VAI Tokens</TYPE.body>
           </AutoColumn>
         </LoadingView>
       )}
@@ -165,7 +165,7 @@ export default function VaiStackingModal({ isOpen, onDismiss, vaiStakingInfo }: 
         <SubmittedView onDismiss={handleDismiss} hash={hash}>
           <AutoColumn gap="12px" justify={'center'}>
             <TYPE.largeHeader>Transaction Submitted</TYPE.largeHeader>
-            <TYPE.body fontSize={20}>Deposited {parsedAmount?.toSignificant(4)} VAI</TYPE.body>
+            <TYPE.body fontSize={20}>Deposited {parsedAmount?.toSignificant(4)} VAI Tokens</TYPE.body>
           </AutoColumn>
         </SubmittedView>
       )}
