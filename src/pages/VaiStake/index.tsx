@@ -12,6 +12,7 @@ import { AutoColumn } from '../../components/Column'
 import { CardBGImage, CardNoise, CardSection, DataCard } from '../../components/earn/styled'
 import { SupportedChainId } from '../../constants/chains'
 import { OutlineCard } from '../../components/Card'
+import PageLoader from '../../components/PageLoader'
 import { TopSection } from '../Earn'
 import { Countdown } from '../Earn/Countdown'
 import PoolCard from './PoolCard'
@@ -33,6 +34,8 @@ export default function VaiStake() {
 
   return (
     <PageWrapper gap="lg" justify="center">
+      {!stakingInfo && <PageLoader />}
+
       {!isChainIdSupported || !account ? (
         <TopSection gap="md">
           <DataCard>
