@@ -24,7 +24,7 @@ type TokenInfo = {
 export const VAI_STAKING_REWARD_INFO: Partial<Record<SupportedChainId, TokenInfo>> = {
   [SupportedChainId.POLYGON]: {
     token: VAI[SupportedChainId.POLYGON],
-    stakingRewardAddress: '0x0Ffb564630865ca870435038d6f5A3568DD32E9C'
+    stakingRewardAddress: '0xfd556cbdfe3c9065f4f20d52d9beb4949249e2ac'
   },
   [SupportedChainId.MUMBAI]: {
     token: VAI[SupportedChainId.MUMBAI],
@@ -131,7 +131,7 @@ export function useVaiStakingInfo() {
     accountsArgs
   )
 
-  const stakingContract = useConnectToVaiStakingContract('0x15b661FB563432BBbe3cE8A6CaCec148131f16BE')
+  const stakingContract = useConnectToVaiStakingContract(rewardsAddresses[0])
 
   useEffect(() => {
     async function getFallbackData() {
