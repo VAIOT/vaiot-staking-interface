@@ -22,6 +22,8 @@ export const useVaiApprovalState = (
   const [currentAllowance, setCurrentAllowance] = useState(new TokenAmount(token, '0'))
   const [pendingApproval, setPendingApproval] = useState(false)
 
+  const resetAllowance = useCallback(() => setCurrentAllowance(new TokenAmount(token, '0')), [token])
+
   const getAllowance = useCallback(async () => {
     if (tokenContract && account) {
       setPendingApproval(true)
@@ -109,5 +111,5 @@ export const useVaiApprovalState = (
     }
   }, [addTransaction, amountToApprove, approvalState, getAllowance, spenderAddress, token, tokenContract])
 
-  return [approvalState, approve] as const
+  return [approvalState, approve, resetAllowance] as const
 }
