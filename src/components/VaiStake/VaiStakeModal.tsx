@@ -1,7 +1,7 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { TransactionResponse } from '@ethersproject/providers'
-import { JSBI } from '@uniswap/sdk'
+import { CurrencyAmount, JSBI } from '@uniswap/sdk'
 
 import { useActiveWeb3React } from '../../hooks'
 import { ApprovalState } from '../../hooks/useApproveCallback'
@@ -63,9 +63,12 @@ export default function VaiStackingModal({ isOpen, onDismiss, vaiStakingInfo }: 
     onDismiss()
   }, [onDismiss, resetAllowance])
 
+  const cachedCurrencyBalance = useRef<CurrencyAmount>()
   const currencyBalance = useCurrencyBalance(account ?? undefined, vaiStakingInfo.stakedAmount.token ?? undefined)
+
+  const finalCurrencyBalance = currencyBalance ?? cachedCurrencyBalance.current
   const maxAmountOrCurrentBalance =
-    currencyBalance && maxAmountInput.greaterThan(currencyBalance) ? currencyBalance : maxAmountInput
+    finalCurrencyBalance && maxAmountInput.greaterThan(finalCurrencyBalance) ? finalCurrencyBalance : maxAmountInput
   const atMaxAmount = Boolean(maxAmountInput && parsedAmount?.equalTo(maxAmountInput))
 
   const handleMax = useCallback(() => {
@@ -109,6 +112,12 @@ export default function VaiStackingModal({ isOpen, onDismiss, vaiStakingInfo }: 
     if (!parsedAmount) throw new Error('missing stake amount')
     return approveCallback()
   }
+
+  useEffect(() => {
+    if (currencyBalance) {
+      cachedCurrencyBalance.current = currencyBalance
+    }
+  }, [currencyBalance])
 
   return (
     <Modal isOpen={isOpen} onDismiss={handleDismiss} maxHeight={90}>
