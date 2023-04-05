@@ -61,7 +61,7 @@ export default function WithdrawTokensStagesModal({ isOpen, onDismiss, stakingIn
           .claimWithdrawal(`0x${parsedAmount.raw.toString(16)}`, { gasLimit: 300000 })
           .then((response: TransactionResponse) => {
             addTransaction(response, {
-              summary: `Withdraw deposited liquidity`
+              summary: `Withdraw deposited VAI tokens`
             })
             setHash(response.hash)
             setTypedValue('')
@@ -108,7 +108,7 @@ export default function WithdrawTokensStagesModal({ isOpen, onDismiss, stakingIn
               <TYPE.body fontWeight={600} fontSize={36}>
                 {<FormattedCurrencyAmount currencyAmount={stakingInfo.stakedAmount} />}
               </TYPE.body>
-              <TYPE.body>Deposited liquidity:</TYPE.body>
+              <TYPE.body>Deposited VAI tokens</TYPE.body>
             </AutoColumn>
           )}
 
@@ -128,8 +128,8 @@ export default function WithdrawTokensStagesModal({ isOpen, onDismiss, stakingIn
 
           <TYPE.subHeader style={{ textAlign: 'center' }}>
             {stakingInfo?.withdrawalInitiated
-              ? 'Grace period ended. You can now withdraw your liquidity.'
-              : 'If you want to withdraw your liquidity, you have to initialise the process, which means that counting your rewards will stop immediately and you will be able to withdraw your VAI Tokens after 7 days.'}
+              ? 'Grace period ended. You can now withdraw your VAI tokens.'
+              : 'If you want to withdraw your VAI tokens, you have to initialise the process, which means that counting your rewards will stop immediately and you will be able to withdraw your VAI tokens after 7 days.'}
           </TYPE.subHeader>
           <ButtonError
             disabled={!!error || (stakingInfo?.withdrawalInitiated && !!amountError)}

@@ -49,6 +49,7 @@ export default function WithdrawTokensImmediatelyModal({ isOpen, onDismiss, stak
   function wrappedOndismiss() {
     setHash(undefined)
     setAttempting(false)
+    setTypedValue('')
     onDismiss()
   }
 
@@ -61,7 +62,7 @@ export default function WithdrawTokensImmediatelyModal({ isOpen, onDismiss, stak
         .withdrawImmediately(`0x${parsedAmount.raw.toString(16)}`, { gasLimit: 300000 })
         .then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Withdraw deposited liquidity`
+            summary: `Withdraw deposited VAI tokens`
           })
           setHash(response.hash)
         })
@@ -93,7 +94,7 @@ export default function WithdrawTokensImmediatelyModal({ isOpen, onDismiss, stak
               <TYPE.body fontWeight={600} fontSize={36}>
                 {<FormattedCurrencyAmount currencyAmount={stakingInfo.stakedAmount} />}
               </TYPE.body>
-              <TYPE.body>Deposited liquidity:</TYPE.body>
+              <TYPE.body>Deposited VAI tokens</TYPE.body>
             </AutoColumn>
           )}
 
@@ -109,8 +110,8 @@ export default function WithdrawTokensImmediatelyModal({ isOpen, onDismiss, stak
             id="withdraw-vai-token"
           />
           <TYPE.subHeader style={{ textAlign: 'center' }}>
-            You can withdraw your liquidity without the need to wait 7 days of the grace period, but it will cost you
-            10% of the liquidity you provided.
+            You can withdraw your VAI tokens without the need to wait 7 days of the grace period, but it will cost you
+            10% of the VAI tokens you provided.
           </TYPE.subHeader>
           <ButtonError disabled={!!error} error={!!error && !!stakingInfo?.stakedAmount} onClick={onWithdraw}>
             {error ?? 'Withdraw & Claim'}
