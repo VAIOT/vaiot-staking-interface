@@ -44,12 +44,11 @@ export default function VaiStackingModal({ isOpen, onDismiss, vaiStakingInfo }: 
 
   const addTransaction = useTransactionAdder()
   const deadline = useTransactionDeadline()
-  const [approval, approveCallback] = useVaiApprovalState(
+  const [approval, approveCallback, resetAllowance] = useVaiApprovalState(
     parsedAmount,
     vaiStakingInfo.stakingRewardAddress,
     vaiStakingInfo.token
   )
-
   const stakingContract = useVaiStakingContract(vaiStakingInfo.stakingRewardAddress)
 
   const onUserInput = useCallback((typedValue: string) => {
@@ -59,8 +58,10 @@ export default function VaiStackingModal({ isOpen, onDismiss, vaiStakingInfo }: 
   const handleDismiss = useCallback(() => {
     setHash(undefined)
     setAttempting(false)
+    setTypedValue('')
+    resetAllowance()
     onDismiss()
-  }, [onDismiss])
+  }, [onDismiss, resetAllowance])
 
   const currencyBalance = useCurrencyBalance(account ?? undefined, vaiStakingInfo.stakedAmount.token ?? undefined)
   const maxAmountOrCurrentBalance =

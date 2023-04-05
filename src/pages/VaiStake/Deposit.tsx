@@ -35,6 +35,7 @@ import { WITHDRAWAL_GENESIS } from 'state/stake/hooks'
 import { useTokenBalance } from 'state/wallet/hooks'
 import WithdrawTokensStagesModal from 'components/VaiStake/WithdrawTokensStagesModal'
 import WithdrawTokensImmediatelyModal from 'components/VaiStake/WithdrawTokensImmediatelyModal'
+import PageLoader from 'components/PageLoader'
 
 const SUPPORTED_CHAIN_IDS = [SupportedChainId.POLYGON, SupportedChainId.MUMBAI]
 
@@ -108,6 +109,7 @@ export default function VaiStakeDeposit() {
 
   return (
     <PageWrapper gap="lg" justify="center">
+      {!stakingInfo && <PageLoader />}
       {!isChainIdSupported || !account ? (
         <TopSection gap="md">
           <DataCard>
