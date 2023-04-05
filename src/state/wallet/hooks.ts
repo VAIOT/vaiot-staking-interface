@@ -1,6 +1,6 @@
 import { VAI } from './../../constants/index'
 import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount } from '@uniswap/sdk'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import ERC20_INTERFACE from '../../constants/abis/erc20'
 import { useAllTokens } from '../../hooks/Tokens'
 import { useActiveWeb3React } from '../../hooks'
@@ -142,7 +142,19 @@ export function useAggregateUniBalance(): TokenAmount | undefined {
   const uniBalance: TokenAmount | undefined = useTokenBalance(account ?? undefined, vai)
   const uniUnHarvested: TokenAmount | undefined = useTotalUniEarned()
 
-  if (!vai) return undefined
+  const cachedAmount = useRef<TokenAmount>()
 
-  return new TokenAmount(vai, JSBI.add(uniBalance?.raw ?? JSBI.BigInt(0), uniUnHarvested?.raw ?? JSBI.BigInt(0)))
+  const amount = useMemo(() => {
+    if (!vai) return undefined
+
+    return new TokenAmount(vai, JSBI.add(uniBalance?.raw ?? JSBI.BigInt(0), uniUnHarvested?.raw ?? JSBI.BigInt(0)))
+  }, [uniBalance?.raw, uniUnHarvested?.raw, vai])
+
+  useEffect(() => {
+    if (amount && uniBalance) {
+      cachedAmount.current = amount
+    }
+  }, [amount, uniBalance])
+
+  return uniBalance ? amount : cachedAmount.current
 }
