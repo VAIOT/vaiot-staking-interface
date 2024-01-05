@@ -3,10 +3,32 @@
     {
       "inputs": [
         { "internalType": "address", "name": "_stakingToken", "type": "address" },
-        { "internalType": "address", "name": "_rewardToken", "type": "address" }
+        { "internalType": "address", "name": "_rewardToken", "type": "address" },
+        { "internalType": "address", "name": "_feeAddress", "type": "address" }
       ],
       "stateMutability": "nonpayable",
       "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "FEE_COLLECTING_WALLET",
+      "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "FEE_PERCENTAGE",
+      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "GRACE_PERIOD",
+      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "stateMutability": "view",
+      "type": "function"
     },
     {
       "inputs": [],
@@ -31,6 +53,27 @@
     },
     {
       "inputs": [{ "internalType": "uint256", "name": "_amount", "type": "uint256" }],
+      "name": "changeFeeAmount",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [{ "internalType": "address", "name": "_newWallet", "type": "address" }],
+      "name": "changeFeeCollectingWallet",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [{ "internalType": "uint256", "name": "_newGracePeriod", "type": "uint256" }],
+      "name": "changeGracePeriod",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [{ "internalType": "uint256", "name": "_amount", "type": "uint256" }],
       "name": "changePoolLimit",
       "outputs": [],
       "stateMutability": "nonpayable",
@@ -39,6 +82,13 @@
     {
       "inputs": [{ "internalType": "uint256", "name": "_amount", "type": "uint256" }],
       "name": "changeStakeLimit",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [{ "internalType": "uint256", "name": "_amount", "type": "uint256" }],
+      "name": "claimWithdrawal",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -100,6 +150,13 @@
       "type": "function"
     },
     {
+      "inputs": [{ "internalType": "address", "name": "_addr", "type": "address" }],
+      "name": "getTimeLeftToWithdraw",
+      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [],
       "name": "getTokensDepositedForRewards",
       "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
@@ -122,6 +179,13 @@
     },
     {
       "inputs": [],
+      "name": "initializeWithdrawal",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "lastTimeRewardApplicable",
       "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
       "stateMutability": "view",
@@ -134,7 +198,7 @@
       ],
       "name": "notifyRewardAmount",
       "outputs": [],
-      "stateMutability": "payable",
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -218,6 +282,13 @@
       "type": "function"
     },
     {
+      "inputs": [{ "internalType": "address", "name": "_newOwner", "type": "address" }],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "inputs": [],
       "name": "updatedAt",
       "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
@@ -233,11 +304,18 @@
     },
     {
       "inputs": [{ "internalType": "uint256", "name": "_amount", "type": "uint256" }],
-      "name": "withdraw",
+      "name": "withdrawImmediately",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
     },
-    { "inputs": [], "name": "withdrawReward", "outputs": [], "stateMutability": "nonpayable", "type": "function" }
+    { "inputs": [], "name": "withdrawReward", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+    {
+      "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+      "name": "withdrawalInitiated",
+      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "stateMutability": "view",
+      "type": "function"
+    }
   ]
 }

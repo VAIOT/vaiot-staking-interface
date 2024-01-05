@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import { CountUp } from 'use-count-up'
 import { JSBI, TokenAmount } from '@uniswap/sdk'
 
@@ -12,6 +12,8 @@ import { VAI } from '../../constants'
 import {
   BottomSection,
   DataRow,
+  IsFinalizeAccessible,
+  IsWithdrawalAccessible,
   PageWrapper,
   PoolData,
   PositionInfo,
@@ -25,10 +27,15 @@ import { AutoColumn } from '../../components/Column'
 import { CardBGImage, CardNoise, CardSection, DataCard } from '../../components/earn/styled'
 import { ButtonPrimary } from '../../components/Button'
 import VaiStackingModal from '../../components/VaiStake/VaiStakeModal'
-import WithdrawTokensModal from 'components/VaiStake/WithdrawTokensModal'
 import WithdrawRewardsModal from 'components/VaiStake/WithdrawRewardsModal'
 import { SupportedChainId } from 'constants/chains'
 import { TopSection } from '../Earn'
+import { Countdown } from 'pages/Earn/Countdown'
+import { WITHDRAWAL_GENESIS } from 'state/stake/hooks'
+import { useTokenBalance } from 'state/wallet/hooks'
+import WithdrawTokensStagesModal from 'components/VaiStake/WithdrawTokensStagesModal'
+import WithdrawTokensImmediatelyModal from 'components/VaiStake/WithdrawTokensImmediatelyModal'
+import PageLoader from 'components/PageLoader'
 
 const SUPPORTED_CHAIN_IDS = [SupportedChainId.POLYGON, SupportedChainId.MUMBAI]
 
@@ -39,6 +46,7 @@ export function parseBigNumber(value: TokenAmount): string {
 }
 
 export default function VaiStakeDeposit() {
+  const timeLeft = useRef<Date | undefined>()
   const { chainId, account } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
 
@@ -47,10 +55,24 @@ export default function VaiStakeDeposit() {
   const token = chainId ? VAI[chainId] : undefined
 
   const stakingModalState = useDialogState()
-  const withdrawTokensModalState = useDialogState()
   const withdrawRewardModalState = useDialogState()
 
+  const withdrawTokensImmediatelyModalState = useDialogState()
+  const withdrawTokensStagesModalState = useDialogState()
+
   const stakingInfo = useVaiStakingInfo()
+  const stakingReturnValue = stakingInfo?.timeLeftToWithdraw
+
+  useEffect(() => {
+    if (stakingReturnValue && !timeLeft.current) {
+      timeLeft.current = stakingReturnValue
+    } else if (!stakingReturnValue && timeLeft.current) {
+      timeLeft.current = undefined
+    }
+  }, [stakingReturnValue])
+
+  const userLiquidityUnstaked = useTokenBalance(account ?? undefined, stakingInfo?.stakedAmount?.token)
+  const showAddLiquidityButton = Boolean(stakingInfo?.stakedAmount?.equalTo('0') && userLiquidityUnstaked?.equalTo('0'))
 
   const countUpAmount = stakingInfo?.earnedAmount?.toFixed(6) ?? '0'
   const countUpAmountPrevious = usePrevious(countUpAmount) ?? '0'
@@ -66,16 +88,28 @@ export default function VaiStakeDeposit() {
     }
   }, [account, stakingModalState, toggleWalletModal])
 
-  const handleWithdrawTokensClick = useCallback(() => {
-    withdrawTokensModalState.open()
-  }, [withdrawTokensModalState])
+  const handleWithdrawTokensImmediatelyClick = useCallback(() => {
+    withdrawTokensImmediatelyModalState.open()
+  }, [withdrawTokensImmediatelyModalState])
+
+  const handleWithdrawTokensStagesClick = useCallback(() => {
+    withdrawTokensStagesModalState.open()
+  }, [withdrawTokensStagesModalState])
 
   const handleWithdrawRewardClick = useCallback(() => {
     withdrawRewardModalState.open()
   }, [withdrawRewardModalState])
 
+  const end = WITHDRAWAL_GENESIS
+
+  const isWithdrawalAccessible = IsWithdrawalAccessible(end)
+  const isFinalizeAccesible = IsFinalizeAccessible(
+    stakingInfo?.timeLeftToWithdraw ? stakingInfo.timeLeftToWithdraw.getTime() / 1000 : 0
+  )
+
   return (
     <PageWrapper gap="lg" justify="center">
+      {!stakingInfo && <PageLoader />}
       {!isChainIdSupported || !account ? (
         <TopSection gap="md">
           <DataCard>
@@ -185,7 +219,37 @@ export default function VaiStakeDeposit() {
           )}
 
           {hasStackedAmount && (
-            <ButtonPrimary padding="8px" borderRadius="8px" width="160px" onClick={handleWithdrawTokensClick}>
+            <ButtonPrimary
+              padding="8px"
+              borderRadius="8px"
+              width="160px"
+              onClick={handleWithdrawTokensImmediatelyClick}
+              disabled={!isWithdrawalAccessible || Boolean(stakingInfo?.withdrawalInitiated)}
+            >
+              Withdraw Immediately
+            </ButtonPrimary>
+          )}
+
+          {hasStackedAmount && !stakingInfo?.withdrawalInitiated && (
+            <ButtonPrimary
+              padding="8px"
+              borderRadius="8px"
+              width="160px"
+              onClick={handleWithdrawTokensStagesClick}
+              disabled={!isWithdrawalAccessible}
+            >
+              Initialize Withdraw
+            </ButtonPrimary>
+          )}
+
+          {hasStackedAmount && stakingInfo?.withdrawalInitiated && (
+            <ButtonPrimary
+              padding="8px"
+              borderRadius="8px"
+              width="160px"
+              onClick={handleWithdrawTokensStagesClick}
+              disabled={!isFinalizeAccesible}
+            >
               Withdraw deposit
             </ButtonPrimary>
           )}
@@ -196,6 +260,8 @@ export default function VaiStakeDeposit() {
             </ButtonPrimary>
           )}
         </DataRow>
+
+        {!showAddLiquidityButton && timeLeft.current && <Countdown exactEnd={timeLeft.current} finalize={true} />}
       </PositionInfo>
 
       {stakingInfo && (
@@ -206,9 +272,15 @@ export default function VaiStakeDeposit() {
             vaiStakingInfo={stakingInfo}
           />
 
-          <WithdrawTokensModal
-            isOpen={withdrawTokensModalState.isOpen}
-            onDismiss={withdrawTokensModalState.close}
+          <WithdrawTokensImmediatelyModal
+            isOpen={withdrawTokensImmediatelyModalState.isOpen}
+            onDismiss={withdrawTokensImmediatelyModalState.close}
+            stakingInfo={stakingInfo}
+          />
+
+          <WithdrawTokensStagesModal
+            isOpen={withdrawTokensStagesModalState.isOpen}
+            onDismiss={withdrawTokensStagesModalState.close}
             stakingInfo={stakingInfo}
           />
 
